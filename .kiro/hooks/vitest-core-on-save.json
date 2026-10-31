@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Run Vitest for core package on save",
+      "trigger": "PostFileSave",
+      "description": "When a file in packages/core is saved, run that package's Vitest suite once (non-watch).",
+      "matcher": "packages.core",
+      "action": {
+        "type": "command",
+        "command": "pnpm --filter @specter/core exec vitest run",
+        "timeout": 120
+      }
+    }
+  ]
+}

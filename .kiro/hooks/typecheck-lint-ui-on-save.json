@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Typecheck and lint extension/UI on save",
+      "trigger": "PostFileSave",
+      "description": "When a file in apps/extension or packages/ui is saved, run the type checker and ESLint.",
+      "matcher": "apps.extension|packages.ui",
+      "action": {
+        "type": "command",
+        "command": "pnpm typecheck; pnpm lint",
+        "timeout": 120
+      }
+    }
+  ]
+}

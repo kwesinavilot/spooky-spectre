@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Run extraction on new corpus file",
+      "trigger": "PostFileCreate",
+      "description": "When a corpus file is added, run extraction on it and print the completeness score.",
+      "matcher": "corpus",
+      "action": {
+        "type": "command",
+        "command": "pnpm --filter @specter/extension exec tsx scripts/run-corpus-extraction.ts",
+        "timeout": 120
+      }
+    }
+  ]
+}

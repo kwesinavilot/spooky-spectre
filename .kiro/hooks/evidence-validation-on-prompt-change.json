@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Run evidence-validation tests on AI prompt change",
+      "trigger": "PostFileSave",
+      "description": "When a prompt file in packages/ai changes, run the fabricated-quote evidence-validation tests.",
+      "matcher": "packages.ai.*prompt",
+      "action": {
+        "type": "command",
+        "command": "pnpm --filter @specter/ai exec vitest run evidence-validation",
+        "timeout": 120
+      }
+    }
+  ]
+}
