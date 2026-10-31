@@ -1,0 +1,8 @@
+node_modules/
+.output/
+.wxt/
+dist/
+coverage/
+.kiro/
+**/*.md
+pnpm-lock.yaml

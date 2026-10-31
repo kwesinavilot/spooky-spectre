@@ -1,0 +1,19 @@
+{
+  "extends": "./.wxt/tsconfig.json",
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "jsx": "react-jsx",
+    "baseUrl": "../..",
+    "paths": {
+      "@specter/core": ["packages/core/src/index.ts"],
+      "@specter/core/*": ["packages/core/src/*"],
+      "@specter/ai": ["packages/ai/src/index.ts"],
+      "@specter/ai/*": ["packages/ai/src/*"],
+      "@specter/ui": ["packages/ui/src/index.ts"],
+      "@specter/ui/*": ["packages/ui/src/*"],
+      "@specter/help": ["packages/help/src/index.ts"],
+      "@specter/help/*": ["packages/help/src/*"]
+    }
+  },
+  "include": ["entrypoints", "src", ".wxt/types"]
+}
