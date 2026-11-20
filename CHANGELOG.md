@@ -31,22 +31,28 @@ Spec roadmap:
 
 ## [Unreleased]
 
-### Added — Foundation setup (Spec 1, documentation phase)
-- Created `.kiro/steering/` governance files: `product.md`, `tech.md`, `structure.md`, `design.md`, `privacy.md`.
-- Created the Foundation spec at `.kiro/specs/specter/foundation/`:
-  - `requirements.md` — EARS-format requirements (FR-MONO, FR-WXT, FR-TOK, FR-SCHEMA, FR-DB, FR-SURF, FR-PRIV, FR-A11Y), fixture/property-based test requirements, and acceptance criteria.
-  - `design.md` — architecture, package boundaries, WXT config, design tokens, Zod-first data models, Dexie schema, surface shells, messaging, privacy defaults.
-  - `tasks.md` — ordered implementation tasks (Phases A–J) with acceptance gates.
-- Created `.kiro/hooks/` automation:
-  - `vitest-core-on-save` — run Vitest for `packages/core` on save.
-  - `typecheck-lint-ui-on-save` — typecheck + ESLint on `apps/extension` / `packages/ui` save.
-  - `evidence-validation-on-prompt-change` — run fabricated-quote evidence tests when AI prompts change.
-  - `extraction-on-corpus-add` — run extraction and print completeness when a corpus file is added.
-  - `pre-commit-secret-scan` — block commits containing API keys, disallowed remote URLs, or document-text logging.
+---
 
-### Notes
-- Documentation and governance only in this entry; no code has been written yet.
-- The AI analysis pipeline is explicitly out of scope for Spec 1 and is not implemented.
+## [0.1.0] - 2026-11-20
+
+First pre-release: foundation spec (Spec 1) implemented on a fresh repository. Nothing was
+shipped before, so this is a feature-scale minor bump from the `0.0.0` placeholder.
+
+### Added
+- pnpm workspace with root tooling: ESLint (flat config), Prettier, TypeScript base config,
+  `.nvmrc`, `.gitignore`, `.prettierignore`, and test scripts.
+- `packages/core`: Zod schemas, design tokens, contrast utilities, privacy helpers, plus
+  Vitest unit tests for schema and contrast.
+- `packages/ai`: provider type definitions and package shell.
+- `packages/ui`: `AppShell`, `ErrorBoundary`, UI primitives with inline stroke SVG icons,
+  base styles and tokens.
+- `packages/help`: help content index module.
+- `apps/extension` (WXT, MV3, React 18, Tailwind): entrypoints for background, content,
+  sidepanel, options, onboarding, graveyard, and help; Dexie database setup; message bus;
+  settings and sidepanel Zustand stores; secrets handling via `chrome.storage.local`;
+  extension icons; manifest config.
+- Governance and spec documentation under `.kiro/` (steering files, Foundation spec
+  requirements/design/tasks, save-time hooks, pre-commit secret scan).
 
 ---
 
