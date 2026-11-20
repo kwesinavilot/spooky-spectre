@@ -21,9 +21,9 @@ This plan implements the Specter foundation: a pnpm monorepo, WXT-based Chrome M
 - [x] 1.4 Create root `.nvmrc` (Node 20 LTS) and `.gitignore` (`node_modules`, `.output`, `dist`, coverage).
   - Both exist.
 - [x] 1.5 Create ESLint flat config with `no-restricted-imports` enforcing package boundaries and a no-emoji rule; create `.prettierrc`.
-  - `eslint.config.mjs` has `no-restricted-imports` for package boundaries and a custom `no-emoji` rule. `.prettierrc.json` exists.
+  - `eslint.config.mjs` has `no-restricted-imports` for package boundaries, a custom `no-emoji` rule, and `no-console: error` for `packages/ai/**` and `**/secrets.ts`. `.prettierrc.json` exists.
 - [x] 1.6 Create `CHANGELOG.md` at repo root initialized with an `Unreleased` section and version `0.0.0`.
-  - Exists with `Unreleased` section, version `0.0.0`.
+  - Exists; now carries a `0.1.0` entry covering the foundation.
 
 ### Phase B — packages/core
 
@@ -41,8 +41,8 @@ This plan implements the Specter foundation: a pnpm monorepo, WXT-based Chrome M
   - Covers TEST-SCHEMA-01..03.
 - [x] 2.7 Create `packages/core/test/contrast.test.ts` covering TEST-TOK-01 for all declared token pairs.
   - Covers TEST-TOK-01 for all `TOKEN_PAIRS`.
-- [~] 2.8 Run `pnpm --filter @specter/core test` and confirm green.
-  - Tests exist but were not executed due to PowerShell execution-policy issues on this Windows machine. **Remaining:** run the test suite and confirm green.
+- [x] 2.8 Run `pnpm --filter @specter/core test` and confirm green.
+  - All 18 core tests (schema + contrast) pass via `pnpm -r run test`.
 
 ### Phase C — packages/ai (stub)
 
@@ -59,10 +59,10 @@ This plan implements the Specter foundation: a pnpm monorepo, WXT-based Chrome M
   - Both exist with React, Tailwind, clsx. **Deviation:** React is v19, not v18 — works but violates the tech rule. **Remaining:** align to React 18 if strict compliance is required.
 - [x] 4.2 Create `packages/ui/src/tokens.ts` exporting the typed token object (design §5).
   - Re-exports `DESIGN_TOKENS` from `@specter/core`.
-- [ ] 4.3 Create `packages/ui/tailwind.preset.ts` extending Tailwind theme with token colors and the two fonts.
-  - **Not done.** No `tailwind.preset.ts` exists; Tailwind config is inline in `apps/extension/tailwind.config.ts` importing tokens directly. **Remaining:** extract a shared preset per design §5.
-- [~] 4.4 Create `packages/ui/src/styles/base.css` with `:root` CSS custom properties for all tokens and `@font-face` for Fraunces and IBM Plex Sans (local `@fontsource` files).
-  - `:root` CSS custom properties for all tokens are present. **Missing:** no `@font-face` declarations; fonts are loaded via `@fontsource` imports in the extension `styles.css` instead. **Remaining:** add local `@font-face` rules (or accept the `@fontsource` import approach and update design).
+- [x] 4.3 Create `packages/ui/tailwind.preset.ts` extending Tailwind theme with token colors and the two fonts.
+  - `packages/ui/tailwind.preset.ts` created (token colors + font stacks); exported as `@specter/ui/tailwind.preset`. `apps/extension/tailwind.config.ts` consumes it via `presets` and only declares `content` globs.
+- [x] 4.4 Create `packages/ui/src/styles/base.css` with `:root` CSS custom properties for all tokens and `@font-face` for Fraunces and IBM Plex Sans (local `@fontsource` files).
+  - `:root` custom properties plus `@fontsource` imports (local @font-face rules over bundled woff2) now live in `base.css`; the extension `styles.css` imports only the base sheet. Verified in the built bundle (all fonts under `assets/*.woff2`).
 - [x] 4.5 Create primitives: `Button`, `Link`, `TextInput`, `SearchField`, `Card`, `Tabs`, `StatCard`, `SectionCard`, `IconButton`, `Icon` (inline stroke SVG with accessible name).
   - All primitives in `primitives.tsx`; `Icon` is inline stroke SVG with accessible name.
 - [x] 4.6 Create `AppShell` layout component (header, "?" link affordance, focus-visible ring base, 44px targets).
@@ -80,22 +80,22 @@ This plan implements the Specter foundation: a pnpm monorepo, WXT-based Chrome M
 ### Phase F — apps/extension: WXT setup
 
 - [x] 6.1 Create `apps/extension/package.json` (`@specter/extension`) with WXT, wxt-react, dexie, zustand, zod.
-  - Exists with WXT, `@wxt-dev/module-react`, dexie, zustand, zod.
-- [~] 6.2 Create `apps/extension/wxt.config.ts` per design §4 (MV3, permissions, optional_host_permissions, entrypoints, no remote).
-  - MV3; permissions `activeTab,storage,sidePanel,scripting,alarms,notifications`; entrypoints present. **Review needed:** `optional_host_permissions: ['<all_urls>']` — design says "never `<all_urls>`". This may be the per-site runtime request mechanism but contradicts FR-WXT-03; needs review/justification or scoping.
+  - Exists with WXT, `@wxt-dev/module-react`, dexie, zustand, zod; Vite pinned to `^6.3.4` with `@vitejs/plugin-react` `^5.0.0` (WXT 0.21 requires Vite 6).
+- [x] 6.2 Create `apps/extension/wxt.config.ts` per design §4 (MV3, permissions, optional_host_permissions, entrypoints, no remote).
+  - `optional_host_permissions` scoped to `http://*/*`, `https://*/*`; each grant is per site at runtime via `chrome.permissions`. Built manifest verified to contain no `<all_urls>` (FR-WXT-03).
 - [x] 6.3 Create `apps/extension/tsconfig.json` extending base with JSX and WXT types.
   - Exists; extends base with JSX and WXT types.
-- [~] 6.4 Create `apps/extension/entrypoints/background.ts` service worker with a `get-status` ping handler.
-  - `background.ts` has `sidePanel.setPanelBehavior` and `onInstalled` handler. **Missing:** no explicit `get-status` ping handler — `messaging.ts` defines the type but background doesn't register a listener. **Remaining:** register the `get-status` handler in the background service worker.
+- [x] 6.4 Create `apps/extension/entrypoints/background.ts` service worker with a `get-status` ping handler.
+  - `ping`/`get-status` handlers registered in `background.ts` via the typed message bus, alongside the side-panel behavior and install handlers.
 - [x] 6.5 Create `apps/extension/entrypoints/content.ts` that mounts a single Shadow DOM root and registers a message listener (renders nothing visible).
-  - Mounts Shadow DOM root (manual registration, `pointer-events:none`, renders nothing visible); registers a message listener.
+  - Mounts Shadow DOM root (`registration: 'runtime'`, `pointer-events:none`, renders nothing visible). Spec 2 will register the script per site on demand.
 
 ### Phase G — apps/extension: data layer
 
 - [x] 7.1 Create `apps/extension/src/db/database.ts` Dexie schema per design §7.
   - `agreements`, `versions`, `settings`, `dismissedTips` stores with correct indexes.
-- [~] 7.2 Create `apps/extension/src/store/settings.ts` Zustand store hydrated from Dexie `settings` (hauntingLevel, reduceMotion, excludedDomains, providerId, onboardingComplete).
-  - All fields present. **Missing:** not hydrated from Dexie — plain in-memory `create()` with defaults, no Dexie persistence. **Remaining:** wire hydration from / persistence to the Dexie `settings` store.
+- [x] 7.2 Create `apps/extension/src/store/settings.ts` Zustand store hydrated from Dexie `settings` (hauntingLevel, reduceMotion, excludedDomains, providerId, onboardingComplete).
+  - Store hydrates from the Dexie `settings` table on surface mount (via `mount.tsx`) and persists on change; `prefers-reduced-motion` honoured when nothing is saved (FR-TOK-06). Cross-surface live sync is deferred.
 - [x] 7.3 Create `apps/extension/src/store/sidepanel.ts` Zustand store with `status` states `idle | detected | analyzing | results`.
   - `status: idle|detected|analyzing|results` and `activeTab: findings|evidence|ask`.
 - [x] 7.4 Create `apps/extension/src/secrets.ts` helper (get/set/clear in `chrome.storage.local` only).
@@ -129,54 +129,49 @@ This plan implements the Specter foundation: a pnpm monorepo, WXT-based Chrome M
 
 ### Phase J — Verification
 
-- [ ] 10.1 Run `pnpm typecheck` and fix all errors until exit zero.
-  - **Not verified.** Could not run due to PowerShell execution-policy issues. **Remaining:** run and fix until exit zero.
-- [ ] 10.2 Run `pnpm lint` until clean.
-  - **Not verified.** Could not run. **Remaining:** run until clean.
-- [ ] 10.3 Run `pnpm test` (core schema + contrast tests) until green.
-  - **Not verified.** Could not run. **Remaining:** run until green.
-- [ ] 10.4 Run `pnpm build` and confirm `.output/` is produced.
-  - **Not done.** `.output/chrome-mv3` is empty. **Remaining:** run build and confirm output.
+- [x] 10.1 Run `pnpm typecheck` and fix all errors until exit zero.
+  - `pnpm -r run typecheck` exits zero across all workspaces (after fixing the `content.ts` registration typing and the side panel tab callback).
+- [x] 10.2 Run `pnpm lint` until clean.
+  - `pnpm -w run lint` exits zero (after adding `argsIgnorePattern: '^_'` to the ESLint config).
+- [x] 10.3 Run `pnpm test` (core schema + contrast tests) until green.
+  - 19 tests pass: 18 core (schema + contrast) + 1 extension Dexie round-trip.
+- [x] 10.4 Run `pnpm build` and confirm `.output/` is produced.
+  - `pnpm build` produces `.output/chrome-mv3` (all 5 HTML surfaces, background, content script, fonts bundled locally; built with Vite 6.4.6).
 - [ ] 10.5 Load `.output/chrome-mv3` unpacked in Chrome; open side panel; confirm no console errors.
   - **Not done.** Manual Chrome verification not performed. **Remaining:** load unpacked, open side panel, confirm clean console.
 - [ ] 10.6 Open each extension tab (Graveyard, Options, Onboarding, Help); confirm each renders its shell.
   - **Not done.** **Remaining:** open each tab and confirm shells render.
-- [ ] 10.7 Inspect the built `manifest.json`; confirm no `<all_urls>` host permission and no remote CSP entries.
-  - **Not done.** Note: current `wxt.config.ts` declares `optional_host_permissions: ['<all_urls>']` — this gate will likely fail until 6.2 is resolved.
-- [~] 10.8 Update `CHANGELOG.md` under `Unreleased` with the foundation completion notes.
-  - CHANGELOG exists but `Unreleased` still says "no code has been written yet" — outdated. **Remaining:** rewrite `Unreleased` with actual foundation completion notes.
+- [x] 10.7 Inspect the built `manifest.json`; confirm no `<all_urls>` host permission and no remote CSP entries.
+  - Built manifest verified: `optional_host_permissions: ["http://*/*","https://*/*"]`, no `<all_urls>`, default MV3 CSP, no remote entries, fonts local.
+- [x] 10.8 Update `CHANGELOG.md` under `Unreleased` with the foundation completion notes.
+  - CHANGELOG carries a `0.1.0` entry covering the foundation; the wave-0 fixes land under a fresh `Unreleased` section.
 
 ## Acceptance gates
 
 Spec 1 is complete only when all Phase J checks pass and the acceptance criteria in `requirements.md` §6 are satisfied:
-1. `pnpm typecheck` exits zero across all workspaces. — _blocked on 10.1_
-2. `pnpm build` produces a loadable extension. — _blocked on 10.4_
+1. `pnpm typecheck` exits zero across all workspaces. — _satisfied (10.1)_
+2. `pnpm build` produces a loadable extension. — _satisfied (10.4)_
 3. Extension loads unpacked; side panel opens with no console errors. — _blocked on 10.5_
 4. Graveyard, Options, Onboarding, Help tabs each open to a non-empty shell. — _blocked on 10.6_
-5. Shared types and Zod schemas compile; fixture-based schema tests pass. — _partially verified (code present, tests not yet run)_
-6. Dexie opens on a fresh profile and round-trips an `AgreementRecord`. — _code present (7.1); not yet verified at runtime_
-7. No `<all_urls>` host permission in the built manifest. — _at risk: 6.2 declares `<all_urls>` in `optional_host_permissions`; needs resolution_
-8. No remote font/script or non-provider network request in the bundle. — _fonts bundled locally via `@fontsource`; needs build-time verification (10.4/10.7)_
+5. Shared types and Zod schemas compile; fixture-based schema tests pass. — _satisfied (10.3)_
+6. Dexie opens on a fresh profile and round-trips an `AgreementRecord`. — _satisfied in tests (10.3); browser runtime check pending 10.5_
+7. No `<all_urls>` host permission in the built manifest. — _satisfied (10.7)_
+8. No remote font/script or non-provider network request in the bundle. — _satisfied (10.4/10.7)_
 9. Default excluded-domains list includes banking, health, email. — _satisfied (2.4/9.1)_
 
 ### Open items before the spec can close
 
-- **6.2 / Gate 7:** reconcile `optional_host_permissions: ['<all_urls>']` with FR-WXT-03 ("never `<all_urls>`").
-- **6.4:** register the `get-status` handler in `background.ts`.
-- **7.2:** hydrate/persist the settings Zustand store against Dexie.
 - **4.1:** decide whether React 19 is acceptable or must downgrade to React 18.
-- **4.3 / 4.4:** add `tailwind.preset.ts` and decide on `@font-face` vs `@fontsource` import for fonts.
 - **5.1 / 5.2:** decide whether markdown stub files are required or the TS catalog suffices.
 - **8.4:** align the Onboarding "Begin" button state with FR-SURF-05.
 - **9.2:** add a test for the `no-console` ESLint rule or accept config-only enforcement.
-- **10.1–10.7:** run the full verification suite (`pnpm typecheck`, `lint`, `test`, `build`) once the PowerShell execution issue is resolved, then perform manual Chrome checks.
-- **10.8:** rewrite the `CHANGELOG.md` `Unreleased` section with real completion notes.
+- **10.5 / 10.6:** load the built extension in Chrome, open the side panel and every extension tab, confirm clean console and rendered shells.
 
 ## Notes
 
 - Tasks marked `[x]` are implemented; `[~]` are partially done with remaining work noted; `[ ]` are not done.
-- The bulk of the foundation scaffold (Phases A–I) is implemented. The main blockers to closing the spec are the Phase J verification steps, which could not be run due to PowerShell execution-policy issues on this Windows machine.
-- Several partial items (4.1 React version, 5.1/5.2 markdown approach, 6.2 `<all_urls>`, 8.4 Begin button) are design-decision points that may require a brief requirements/design update rather than code changes.
+- Phases A–I are implemented except the decision points above; Phase J is fully green except the manual Chrome checks.
+- The build toolchain required a dependency repair (Vite 6 + `@vitejs/plugin-react` 5 replacing a broken pin) before any verification could run.
 - Each remaining task references the requirement it satisfies via the phase notes above.
 
 ## Task Dependency Graph
@@ -184,11 +179,8 @@ Spec 1 is complete only when all Phase J checks pass and the acceptance criteria
 ```json
 {
   "waves": [
-    { "id": 0, "tasks": ["2.8", "4.1", "4.3", "4.4", "5.1", "5.2", "6.2", "6.4", "7.2", "8.4", "9.2"] },
-    { "id": 1, "tasks": ["10.1", "10.2", "10.3"] },
-    { "id": 2, "tasks": ["10.4"] },
-    { "id": 3, "tasks": ["10.5", "10.6", "10.7"] },
-    { "id": 4, "tasks": ["10.8"] }
+    { "id": 0, "tasks": ["4.1", "5.1", "5.2", "8.4", "9.2"] },
+    { "id": 1, "tasks": ["10.5", "10.6"] }
   ]
 }
 ```

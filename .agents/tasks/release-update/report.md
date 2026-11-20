@@ -1,54 +1,53 @@
 # Release Update Report
 
-- **Date:** 2026-10-31
+- **Date:** 2026-11-20
 - **Branch:** `main`
-- **Commits since last release:** 2 (no tags exist; full history used)
-- **Current version (package.json):** 0.0.0
+- **Last release:** v0.1.0 (commit `e6fcbe6`, tagged as a changelog/version-bump release commit; no git tags exist yet)
+- **Current version (package.json):** 0.1.0
+- **Commits since v0.1.0:** 0
 
-## Chosen version: v0.1.0
+## Chosen version: v0.1.0 (no bump)
 
-- **Bump type:** minor
-- **Justification:** No tags and no prior released version exist. The current version is 0.0.0
-  (pre-release placeholder). The latest commit (`85e76a7`, "set up foundation and run tests")
-  is a feature-scale change: it introduces the pnpm monorepo, all workspace packages
-  (`packages/core`, `packages/ai`, `packages/ui`, `packages/help`), the WXT-based
-  `apps/extension` with all entrypoints, the Dexie database schema, Zod schemas, stores,
-  and passing unit tests. Per semver, a new feature on 0.0.0 yields 0.1.0. There are no
-  breaking changes (nothing shipped before), and this is more than a patch because it adds
-  the first working feature surface. This also aligns with the versioning plan in
-  CHANGELOG.md, where each completed spec increments the minor within the 0.x line.
+- **Bump type:** none (stay at v0.1.0)
+- **Justification:** HEAD (`e6fcbe6`, "chore: release v0.1.0 (changelog entry + version bump)")
+  is itself the v0.1.0 release commit. There are no commits after it and no tags exist to
+  mark the release point. The two preceding commits are the v0.1.0 release analysis report
+  (`92f7ce4`, docs only, no release files changed) and the v0.1.0 payload (`85e76a7`,
+  "set up foundation and run tests"), both already covered by the existing 0.1.0 changelog
+  entry. There are no new `feat` commits, no fixes, and no breaking changes since the
+  release, so semver yields no increment: the next version remains 0.1.0 until new work
+  lands. Per the CHANGELOG versioning plan, the next bump will be a minor (`0.2.0`) when
+  Spec 1 (Foundation) is completed or a new spec's code lands, or a patch for fixes.
 
-## Categorized changes (from `git log` / `git diff ee758f8..HEAD`, 73 files, ~7049 insertions)
+## Categorized changes (since v0.1.0; none)
 
 ### Added
-- pnpm workspace with root tooling: ESLint (flat config), Prettier, TypeScript base config,
-  `.nvmrc`, `.gitignore`, `.prettierignore`, test scripts.
-- `packages/core`: Zod schemas (`schema.ts`), design tokens (`tokens.ts`), contrast
-  utilities (`contrast.ts`), privacy helpers (`privacy.ts`), plus Vitest unit tests for
-  schema and contrast.
-- `packages/ai`: provider type definitions and package shell.
-- `packages/ui`: `AppShell`, `ErrorBoundary`, UI primitives with inline stroke SVG icons,
-  base styles and tokens.
-- `packages/help`: help content index module.
-- `apps/extension` (WXT, MV3, React 18, Tailwind): entrypoints for background, content,
-  sidepanel, options, onboarding, graveyard, help; Dexie database setup; message bus;
-  settings and sidepanel Zustand stores; secrets handling via `chrome.storage.local`;
-  extension icons; manifest config.
+- None since the v0.1.0 release. (The 0.1.0 payload — workspace packages, extension
+  entrypoints, tests, governance docs — is already recorded under [0.1.0] in CHANGELOG.md.)
 
 ### Changed
-- Initial repository state only; no pre-existing code was modified (nothing existed).
+- None.
 
 ### Fixed
-- None recorded.
+- None.
 
 ### Removed
 - None.
 
-### Chores / Docs
-- `ee758f8` — chore: add Kiro hooks, specs, and steering documentation (governance files,
-  Foundation spec requirements/design/tasks, save-time hooks).
-- `85e76a7` (docs portion) — root README/config scaffolding and lockfile.
+## History reviewed (last 30 commits / full history)
 
-## Commit list
-- `85e76a7` set up foundation and run tests
+- `e6fcbe6` chore: release v0.1.0 (changelog entry + version bump) — current HEAD, unpushed
+- `92f7ce4` docs: release analysis report for v0.1.0 (report only)
+- `85e76a7` set up foundation and run tests — origin/main, the v0.1.0 payload
 - `ee758f8` chore: add Kiro hooks, specs, and steering documentation
+
+Breakdown: 0 `feat`, 0 `fix`, 1 `chore` (release commit), 1 `docs`, 1 non-conventional
+(foundation setup). No breaking changes (`BREAKING CHANGE`/`!`) anywhere in history.
+
+## Notes for the next release
+
+- The only unpushed delta vs `origin/main` is the release commit itself plus the v0.1.0
+  report; push `main` to publish the release point.
+- Consider creating a lightweight `v0.1.0` tag at `e6fcbe6` so future "since last release"
+  analyses have an anchor.
+- Next version once new work lands: minor to `0.2.0` per the CHANGELOG versioning plan.

@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Release update trigger",
+      "trigger": "PostTaskExec",
+      "description": "After any spec task completes, ask the user if they want to run the release-update workflow. The hook is only the trigger; the workflow handles the release.",
+      "action": {
+        "type": "agent",
+        "prompt": "Ask the user if they want to run the release-update workflow now."
+      }
+    }
+  ]
+}

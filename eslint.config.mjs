@@ -3,7 +3,7 @@ import tseslint from 'typescript-eslint'
 
 /**
  * Local rule: no emoji as affordances in source (FR-A11Y-04).
- * Range-based so common symbols like © and ® are not flagged.
+ * Range-based so common symbols like Â© and Â® are not flagged.
  */
 const noEmoji = {
   meta: {
@@ -96,6 +96,15 @@ export default tseslint.config(
   {
     files: ['**/secrets.ts'],
     rules: { 'no-console': 'error' },
+  },
+  {
+    files: ['**/*.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
+    },
   },
   {
     files: ['**/*.{ts,tsx,js,mjs}'],

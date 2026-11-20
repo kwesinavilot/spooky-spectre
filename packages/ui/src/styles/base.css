@@ -1,3 +1,14 @@
+/* Local fonts (design section 5, FR-WXT-09). The @fontsource CSS files are
+   plain @font-face rules that point at bundled woff2 files — nothing is
+   fetched remotely. Every surface that imports this base sheet gets the
+   fonts and the token custom properties. */
+@import '@fontsource/fraunces/400.css';
+@import '@fontsource/fraunces/500.css';
+@import '@fontsource/fraunces/600.css';
+@import '@fontsource/ibm-plex-sans/400.css';
+@import '@fontsource/ibm-plex-sans/500.css';
+@import '@fontsource/ibm-plex-sans/600.css';
+
 :root {
   --specter-ink: #0e0b14;
   --specter-panel: #14101d;

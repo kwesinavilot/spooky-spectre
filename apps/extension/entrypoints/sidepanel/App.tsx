@@ -1,5 +1,5 @@
 import { AppShell, Button, Card, Tabs } from '@specter/ui';
-import { useSidePanel } from '../../src/store/sidepanel';
+import { useSidePanel, type SidePanelTab } from '../../src/store/sidepanel';
 import { openTab } from '../../src/nav';
 
 export default function App() {
@@ -29,7 +29,7 @@ export default function App() {
               { id: 'ask', label: 'Ask Specter' },
             ]}
             active={activeTab}
-            onChange={setActiveTab}
+            onChange={(id) => setActiveTab(id as SidePanelTab)}
           />
           <Card className="mt-4">
             <p className="text-specter-muted">

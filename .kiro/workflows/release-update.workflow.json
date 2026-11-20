@@ -1,0 +1,35 @@
+{
+  "name": "release-update",
+  "description": "Determine the next semantic version from recent git history, update CHANGELOG.md and the version file, commit with a conventional commit message, and push to the current branch.",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "type": "step",
+      "id": "analyze-history",
+      "name": "Analyze recent commits and diffs",
+      "agent": "wf-coder",
+      "prompt": "In the repository at c:\\wamp64\\www\\alter\\spectre, inspect the git history since the last release tag (or the last 30 commits if no tags exist). Run git log, git tag, git diff to summarize: features added (feat), breaking changes, fixes, chores, docs. Read the current version in package.json and the current CHANGELOG.md. Determine the next semantic version per semver: breaking change -> major, new feature (feat) -> minor, otherwise -> patch. Write a short report of: chosen version (e.g. v0.4.0), bump type (major/minor/patch), justification, categorized changes (Added / Changed / Fixed / Removed), and the current branch name. Save the report to .agents/tasks/release-update/report.md. Do not modify any files yet."
+    },
+    {
+      "type": "step",
+      "id": "update-files",
+      "name": "Update CHANGELOG.md and version file",
+      "agent": "wf-coder",
+      "prompt": "Read the report at .agents/tasks/release-update/report.md in the repo c:\\wamp64\\www\\alter\\spectre. Update: (1) CHANGELOG.md, prepending a new section for the next version in Keep a Changelog style (## [x.y.z] - YYYY-MM-DD with Added / Changed / Fixed / Removed subsections only where there are entries; use today's date). (2) Bump the version field in package.json to the chosen version. Do not change anything else. Verify with git diff that only these two files changed. Report the new version string and the diff summary."
+    },
+    {
+      "type": "step",
+      "id": "commit-review",
+      "name": "Review the release changes",
+      "agent": "wf-code-reviewer",
+      "prompt": "In the repo c:\\wamp64\\www\\alter\\spectre, review the uncommitted changes to CHANGELOG.md and package.json (git diff). Verify: the changelog section matches the actual commit history since the last release, the version bump is consistent between CHANGELOG.md and package.json and with semver rules, no unrelated files are modified, and no secrets or keys appear in the changelog. Report blocking findings, or approve."
+    },
+    {
+      "type": "step",
+      "id": "commit-and-push",
+      "name": "Stage, commit and push",
+      "agent": "wf-coder",
+      "prompt": "In the repo c:\\wamp64\\www\\alter\\spectre: stage CHANGELOG.md and package.json (git add only those two files), commit with a conventional commit message of the form 'chore(release): vX.Y.Z' plus a short body naming the bump type, then push to the current branch's upstream (git push origin HEAD). Do not force-push. Do not create or push tags. Report the commit hash and push result."
+    }
+  ]
+}
