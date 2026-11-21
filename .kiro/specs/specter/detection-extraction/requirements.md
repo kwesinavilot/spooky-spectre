@@ -22,8 +22,8 @@ Detection can run in two modes, chosen by the user:
   side panel and asks, or on sites the user has enabled one by one.
 
 Extraction always needs an explicit user action. Nothing in this spec sends anything off the
-device except an optional, user-triggered fetch of a policy page linked from the current page
-(see FR-EXT-08 and the open decision in §8).
+device except the fetch of a policy page linked from the current page, during an analysis the user
+started and only with their one-time consent (see FR-EXT-08 and §8).
 
 ## 2. Out of scope
 
@@ -153,9 +153,11 @@ device except an optional, user-triggered fetch of a policy page linked from the
 - **FR-EXT-07** Extraction shall compute `documentHash` as SHA-256 over the normalized text, so
   layout-only and whitespace-only changes produce the same hash and any word change produces a
   different one.
-- **FR-EXT-08** When the agreement is a link to another page, the side panel shall offer "Read the
-  linked policy", and only after the user clicks it shall the extension fetch that URL, with no
-  cookies or credentials sent, and extract it.
+- **FR-EXT-08** When the user analyzes an agreement that is a link to another page, and the user
+  has given the one-time consent to read linked policies, the extension shall fetch that URL
+  automatically, with no cookies or credentials sent, and extract it. Without that consent the side
+  panel shall offer "Read the linked policy" and fetch only after the user clicks it. The consent
+  shall be changeable in Settings and Options (§8).
 - **FR-EXT-09** Extraction shall compute a completeness score from 0 to 1 and a list of reasons
   (FR-CMP-01 to 04).
 - **FR-EXT-10** When the page is a PDF, or the agreement link points to a PDF, the side panel shall
@@ -252,11 +254,12 @@ device except an optional, user-triggered fetch of a policy page linked from the
 5. All TEST-* above pass, and typecheck, lint and build are green.
 6. No test or manual check shows a request other than the user-triggered linked-policy fetch.
 
-## 8. Open decision
+## 8. Decision: reading linked policies
 
-The definition of done in the master prompt says "no network requests except to the user's chosen
-AI provider". Reading a linked policy (FR-EXT-08) means fetching a page from the site the user is
-on, or from where its link points. This spec proposes allowing that fetch only when the user clicks
-"Read the linked policy", with credentials omitted. If you prefer a stricter rule, the alternative is
-to open the linked page in a tab and extract it there, which needs no fetch but takes the user away
-from the signup page.
+Decided by the user (2026-11-21): reading a linked policy is automatic after a one-time consent.
+Onboarding (Spec 7) asks once; the "Read linked policies automatically" switch in Settings and
+Options changes it at any time. Until the user agrees, Specter offers "Read the linked policy" as a
+button instead. The fetch omits cookies and credentials, goes only to the linked page, and the
+response is never stored. This is the one request besides the AI provider that Specter makes, and
+it happens only during an analysis the user started. If background detection is off, Chrome still
+asks for permission the first time Specter reads from a new site.

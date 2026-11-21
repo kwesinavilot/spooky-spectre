@@ -13,6 +13,9 @@
     "typecheck": "pnpm -r run typecheck",
     "lint": "eslint .",
     "test": "pnpm -r --if-present run test",
+    "examples": "node scripts/serve-examples.mjs",
+    "corpus:add": "node scripts/corpus-add.mjs",
+    "corpus:report": "pnpm --filter @specter/core exec vitest run --config vitest.corpus.config.ts",
     "format": "prettier --write ."
   },
   "devDependencies": {

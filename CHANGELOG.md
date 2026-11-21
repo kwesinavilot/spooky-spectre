@@ -70,6 +70,13 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 - New tests: `test/pageInfo.test.ts` and `test/sidepanel.test.ts` (navigation and back behavior).
 - Tested: extension typecheck, 7 extension tests, ESLint on `apps` and `packages`, and the build pass; the built manifest has `default_popup` and no host access at install. Not yet checked by hand in Chrome.
 
+### Changed (Spec 2: linked policies, test setup, demo server)
+- Decision: reading a linked policy is automatic after a one-time consent (asked in onboarding, changeable in Settings and Options); without it, a "Read the linked policy" button. Recorded in Spec 2 requirements FR-EXT-08 and §8, the privacy steering and `docs/privacy.md`.
+- `packages/core/vitest.config.ts` sets happy-dom for the detection and extraction tests; the per-file pragmas are gone.
+- `pnpm examples` serves the demo pages on http://localhost:5178 (Node built-ins only).
+- Root scripts `corpus:add` and `corpus:report` reserved for the corpus (Phase 7).
+- Removed `update-tasks.cjs`, a one-off script that made `pnpm lint` fail. ESLint now knows Node globals in `scripts/`.
+
 ### Added (docs)
 - `docs/` folder with an index, architecture, detection and extraction, effects and scares, privacy model, and development pages, describing what exists today and marking what is unverified or planned.
 

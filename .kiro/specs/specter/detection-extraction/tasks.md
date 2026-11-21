@@ -21,7 +21,7 @@ regression corpus.
 
 - [x] 1.1 Add `AgreementKind`, `ElementAnchor`, `CookieControl`, `PolicyLink`, `Unreadable`, `DetectionResult`, `CompletenessReason`, `Section` and `ExtractedDocument` to `packages/core/src/schema.ts` (design §2). _NFR-02_
 - [x] 1.2 Add schema fixture tests: valid objects parse; labels over 80 characters, offsets out of order and completeness above 1 are rejected (`test/schema-spec2.test.ts`). _NFR-02_
-- [~] 1.3 `happy-dom` and `fast-check` are in `packages/core` dev dependencies and the detect and extract tests opt in with a `// @vitest-environment happy-dom` pragma. Still to do: add a `vitest.config.ts` that sets the environment for `test/detect/**` and `test/extract/**` so new test files need no pragma (design §11). _NFR-01_
+- [x] 1.3 `happy-dom` and `fast-check` are in `packages/core` dev dependencies; `packages/core/vitest.config.ts` runs `test/detect/**` and `test/extract/**` in happy-dom, so test files need no pragma. The corpus run has its own config. _NFR-01_
 
 ## Phase 2 — Demo fixtures
 
@@ -29,7 +29,7 @@ regression corpus.
 - [x] 2.2 Write `terms-v2.html` from v1 with only the two FR-FIX-02 edits; test that diffs the two texts (in `test/extract/extract.test.ts`). _FR-FIX-02_
 - [x] 2.3 Write `examples/cookies/` pages: `index.html`, `no-reject.html`, `shadow.html`, `closed-shadow.html`, `late.html`. _FR-FIX-01_
 - [x] 2.4 Write `examples/benign/terms.html`. _FR-FIX-01_
-- [ ] 2.5 Add a root `pnpm examples` script (static server on localhost serving `examples/`, no new runtime dependency in the extension). _FR-FIX-01_
+- [x] 2.5 `pnpm examples` runs `scripts/serve-examples.mjs`: Node built-ins only, serves `examples/` on http://localhost:5178 and refuses paths outside it. _FR-FIX-01_
 
 ## Phase 3 — Detection rules (packages/core)
 
@@ -60,7 +60,7 @@ regression corpus.
 - [ ] 5.2 Write `apps/extension/src/access.ts`: `enableBackground`, `disableBackground`, `enableSite`, `disableSite`, `syncRegistrations`, using `chrome.scripting.registerContentScripts` and `excludeMatches` from the excluded-domains list. `enableBackground` must be called from a user gesture. _FR-ACC-02, 04, 05, 07_
 - [ ] 5.3 Update `content.ts`: `shouldAnalyze` gate before any DOM read, `requestIdleCallback` detection via `detectPage`, late-banner `MutationObserver` (debounced 500 ms, stops after 15 s, background mode only), and `extract` handling with the fingerprint retry and `page_changed` reason. Keep the existing empty Shadow DOM host; add nothing else to the page. _FR-PRV-01, FR-DET-10, FR-DET-12, FR-EXT-11_
 - [ ] 5.4 Update `background.ts`: tab state in `chrome.storage.session`, cleanup on `tabs.onUpdated` (new URL) and `tabs.onRemoved`, the dot badge in the medium color (never a number), and `syncRegistrations` on start and on `permissions.onAdded` and `onRemoved`. _FR-DET-11, FR-PRV-03, FR-ACC-05_
-- [ ] 5.5 Write `apps/extension/src/linkedPolicy.ts`: click-only fetch with `credentials: 'omit'`, HTML content-type check, PDF state, `DOMParser` with a `<base href>`, then `extractDocument`. The response is never stored and nothing is logged. _FR-EXT-08, FR-EXT-10, FR-PRV-04, FR-PRV-05_
+- [ ] 5.5 Write `apps/extension/src/linkedPolicy.ts`: fetch automatically during Analyze when the "Read linked policies automatically" consent is on (button otherwise; requirements §8), with `credentials: 'omit'`, HTML content-type check, PDF state, `DOMParser` with a `<base href>`, then `extractDocument`. The response is never stored and nothing is logged. _FR-EXT-08, FR-EXT-10, FR-PRV-04, FR-PRV-05_
 - [ ] 5.6 Per-site Analyze path: `chrome.scripting.executeScript` on the active tab, falling back to a per-origin permission request from the button click as decided in 3.4. _FR-ACC-08_
 - [ ] 5.7 Add extension unit tests (Vitest, mocked `chrome.*`) for `syncRegistrations` (granted, revoked, per-site), tab-state cleanup on navigation, and the manifest check that `host_permissions` is absent and `http://*/*`, `https://*/*` appear only under `optional_host_permissions`. _FR-ACC-01, 04, 05, FR-PRV-03_
 

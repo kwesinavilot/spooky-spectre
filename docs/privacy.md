@@ -20,6 +20,8 @@ The rules are in `.kiro/steering/privacy.md`. This page records how the code mee
   explained first. Per-site access otherwise.
 - Detection results are kept per tab in `chrome.storage.session` and cleared on navigation.
 - Extracted text stays in memory until the user saves (Spec 8).
-- A linked policy page is fetched only when the user clicks "Read the linked policy", without
-  cookies. This is the only network request before AI analysis, and it is still an open decision.
+- A linked policy page is read automatically during an analysis once the user has given the
+  one-time consent (onboarding, changeable in Settings and Options), and on a button click
+  otherwise. No cookies are sent and nothing is stored. This is the only network request before
+  AI analysis.
 - Before any AI call, the user sees exactly what will be sent (Spec 4 and 5).

@@ -1,4 +1,3 @@
-// @vitest-environment happy-dom
 import { describe, expect, it } from 'vitest';
 import { detectPage, extractDocument } from '../../src';
 import { DEMO_PAGES, loadExample, parse } from '../helpers';

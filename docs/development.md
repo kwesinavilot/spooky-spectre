@@ -27,8 +27,10 @@ use fast-check.
 
 ## Demo pages
 
-Static HTML in `examples/`, described in [Detection and extraction](detection-extraction.md). Open
-them directly in Chrome for now; a local server script (`pnpm examples`) is planned.
+Static HTML in `examples/`, described in [Detection and extraction](detection-extraction.md). Run
+`pnpm examples` to serve them on http://localhost:5178 (for example
+`/streamly/signup.html`); the server uses Node built-ins only and serves nothing outside
+`examples/`.
 
 ## Kiro hooks
 

@@ -98,6 +98,13 @@ export default tseslint.config(
     rules: { 'no-console': 'error' },
   },
   {
+    // Developer scripts run in Node.
+    files: ['scripts/**/*.mjs'],
+    languageOptions: {
+      globals: { process: 'readonly', console: 'readonly', URL: 'readonly', fetch: 'readonly' },
+    },
+  },
+  {
     files: ['**/*.{ts,tsx}'],
     rules: {
       '@typescript-eslint/no-unused-vars': [
