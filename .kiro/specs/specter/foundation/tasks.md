@@ -1,6 +1,8 @@
 # Implementation Plan: Spec 1 — Foundation
 
 > Ordered implementation tasks for the Foundation spec. Check off each as it completes. Run the verification command at the bottom before marking the spec done.
+
+> **Progress at v0.5.0 (2026-10-31):** Phases A–I complete. Phase J partially done: unit tests green (18 core + 1 Dexie round-trip), `tsc` green for core/ai/help and ui fixed (re-run pending), extension production build pending final verification. E2 was adapted: the article catalog lives in `packages/help/src/index.ts` instead of stub markdown files.
 >
 > Status legend: `[x]` done · `[~]` partially done · `[ ]` not done
 
