@@ -39,8 +39,8 @@ Requirements are written in EARS. Each has a stable id for traceability.
 ### 3.2 WXT extension shell
 
 - **FR-WXT-01** The extension shall target Chrome Manifest V3 using WXT.
-- **FR-WXT-02** The extension manifest shall declare only the permissions `activeTab`, `storage`, `sidePanel`, `scripting`, `alarms`, and `notifications`.
-- **FR-WXT-03** The extension manifest shall not request `<all_urls>` host access by default; host access shall be declared under `optional_host_permissions` and requested per site at runtime.
+- **FR-WXT-02** The extension manifest shall declare only the permissions `activeTab`, `storage`, `sidePanel`, and `scripting`. (`alarms` and `notifications` are deferred until reminders ship, post-MVP.)
+- **FR-WXT-03** The extension manifest shall not grant host access at install; `<all_urls>` shall be declared only under `optional_host_permissions` and requested at runtime, either when the user opts in to background detection or per site.
 - **FR-WXT-04** The extension shall register a background service worker entrypoint.
 - **FR-WXT-05** The extension shall register a content script entrypoint that injects into the active tab on demand.
 - **FR-WXT-06** The extension shall register a side panel entrypoint.

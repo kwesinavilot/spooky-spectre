@@ -7,27 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Specter is a Chrome MV3 extension that detects agreements on web pages, highlights
 risky clauses with verified evidence, explains them in plain language, and remembers
-what changed. Tagline: *See what haunts your digital life.*
+what changed. Positioning: *The things you agree to online shouldn't come back to haunt you.*
 
 Spec roadmap:
 
-| Spec | Title | Status |
-| --- | --- | --- |
-| 1 | Foundation | Code complete, build verification pending |
-| 2 | Detection and extraction | Not started |
-| 3 | Candidate finding and segmentation | Not started |
-| 4 | AI provider layer and BYOK | Not started |
-| 5 | Clause analysis and validation | Not started |
-| 6 | Side panel and overlay | Not started |
-| 7 | Onboarding and tutorial | Not started |
-| 8 | Graveyard and saving | Not started |
-| 9 | Haunting Timeline | Not started |
-| 10 | Ask Specter | Not started |
-| 11 | Reminders | Not started |
-| 12 | Help Center and coach marks | Not started |
-| 13 | Accessibility, polish and performance | Not started |
+| Spec | Title | Scope | Status |
+| --- | --- | --- | --- |
+| 1 | Foundation | MVP | Code complete, build verification pending |
+| 2 | Detection and extraction (incl. opt-in background detection, cookie banners) | MVP | Not started |
+| 3 | Candidate finding and segmentation | MVP | Not started |
+| 4 | AI provider layer and BYOK | MVP | Not started |
+| 5 | Clause analysis and validation | MVP | Not started |
+| 6 | Side panel (Contract Exorcist) and Spectral Vision overlay | MVP | Not started |
+| 7 | Onboarding and tutorial | MVP | Not started |
+| 8 | Graveyard, saving and consent search | MVP | Not started |
+| 9 | Version comparison (Haunting Timeline) | MVP | Not started |
+| 10 | Ask Specter | MVP | Not started |
+| 11 | Reminders | Later | Deferred |
+| 12 | Help Center and coach marks | MVP | Not started |
+| 13 | Accessibility, polish and performance | MVP | Not started |
+
+Later, outside the MVP: automatic monitoring of saved policies, subscription reminders, scam and
+phishing investigation, multi-browser support, cloud sync and accounts.
 
 ---
+
+## [0.6.0] - 2026-10-31
+
+### Changed
+- Product direction adopted from the product vision: Specter's three jobs are seeing the invisible, explaining the consequences, and remembering the agreement. New positioning line: "The things you agree to online shouldn't come back to haunt you." Feature names Spectral Vision (highlights), Contract Exorcist (findings report) and the panel subtitle "Your digital sixth sense" are now in `.kiro/steering/product.md`.
+- Background detection is now an opt-in. During onboarding (or later in Options) the user can grant access to all http/https sites so Specter detects agreements locally while they browse and shows a small indicator. Users who decline keep per-site access. AI analysis still requires an explicit click. Recorded in `tech.md` and `privacy.md`, including the plain-language Chrome warning the onboarding step must show.
+- MVP scope fixed: extension and side panel, cookie banner detection, terms and privacy extraction, cited AI explanations, Spectral Vision highlights, local snapshots, version comparison. Reminders (Spec 11), automatic monitoring, scam investigation, multi-browser support and cloud sync moved to Later.
+- Added product scenarios A to D (cookie banners, free trials, terms and policies, checkout pages) and consent search over saved records to the product steering.
+- Manifest permissions reduced to `activeTab`, `storage`, `sidePanel`, `scripting`. `alarms` and `notifications` return when reminders are built. FR-WXT-02 and FR-WXT-03 updated to match.
+- Tech steering now says React 19, matching the installed version.
 
 ## [0.5.0] - 2026-10-31
 

@@ -1,6 +1,29 @@
 # Specter
 
-> See what haunts your digital life.
+> The things you agree to online shouldn't come back to haunt you.
+
+Specter is your digital sixth sense: a browser companion with three jobs. It sees
+the invisible, explains the consequences, and remembers the agreement.
+
+## MVP scope
+
+| In the MVP | Later |
+| --- | --- |
+| Chrome extension and side panel | Automatic monitoring of saved policies |
+| Cookie banner detection and explanation | Subscription and trial reminders |
+| Terms and privacy policy extraction | Scam and phishing investigation |
+| AI explanations with source citations | Multi-browser support |
+| Spectral Vision highlights on the page | Cloud sync and accounts |
+| Saving agreement snapshots locally | |
+| Comparing two agreement versions | |
+
+Background detection is opt-in. If you allow it during onboarding, Specter spots
+agreements on the pages you visit using local rules and shows a small indicator.
+Nothing is sent to an AI model until you click Analyze. If you decline, Specter
+works only on sites you enable one at a time. Specter informs and never decides:
+it will not accept cookies, accept agreements, or cancel anything for you.
+
+## About
 
 Specter is a Chrome (Manifest V3) extension that reveals risky clauses in online
 agreements — terms of service, privacy policies, cookie banners, subscription
