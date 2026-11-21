@@ -32,6 +32,12 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 
 ---
 
+## [Unreleased]
+
+### Added
+- Spec 2 (Detection and extraction) at `.kiro/specs/specter/detection-extraction/`: EARS requirements for access modes and opt-in background detection, privacy gates, rule-based detection (cookie banners with control roles, terms, privacy, subscription terms, EULA, signup checkboxes), extraction with section ids, offsets, anchors, SHA-256 hash and completeness, side panel states, demo fixtures and the 10-page corpus. Design and ordered tasks included. Documents only; no code yet.
+- One open decision recorded in the spec: whether Specter may fetch a linked policy page when the user clicks "Read the linked policy".
+
 ## [0.6.0] - 2026-10-31
 
 ### Changed
