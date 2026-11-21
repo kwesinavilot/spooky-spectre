@@ -36,7 +36,7 @@ regression corpus.
 - [x] 3.1 Shared walker in `src/dom/walk.ts`: open shadow roots, same-origin iframes, sensitive and form-control skipping, closed-shadow and cross-origin-frame recording. _FR-DET-09, FR-PRV-02_
 - [x] 3.2 `detect/controls.ts` (label regex tables, `Detected`/`Uncertain` certainty) and `detect/banner.ts` (two-signal rule, control roles, `noRejectControlFound`). _FR-DET-02, 03, 04_
 - [x] 3.3 `detect/pageKind.ts`, `detect/forms.ts` (consent checkbox and subscription terms) and `detect/links.ts`. _FR-DET-05, 06, 07, 08_
-- [ ] 3.4 **Spike, do first in the extension:** check whether opening the side panel from the toolbar icon grants `activeTab`, and record the result in a note at the end of this file (design.md is not edited here). _FR-ACC-08_
+- [~] 3.4 Resolved by design: the toolbar now opens a popup (design steering 6B), and opening an extension popup grants `activeTab` for that tab, so the side panel it opens can use `executeScript` on it. The per-origin permission request stays as the fallback. Still to confirm by hand in Chrome during 6.4. _FR-ACC-08_
 - [x] 3.5 `detectPage(doc, url, opts)` in `detect/index.ts` combining the rules, stripping query and hash, honoring `shouldAnalyze`, and validating with `DetectionResult`. _FR-DET-01, FR-PRV-05_
 - [x] 3.6 Tests TEST-DET-01, TEST-DET-02, TEST-DET-03, TEST-PRV-01, TEST-PRV-02 in `test/detect/detect.test.ts`, plus a test that `cookies/late.html` has no banner at parse time and that the Streamly submit button is recorded (FR-DET-14). Green. _§6_
 - [x] 3.7 TEST-NOINT-01 runs detection and extraction on every demo page and compares the HTML before and after. Green. _FR-DET-12_
@@ -70,7 +70,7 @@ regression corpus.
 - [ ] 6.2 Build the side panel states: excluded, no access, idle, detected (cookie controls as `Detected`/`Uncertain`, "Specter never clicks them", linked-policy buttons), PDF, reading with Cancel, extracted ("Coverage: complete" or "Partial coverage" with percent, reasons, section headings, Try again below 80%). Use design-system tokens and components, 44 px targets, `aria-live="polite"` for progress and `role="alert"` for errors. _FR-UI-01 to 05, FR-CMP-04, FR-DET-03, 04_
 - [ ] 6.3 Build the Options "Site access" section: background detection switch with the Chrome warning explainer shown before the prompt (declining as easy as accepting), the per-site list with Remove, and the current state read from `chrome.permissions.contains`. _FR-ACC-03, 06, 09_
 - [ ] 6.4 Manual check in Chrome on the demo pages (served by `pnpm examples`): badge on, badge off on the benign page, all side panel states reachable, revoking access in Chrome turns background detection off. _§7 criteria 2 to 4_
-- [ ] 6.5 Add the toolbar popup (design steering §6B): host and status chip for Agreement detected, Nothing found, Paused, Excluded and Unsupported page, "Open Specter" opening the side panel, and the "Specter on this site" toggle. It reads the same tab state as the side panel. _FR-DET-11, FR-PRV-01, FR-UI-05_
+- [~] 6.5 Toolbar popup built (design steering §6B): host, status chip (Not checked, Excluded, Unsupported page), "Open Specter" opening the side panel, Settings, Graveyard and Help. Still to add once Phase 5 exists: Agreement detected, Nothing found and Paused states from the shared tab state, and the "Specter on this site" toggle. _FR-DET-11, FR-PRV-01, FR-UI-05_
 
 ## Phase 7 — Corpus
 
