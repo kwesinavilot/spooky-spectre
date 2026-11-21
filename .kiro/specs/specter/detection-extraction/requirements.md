@@ -103,7 +103,8 @@ device except an optional, user-triggered fetch of a policy page linked from the
   manage patterns.
 - **FR-DET-03** When a cookie banner is detected, the detection result shall list each control
   found with its role (`accept_all`, `reject_optional`, `manage`, `other`), its visible label,
-  and an anchor to the element.
+  a certainty (`detected` for a real button with a recognized label, otherwise `uncertain`), and
+  an anchor to the element.
 - **FR-DET-04** When a cookie banner is detected without a reject control, the detection result
   shall record that no reject control was found in the banner, without claiming the site offers
   no way to reject.
@@ -122,11 +123,15 @@ device except an optional, user-triggered fetch of a policy page linked from the
 - **FR-DET-10** While background detection is on, the detection script shall watch for cookie
   banners added after load for up to 15 seconds, debounced, and then stop observing.
 - **FR-DET-11** When detection finds at least one agreement kind, the background worker shall show
-  a badge on the toolbar icon for that tab, and shall clear it when nothing is found.
+  a small dot badge in the medium color on the toolbar icon for that tab, and shall clear it when
+  nothing is found. The badge shall never show a number or a risk color (design steering §6B).
 - **FR-DET-12** The detection script shall not click, focus, hide, move or restyle any site
   element, and shall not add any element to the page other than the existing overlay host.
 - **FR-DET-13** Detection shall finish within 50 ms of scripting time on the demo pages and shall
   be scheduled when the browser is idle.
+- **FR-DET-14** When a page has subscription terms or a consent checkbox, the detection result
+  shall list the form's submit control with its visible label and an anchor, so Spec 6 can watch
+  it for the moment-of-agreement trigger (design steering §5.3). Only the label is read.
 
 ### 4.4 Extraction
 
@@ -168,9 +173,10 @@ device except an optional, user-triggered fetch of a policy page linked from the
   `aria-expanded="false"` controlling hidden text), text in closed shadow roots or cross-origin
   frames, and content behind "Read more" or pagination controls when detectable.
 - **FR-CMP-03** Where the size of unreadable content cannot be estimated, extraction shall cap
-  completeness at 0.9 and add the reason "some content may not have loaded".
-- **FR-CMP-04** The side panel shall show the score as "Text read: N%" with every reason in plain
-  words, and shall offer "Try again" when the score is below 0.8.
+  completeness at 0.9 and list the reason without an estimated size.
+- **FR-CMP-04** The side panel shall show coverage as "Coverage: complete" at 1, otherwise
+  "Partial coverage" with the percentage read, and every reason in plain words. It shall offer
+  "Try again" when the score is below 0.8.
 
 ### 4.6 Side panel states
 

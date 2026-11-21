@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Ghostly Gazette - banner in a closed shadow root</title>
+  </head>
+  <body>
+    <main>
+      <h1>Lighthouse keeper retires after forty years</h1>
+      <p>A fictional article. The cookie banner below is in a closed shadow root, which Specter cannot read. Specter should say so instead of guessing.</p>
+    </main>
+    <consent-banner></consent-banner>
+    <script>
+      class ConsentBanner extends HTMLElement {
+        constructor() {
+          super();
+          const root = this.attachShadow({ mode: 'closed' });
+          root.innerHTML =
+            '<div style="position: fixed; left: 0; right: 0; bottom: 0; background: #fff; padding: 16px; border-top: 2px solid #333; font-family: system-ui">' +
+            '<p>We use cookies for advertising.</p><button type="button">Accept all</button> <button type="button">Reject all</button>' +
+            '</div>';
+        }
+      }
+      customElements.define('consent-banner', ConsentBanner);
+    </script>
+  </body>
+</html>

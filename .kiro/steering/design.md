@@ -13,7 +13,7 @@ Reference screens live in `docs/design/` (exported from the design canvas). The 
 ## 1. Principles (non-negotiable)
 
 1. **Calm panel, theatrical page.** The side panel, popup and settings are professional and readable. Spooky effects happen only on the page, only for verified findings, and only briefly.
-2. **Never obscure the site.** Overlays must not cover or block Accept / Reject / Manage buttons, form inputs or legal text. Overlays never dim the page.
+2. **Never obscure the site.** Overlays must not cover or block Accept / Reject / Manage buttons, form inputs or legal text. Overlays never dim the content area; the only darkening allowed is the Immersive edge vignette in section 5, which stays at the screen edges.
 3. **Evidence over drama.** Every finding shows its source quote, its location, and an evidence label. No finding is shown as verified unless the deterministic check passed.
 4. **Honest wording.** Say "May result in recurring charges", "Worth reviewing", "Requires confirmation". Never say "scam", "illegal", "dangerous", "unsafe" or "trust score".
 5. **User in control.** Nothing is analyzed, sent, saved or recorded without an explicit user action. Specter never clicks a site's consent buttons.
@@ -129,16 +129,56 @@ Order findings by impact (High, Medium, Low, Unknown), then by document order.
 
 ## 5. Motion and effects
 
-Motion has three levels. The effect level setting (`immersive | subtle | quiet`) is stored in settings. **`prefers-reduced-motion: reduce` forces Quiet** unless the user has turned off "Respect system reduced motion", and even then keep it off by default.
+### 5.1 The rule: scares are rare and earned
+
+Specter is a product people use every day, so the scare has to mean something. A big effect appears only when something consequential is verified and the user is about to act on it. Everything else stays quiet. A scare on a guess destroys trust, so effects follow the same rule as findings: evidence or silence.
+
+**Ghosts are part of every mode.** Their form changes with the effect level; they are never removed entirely.
+
+| Level | Ghost form |
+|---|---|
+| Immersive | Up to three ghosts drift once across the viewport during Possession; the ghost glyph marks every finding |
+| Subtle (default) | One ghost glyph rises beside the clause (600 ms) and stays as the margin marker |
+| Quiet, or reduced motion | The static ghost glyph marks each finding; no movement |
+
+The effect level setting (`immersive | subtle | quiet`) is stored in settings. **`prefers-reduced-motion: reduce` forces Quiet motion** unless the user turns off "Respect system reduced motion" (on by default). Quiet still shows ghosts, outlines and static color; it removes movement only.
+
+### 5.2 Effects
 
 | Effect | When | Immersive | Subtle (default) | Quiet |
 |---|---|---|---|---|
-| **Whisper** (purple edge shimmer around the highlighted clause) | Finding revealed, informational | 600 ms, once | 600 ms, once | none |
-| **Haunting** (soft pulse ring around a consequential clause) | High / Medium finding, "Show on page" | 2.4 s ease-in-out, 2 pulses, then rests as a static 2px `--ghost` outline | 1 pulse only | static outline only |
-| **Spectral pointer** (small ghost glyph in the page margin guiding to the clause) | "Show on page" when the clause is off-screen | travels ≤ 400 ms ease-out, then fades after 1 s | off | off |
-| **Resurrection** (old / new version transition) | Opening a comparison in the Graveyard | 300 ms crossfade of the two columns | 150 ms crossfade | instant |
+| **Whisper** (purple edge shimmer around the clause) | Informational finding revealed | 600 ms, once | 600 ms, once | static outline |
+| **Haunting** (soft pulse ring around the clause) | High or Medium finding, "Show on page" | 2.4 s, 2 pulses, then a static 2px `--ghost` outline | 1 pulse | static outline |
+| **Spectral pointer** (ghost glyph guiding to an off-screen clause) | "Show on page" when the clause is off-screen | travels ≤ 400 ms, fades after 1 s | travels ≤ 400 ms, fades after 1 s | glyph appears at the clause, no travel |
+| **Possession** (see 5.3) | Possession trigger | edge vignette, `--high` clause outline with 2 slow pulses, three drifting ghosts, callout beside the control | `--high` outline with 1 pulse, one rising ghost, callout | static `--high` outline, static ghost, callout |
+| **Resurrection** (old clause rises beside the new one) | Opening a comparison, or revisiting a saved agreement whose text changed | old column rises and fades in over 500 ms with one ghost | 150 ms crossfade | instant |
 
-Hard limits: no flashing, no jump scares, no sounds, no page dimming, no animation longer than 3 s, no looping animation. All effects are `pointer-events: none` and never move page layout. Highlights must still be visible with zero animation.
+### 5.3 Possession: trigger, frequency and limits
+
+**Trigger.** All four must be true:
+1. Impact is High.
+2. Evidence is `Source verified` (the deterministic quote check passed).
+3. Confidence is at least 0.85.
+4. A moment of agreement: the pointer enters a 120px zone around the detected submit, "Start trial" or Accept control; that control receives keyboard focus; or the user presses "Show on page" for that finding.
+
+**Frequency.** At most once per finding per page load, once per site per day, and three times per day across all sites. After that, the same finding shows Haunting instead. The counters live in local settings and reset daily.
+
+**The callout.** A popover beside the control (never over it) states the verified consequence with its section, for example: "Before you press this: renews at GHS 120 per month (§4.2). Cancel at least 24 hours before renewal." It includes **Why am I seeing this?**, which opens the finding and its quote. Specter never prevents the click, never calls `preventDefault`, and never delays the site.
+
+**Immersive vignette.** A radial darkening limited to the outer 12% of the viewport, with opacity up to 0.55. It fades in over 400 ms, holds while the callout is open (8 s at most), then fades out. If the clause, the callout or a protected control (consent buttons, submit buttons, form fields) is inside the edge band on one side, that side gets no vignette.
+
+**Drifting ghosts.** Up to three, Immersive only, once per Possession. Each drifts across part of the viewport in 4 to 6 s with soft opacity changes, then is removed. They never pass over protected controls or the callout, and they never loop.
+
+**Sound.** Off by default. If the user turns it on (Immersive only), one soft tone of at most 1 s plays at the start of Possession. Never on page load.
+
+### 5.4 Hard limits (every level)
+
+- **No flashing.** No element changes brightness or color more than once per second (pulses are ≤ 1 Hz); this stays well inside WCAG 2.3.1's three-flashes-per-second limit.
+- No jump scares: nothing appears suddenly at full size or full opacity, and nothing appears on page load.
+- No looping animation. Animations last at most 3 s, except ghost drift (6 s, once) and the vignette hold (while the callout is open, 8 s at most).
+- All effects are `pointer-events: none`, except Specter's own ghost markers and callouts. Effects never move page layout.
+- **Esc dismisses everything at once**: callout, vignette, ghosts and sound.
+- Highlights and ghost markers stay visible with zero animation.
 
 ### UI transitions (inside the extension)
 - Side panel tab switch (Page / Findings / Ask / History): content swaps with a 120 ms opacity fade. No slide. Keep scroll position per tab.
@@ -239,7 +279,8 @@ Layout: header, scrolling body, bottom nav (Page, Findings, Ask, History). Heade
 - Popover (320 wide, `--surface`): impact chip, evidence chip, title, one sentence, buttons **Open in Specter** (primary) and **Dismiss**. It never covers the site's Accept button. If space is tight, place it on the opposite side or below.
 - All overlay UI is isolated in a Shadow DOM so the page cannot restyle or spoof it. Do not use `innerHTML` with extracted text.
 - Esc dismisses the popover. Dismiss removes the highlight for this page load.
-- Respect the effect level (section 5). Quiet shows the outline with no motion.
+- Respect the effect level (section 5). Quiet shows the outline and the static ghost marker with no motion.
+- Possession callouts and drifting ghosts follow section 5.3. They are placed after measuring the protected controls and never overlap them.
 
 ### E. Graveyard (full-page tab, 1280 reference)
 - Left nav (232): Agreements, Consent history, Changes, Reminders (disabled, "Later" chip), Settings. Footer line: storage used.

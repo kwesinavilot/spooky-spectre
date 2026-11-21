@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Ghostly Gazette - banner added after load</title>
+  </head>
+  <body>
+    <main>
+      <h1>Storm warning for the coast road</h1>
+      <p>A fictional article. The cookie banner appears two seconds after the page loads, like many consent tools. With background detection on, Specter should still notice it.</p>
+    </main>
+    <script>
+      setTimeout(() => {
+        const bar = document.createElement('div');
+        bar.setAttribute('role', 'dialog');
+        bar.setAttribute('aria-label', 'Cookie consent');
+        bar.style.cssText = 'position: fixed; left: 0; right: 0; bottom: 0; background: #fff; padding: 16px; border-top: 2px solid #333; font-family: system-ui';
+        bar.innerHTML = '<p>We use cookies for advertising and analytics.</p><button type="button">Accept all</button> <button type="button">Reject all</button> <button type="button">Manage preferences</button>';
+        document.body.append(bar);
+      }, 2000);
+    </script>
+  </body>
+</html>

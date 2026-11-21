@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Ghostly Gazette - banner in an open shadow root</title>
+  </head>
+  <body>
+    <main>
+      <h1>Ferry timetable changes this winter</h1>
+      <p>A fictional article. The cookie banner below lives inside an open shadow root, like some consent tools.</p>
+    </main>
+    <div id="banner-host"></div>
+    <script>
+      const root = document.getElementById('banner-host').attachShadow({ mode: 'open' });
+      root.innerHTML =
+        '<div role="dialog" aria-label="Cookie consent" style="position: fixed; left: 0; right: 0; bottom: 0; background: #fff; padding: 16px; border-top: 2px solid #333; font-family: system-ui">' +
+        '<p>We use cookies for advertising and analytics.</p>' +
+        '<button type="button">Accept all</button> <button type="button">Reject all</button> <button type="button">Manage preferences</button>' +
+        '</div>';
+    </script>
+  </body>
+</html>

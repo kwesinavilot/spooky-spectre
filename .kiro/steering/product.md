@@ -49,5 +49,32 @@ Later (do not build in MVP): automatic monitoring of saved policies across websi
 subscription and trial reminders, scam and phishing investigation, multi-browser support,
 cloud sync and accounts, hosted AI and paid tiers.
 
-Demo priority: the visual reveal of a hidden renewal clause, then the evidence-backed
-explanation, then a Graveyard version comparison.
+## Scares
+
+Specter should genuinely scare people, in the demo and in everyday use, and stay a tool they keep
+installed. The scare works because it is rare and true.
+
+- **Scare at the moment of agreement.** The strongest effect (Possession) fires when a verified,
+  high-impact clause meets a user about to act: pointer near "Start free trial" or "Accept all",
+  focus on the submit button, or "Show on page". Rules are in design steering §5.3.
+- **Scare with memory.** The everyday scare is Resurrection: "You agreed to this in March. It
+  changed last week." The old clause rises beside the new one when the user revisits a saved
+  agreement. (Automatic monitoring is post-MVP, so for now this fires on revisit or Recheck.)
+- **Ration it.** Possession at most once per site per day and three times a day overall. A scare
+  people see constantly stops working.
+- **Never scare on a guess.** No verified quote, no scare. Every scare offers "Why am I seeing this?"
+- **Ghosts always.** Every mode has ghosts; Quiet and reduced motion keep them still.
+- **Warn, never block.** The site's buttons always work. Specter never delays or prevents a click.
+
+## Demo arc (three minutes)
+
+1. A normal Streamly signup page. Specter is silent apart from a dot on the toolbar icon.
+2. Analyze. Findings appear, calm and verified, in the side panel.
+3. The cursor moves toward "Start free trial". Possession: edge vignette, the renewal clause
+   outlined in red, three ghosts drift past, and the callout states "renews at GHS 120 per month
+   (§4.2)". Press "Why am I seeing this?" to show the verified quote.
+4. Save to the Graveyard and record "Accepted".
+5. Load Streamly v2. Resurrection: the old privacy clause rises beside the new one, showing
+   "aggregated" removed and "and affiliated companies" added, with what the text does not say.
+6. Ask "What changed since I agreed?" and get a cited answer.
+7. Open the benign page: Specter stays quiet. Switch to Quiet mode: the ghosts stay, still.

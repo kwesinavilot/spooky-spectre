@@ -2,3 +2,7 @@ export * from './schema';
 export * from './tokens';
 export * from './privacy';
 export * from './contrast';
+export { normalizeInline, visibleText } from './dom/text';
+export { cssPath, textQuote } from './dom/anchors';
+export * from './detect';
+export * from './extract';

@@ -32,8 +32,17 @@ export const SENSITIVE_INPUT_SELECTORS = [
   '[autocomplete*="password"]',
 ] as const;
 
-/** Returns true if analysis is permitted for the given host. */
-export function shouldAnalyze(host: string): boolean {
+/**
+ * Returns true if analysis is permitted for the given host. Pass the user's
+ * excluded list; the default list is used when none is given.
+ */
+export function shouldAnalyze(
+  host: string,
+  excluded: readonly string[] = DEFAULT_EXCLUDED_DOMAINS,
+): boolean {
   const h = host.toLowerCase().replace(/^www\./, '');
-  return !DEFAULT_EXCLUDED_DOMAINS.some((d) => h === d || h.endsWith(`.${d}`));
+  return !excluded.some((d) => {
+    const domain = d.toLowerCase().replace(/^www\./, '');
+    return h === domain || h.endsWith(`.${domain}`);
+  });
 }

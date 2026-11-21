@@ -189,8 +189,10 @@ Detection never writes to the DOM. TEST-NOINT-01 serializes the page before and 
 3. **Normalize** (FR-EXT-03): NFC, collapse whitespace, one `\n` between blocks, trim. A shared
    `normalize()` is also exported for later quote validation in Spec 5, so both sides use the same
    rules.
-4. **Sections** (FR-EXT-04, FR-EXT-05): each heading starts a section that runs to the next
-   heading of the same or higher level. Text before the first heading becomes section `s-intro`.
+4. **Sections** (FR-EXT-04, FR-EXT-05): sections are flat. Each heading of any level starts a
+   section that runs to the next heading, so sections never overlap (TEST-EXT-01). The heading
+   level is kept so later specs can rebuild the outline. Text before the first heading becomes
+   section `s-intro`.
    Ids: a leading number pattern `^(\d+(?:\.\d+)*)` gives `s-4-2`; otherwise
    `s-<slug>-<n>` where `n` is the position among headings with the same slug. Duplicate ids get
    `-2`, `-3` suffixes.
@@ -231,8 +233,9 @@ Added to `SpecterMessage` in `apps/extension/src/messaging.ts`:
 The background worker stores `TabState = { result?: DetectionResult; excluded: boolean }` in
 `chrome.storage.session` under `tab:<id>`, because the service worker can be stopped at any time.
 It removes the entry on `tabs.onRemoved` and on `tabs.onUpdated` with a new URL (FR-PRV-03), and
-sets the badge with `chrome.action.setBadgeText({ tabId, text })` and a violet background. The
-badge text is the number of agreement kinds found, or empty when there are none.
+sets the badge with `chrome.action.setBadgeText({ tabId, text: ' ' })` and the medium token as
+the background, which Chrome draws as a small dot. It never shows a number or a risk color
+(design steering §6B). An empty text clears it.
 
 The side panel asks for the active tab's state on open and on `tabs.onActivated`, and talks to the
 content script with `chrome.tabs.sendMessage`. Extracted documents travel only from the content
