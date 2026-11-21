@@ -1,8 +1,8 @@
-import {
+import type {
   ExtractedDocument,
-  type AgreementKind,
-  type CompletenessReason,
-  type CompletenessReasonCode,
+  AgreementKind,
+  CompletenessReason,
+  CompletenessReasonCode,
 } from '../schema';
 import { normalizeInline } from '../dom/text';
 import { collectBlocks, type Collected } from './blocks';
@@ -46,7 +46,18 @@ function paragraphChars(el: Element): number {
  */
 export function chooseRoot(doc: Document): RootChoice {
   const main = doc.querySelector('main, [role="main"]');
-  if (main) return { root: main, dropChrome: false };
+  if (main) {
+    // Some sites put the page title (and often the summary or effective date)
+    // outside <main>. Widen to the closest element holding both, and drop the
+    // site navigation, header and footer instead (corpus finding, task 7.4).
+    const h1 = doc.querySelector('h1');
+    if (h1 && !main.contains(h1)) {
+      let common: Element | null = main.parentElement;
+      while (common && !common.contains(h1)) common = common.parentElement;
+      if (common) return { root: common, dropChrome: true };
+    }
+    return { root: main, dropChrome: false };
+  }
   const articles = doc.querySelectorAll('article');
   if (articles.length === 1) return { root: articles[0]!, dropChrome: false };
 
@@ -124,7 +135,7 @@ export async function extractDocument(
   );
   const url = new URL(opts.url);
   const firstHeading = collected.blocks.find((b) => b.level > 0)?.text;
-  return ExtractedDocument.parse({
+  return {
     url: `${url.origin}${url.pathname}`,
     title: opts.title ?? firstHeading ?? normalizeInline(doc.title ?? ''),
     kind: opts.kind,
@@ -135,5 +146,5 @@ export async function extractDocument(
     completeness,
     completenessReasons: reasons,
     extractedAt: (opts.now ?? new Date()).toISOString(),
-  });
+  };
 }

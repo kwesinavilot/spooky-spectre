@@ -1,0 +1,12 @@
+[
+  { "name": "github-terms", "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service", "expectedKinds": ["terms_of_service"] },
+  { "name": "mozilla-terms", "url": "https://www.mozilla.org/en-US/about/legal/terms/services/", "expectedKinds": ["terms_of_service"] },
+  { "name": "wordpress-terms", "url": "https://wordpress.com/tos/", "expectedKinds": ["terms_of_service"] },
+  { "name": "dropbox-terms", "url": "https://www.dropbox.com/terms", "expectedKinds": ["terms_of_service"] },
+  { "name": "mozilla-firefox-privacy", "url": "https://www.mozilla.org/en-US/privacy/firefox/", "expectedKinds": ["privacy_policy"] },
+  { "name": "duckduckgo-privacy", "url": "https://duckduckgo.com/privacy", "expectedKinds": ["privacy_policy"] },
+  { "name": "signal-legal", "url": "https://signal.org/legal/", "expectedKinds": ["terms_of_service"] },
+  { "name": "govuk-home", "url": "https://www.gov.uk/", "expectedKinds": ["cookie_banner"] },
+  { "name": "legislation-home", "url": "https://www.legislation.gov.uk/", "expectedKinds": ["cookie_banner"] },
+  { "name": "guardian-home", "url": "https://www.theguardian.com/uk", "expectedKinds": ["cookie_banner"] }
+]

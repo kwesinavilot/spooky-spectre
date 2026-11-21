@@ -84,6 +84,14 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 - Background worker keeps per-tab detection results in `chrome.storage.session`, clears them on navigation and close, and shows a small dot badge in the medium color (never a number).
 - Tested: 23 extension tests (new: access, tab state, manifest permissions) with a mocked `chrome`, extension typecheck and ESLint pass. Not yet checked in Chrome.
 
+### Added (Spec 2 Phase 7: corpus) and Changed (core rules)
+- Corpus of 10 saved public pages (`corpus/`): GitHub, Mozilla, Automattic and Dropbox terms; Firefox, DuckDuckGo and Signal privacy; GOV.UK, the Guardian and legislation.gov.uk home pages for cookie banners. `pnpm corpus:add` captures pages, `pnpm corpus:report` scores them and writes `corpus/report.json`. Result: 7 of 10. The 3 failures are cookie banners injected by scripts, which saved copies cannot contain.
+- Detection: a page can be more than one kind (Signal's "Terms & Privacy Policy"); a banner must offer accept or reject and, outside a fixed container or dialog, two kinds of control, which removes false positives from footer "Cookie settings" links; banners that are hidden (already dismissed) are ignored.
+- Extraction: folded sections (closed `details`, `aria-expanded="false"` regions) are read, because they are part of the agreement and already in the page; collapsed tables of contents are not counted as missing; when the page title is outside `<main>`, the root widens to include it. Spec 2 FR-CMP-02 and FR-DET-02 updated.
+- `detectPage` and `extractDocument` no longer validate their own output. Results are validated with the Zod schemas where they are received (background worker, side panel), and the core tests check the schemas on every demo page. New `@specter/core/detect` and `@specter/core/extract` subpaths keep Zod out of the content script.
+- The corpus hook now runs `pnpm.cmd corpus:report`.
+- Tested: 77 core tests, the corpus report (7 of 10) and the core typecheck pass.
+
 ### Added (docs)
 - `docs/` folder with an index, architecture, detection and extraction, effects and scares, privacy model, and development pages, describing what exists today and marking what is unverified or planned.
 

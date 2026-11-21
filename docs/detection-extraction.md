@@ -1,80 +1,98 @@
 # Detection and extraction
 
-Spec 2. Code in `packages/core/src/detect/`, `packages/core/src/extract/` and
-`packages/core/src/dom/`. **Status: core library built and tested** (54 core tests and the core
-typecheck pass). The extension wiring and side panel screens (Phases 5 and 6) are not built yet,
-so none of this runs in Chrome yet.
+Spec 2. Core logic in `packages/core/src/{detect,extract,dom}`, extension wiring in
+`apps/extension`. **Status:** built and tested by automated tests (77 core tests, 28 extension
+tests, the 7-of-10 corpus target). Not yet checked by hand in Chrome (Spec 2 task 6.4).
+
+## How it runs in the extension
+
+```
+toolbar icon -> popup (grants activeTab for this tab)
+   Open Specter -> side panel, Page tab
+      background result for this tab?  yes -> show it
+                                       no  -> inject content script (activeTab) and detect now
+      Analyze agreement -> content script extracts the chosen document, or the side panel
+                           reads a linked policy -> sections and coverage shown in memory
+
+background detection on (opt-in): registered content script runs at document_idle on every
+http/https page except excluded and paused sites -> result to the background worker -> dot badge
+```
+
+- **Access** (`src/access.ts`): no host access at install. Background detection asks for all
+  http/https sites, after the Options explainer. Otherwise sites can be turned on one by one from
+  the popup's "Specter on this site" switch, and any page can be checked through the popup's
+  `activeTab` grant. The registered script follows the granted permissions, including access
+  removed in Chrome's own settings.
+- **Content script** (`entrypoints/content.ts`): checks excluded and paused sites before reading
+  anything, detects when the browser is idle, watches for late cookie banners for 15 seconds in
+  background mode, and answers `get-detection` and `extract`. It imports core through subpaths
+  (`@specter/core/detect`, `/extract`, `/privacy`) so the Zod schemas stay out of the page.
+- **Validation on receipt:** the background worker and the side panel validate everything the
+  content script sends with the Zod schemas (`DetectionResult`, `ExtractedDocument`). The content
+  script runs inside the web page, so this is the trust boundary.
+- **Tab state** (`src/tabState.ts`): the result per tab in `chrome.storage.session`, cleared on
+  navigation and close; a small dot badge in the medium color when an agreement is found.
+- **Linked policies** (`src/linkedPolicy.ts`): read during an analysis, automatically when the
+  user has turned on "Read linked policies automatically" (Settings or Options), otherwise from the
+  "Read the linked policy" button. No cookies are sent; nothing is stored.
 
 ## Detection: `detectPage(doc, url, opts?)`
 
 Rules only, no AI, no network. Returns `{ excluded: true }` for an excluded domain without reading
-the document. Otherwise returns a validated `DetectionResult` plus the live banner element.
+the document. Otherwise a `DetectionResult` plus the live banner element.
 
 | Kind | How it is recognized |
 | --- | --- |
-| `cookie_banner` | Starts from buttons whose labels look like accept, reject or manage, walks up to a container with cookie or consent wording that is fixed or sticky, a dialog, or short |
-| `terms_of_service`, `privacy_policy`, `eula` | Title, main heading, URL path and the share of numbered headings, scored against a 0.5 threshold |
+| `cookie_banner` | Starts from visible buttons labeled like accept, reject or manage, walks up to a container with cookie or consent wording that is fixed or sticky, a dialog, or short. It must offer accept or reject; outside a fixed container or dialog it needs two kinds of control. Hidden banners (already dismissed) do not count |
+| `terms_of_service`, `privacy_policy`, `eula` | Title, main heading, URL path and the share of numbered headings, against a 0.5 threshold. A page can be more than one (for example "Terms & Privacy Policy") |
 | `consent_checkbox` | A checkbox whose label links to terms or privacy |
-| `subscription_terms` | A sign-up or payment form with at least two kinds of billing wording (trial, renewal, per month, subscription, cancel) near the submit button |
+| `subscription_terms` | A sign-up or payment form with at least two kinds of billing wording near the submit button |
 
-Also recorded:
-
-- **Cookie controls** with a role (`accept_all`, `reject_optional`, `manage`, `other`) and a
-  certainty: `detected` for a real button with a recognized label, `uncertain` otherwise. Label
-  patterns are one table in `controls.ts`; "Accept necessary only" counts as reject.
-- **No reject control found** when a banner has none. Specter does not claim the site offers no
-  way to reject.
-- **Action controls:** the submit button of sign-up and payment forms, for the moment-of-agreement
-  trigger in Spec 6.
-- **Policy links** with kind, text, absolute URL and whether they point to a PDF.
-- **Unreadable containers:** consent components in closed shadow roots or frames from another site.
-- The URL is stored as origin and path only.
-
-Detection walks open shadow roots and same-origin frames, never reads form field values, labels or
-sensitive fields, and never changes the page.
+Also recorded: cookie controls with role and certainty (`detected` or `uncertain`), "no reject
+control found", the form's submit button (for the moment-of-agreement trigger in Spec 6), policy
+links, and consent containers Specter cannot read. The URL is origin and path only.
 
 ## Extraction: `extractDocument(doc, opts)`
 
-1. **Root:** `<main>`, a single `<article>`, or the smallest element holding 80% of the paragraph
-   text. When the root is guessed, navigation, headers, footers and asides are dropped.
-2. **Blocks:** headings, paragraphs, list items and table cells in reading order. Buttons, labels,
-   form controls, scripts and hidden elements are skipped.
-3. **Normalization:** NFC, whitespace collapsed, one newline between blocks (`normalizeInline`).
-4. **Sections:** flat; every heading starts one. Numbered headings give ids like `s-4-2`; others get
-   a slug and occurrence number. Text before the first heading is `s-intro`.
-5. **Anchors:** a CSS path (shadow boundaries written as ` >>> `) and a text quote with prefix and
-   suffix, so later specs can find the clause on the live page.
-6. **Hash:** SHA-256 of the normalized text. Layout and whitespace changes keep the hash; any word
-   change alters it.
-7. **Completeness:** characters read divided by read plus known skipped characters. Collapsed
-   `<details>` and collapsed `aria-expanded` regions are measured. "Read more" controls, pagination,
-   closed components and foreign frames cannot be measured, so they cap the score at 0.9. Every
-   reason has a plain-language message.
+1. **Root:** `<main>` (widened to include the page's `<h1>` when the title sits outside it), a
+   single `<article>`, or the smallest element holding 80% of the paragraph text. When widened or
+   guessed, navigation, headers, footers and asides are dropped.
+2. **Blocks:** headings, paragraphs, list items and table cells in reading order. Folded sections
+   (closed `<details>`, regions behind `aria-expanded="false"`) are read, because they are part of
+   the agreement and already in the page. Buttons, labels, form controls, scripts, decorative
+   hidden elements and collapsed tables of contents are skipped.
+3. **Normalization:** NFC, whitespace collapsed, one newline between blocks.
+4. **Sections:** flat; every heading starts one. Numbered headings give ids like `s-4-2`.
+5. **Anchors:** CSS path (shadow boundaries as ` >>> `) and a text quote with prefix and suffix.
+6. **Hash:** SHA-256 of the normalized text.
+7. **Completeness:** "Read more" controls, pagination, closed components and frames from other
+   sites may hide text that is not in the page, so they cap the score at 0.9 with a plain reason.
 
-## Demo pages (`examples/`)
+## Side panel and popup
 
-| Page | Purpose |
-| --- | --- |
-| `streamly/signup.html` | Sign-up with trial and renewal wording, a terms checkbox and a "Start free trial" button |
-| `streamly/terms-v1.html`, `terms-v2.html` | Numbered terms (renewal at §4.2). v2 differs only by removing "aggregated" and adding "and affiliated companies" in §5 |
-| `cookies/index.html` | Fixed banner with Accept all, Reject all, Manage preferences |
-| `cookies/no-reject.html` | Banner without a reject button |
-| `cookies/shadow.html`, `closed-shadow.html` | Banner in an open and a closed shadow root |
-| `cookies/late.html` | Banner added two seconds after load |
-| `benign/terms.html` | Short terms with nothing to flag |
+- **Popup:** host, status (Review available, Quiet, Not checked, Paused, Excluded, Unsupported page),
+  Open Specter, and the "Specter on this site" switch (pauses the site when background detection is
+  on, otherwise turns the site on or off).
+- **Page tab:** checking, excluded or unsupported, "needs your OK" with Allow on this site, detected
+  (kinds in plain words, one document to choose when there are several, cookie controls with
+  Detected or Uncertain and "Specter never clicks them", partial coverage notes), reading with Cancel,
+  extracted ("Coverage: complete" or "Partial coverage: N% read", reasons, sections, Try again below
+  80%, "Limited · on-device only"), and failure messages. Navigation resets it with "The page
+  changed. Run analysis again."
+- **Options, Site access:** background detection switch with the plain explainer before Chrome's
+  prompt and a "Not now" as easy as "Continue", the linked-policy switch, sites turned on one by
+  one with Remove, and paused sites with Resume.
 
-All companies and people are fictional.
+## Demo pages and corpus
 
-## Tests
-
-`packages/core/test/detect/`, `test/extract/` and `test/schema-spec2.test.ts`: fixture tests on every
-demo page, privacy tests (sensitive values and labels never appear, excluded domains are not read),
-a no-interference test (the page HTML is identical after detection and extraction), and property
-tests with fast-check for section offsets and hash stability.
+`examples/` holds the fictional demo pages (`pnpm examples` serves them on port 5178). `corpus/`
+holds 10 saved real pages and their results; see [corpus/README.md](../corpus/README.md). Latest:
+7 of 10 pass; the 3 failures are cookie banners that only exist once the site's scripts run.
 
 ## Known limits
 
 - English label and keyword patterns only.
-- Without a live window (parsed documents and tests), position is read from inline styles only.
-- Banners rendered by third-party scripts may be missing from saved copies of pages.
+- Cookie banners injected by scripts cannot be tested from saved pages; in Chrome they rely on the
+  15-second late-banner watch, which still needs a manual check.
+- A banner in a closed component or another site's frame is reported as unreadable, not guessed.
 - PDFs are detected and reported as not supported; they are never read.

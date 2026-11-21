@@ -118,19 +118,19 @@ describe('hash stability (TEST-EXT-02, property)', () => {
 });
 
 describe('completeness (TEST-CMP-01)', () => {
-  it('scores below 1 and explains collapsed and "Read more" content', async () => {
+  it('reads collapsed sections that are in the page, and flags a "Read more" control', async () => {
     const html = `<main><h1>Terms</h1><p>Visible text about the service.</p>
-      <details><summary>Section 2</summary><p>Hidden text inside a closed details element that was not read.</p></details>
+      <details><summary>Section 2</summary><p>Text inside a closed details element.</p></details>
       <button aria-expanded="false" aria-controls="more">Read more</button>
       <div id="more" hidden><p>Collapsed text that a Read more button would reveal.</p></div></main>`;
     const doc = await extract(html);
-    expect(doc.completeness).toBeLessThan(1);
-    const codes = doc.completenessReasons.map((r) => r.code);
-    expect(codes).toContain('collapsed_section');
-    expect(codes).toContain('read_more');
-    expect(doc.completeness).toBeLessThanOrEqual(0.9);
-    expect(doc.text).not.toContain('Hidden text inside');
+    // Folded-away text is still in the page, so it is read (task 7.4).
     expect(doc.text).toContain('Section 2');
+    expect(doc.text).toContain('Text inside a closed details element.');
+    expect(doc.text).toContain('Collapsed text that a Read more button would reveal.');
+    // A "Read more" control may also load text that is not in the page yet.
+    expect(doc.completenessReasons.map((r) => r.code)).toEqual(['read_more']);
+    expect(doc.completeness).toBeLessThanOrEqual(0.9);
   });
 
   it('scores 1 on a fully visible page', async () => {
@@ -144,6 +144,29 @@ describe('completeness (TEST-CMP-01)', () => {
     );
     expect(doc.completenessReasons.map((r) => r.code)).toContain('pagination');
     expect(doc.completeness).toBeLessThanOrEqual(0.9);
+  });
+});
+
+describe('corpus-driven rules (task 7.4)', () => {
+  it('includes a page title and summary that sit outside <main>, without the site chrome', async () => {
+    const doc = await extract(
+      '<header><nav><a href="/">Home</a></nav></header><div><h1>Example Privacy Notice</h1><p>Effective May 4, 2026</p>' +
+        '<main><h2>1. What we collect</h2><p>We collect your email address.</p></main></div><footer>Footer links</footer>',
+    );
+    expect(doc.text).toContain('Example Privacy Notice');
+    expect(doc.text).toContain('Effective May 4, 2026');
+    expect(doc.text).toContain('We collect your email address.');
+    expect(doc.text).not.toContain('Footer links');
+    expect(doc.text).not.toContain('Home');
+  });
+
+  it('does not count a collapsed table of contents as unread text', async () => {
+    const doc = await extract(
+      '<main><h1>Terms</h1><button aria-expanded="false" aria-controls="toc">Contents</button>' +
+        '<div id="toc" hidden><a href="#a">1. Fees</a> <a href="#b">2. Renewal</a></div>' +
+        '<h2 id="a">1. Fees</h2><p>Fees are billed monthly.</p></main>',
+    );
+    expect(doc.completeness).toBe(1);
   });
 });
 

@@ -6,6 +6,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./schema": "./src/schema.ts",
+    "./detect": "./src/detect/index.ts",
+    "./extract": "./src/extract/index.ts",
     "./privacy": "./src/privacy.ts",
     "./contrast": "./src/contrast.ts",
     "./tokens": "./src/tokens.ts"

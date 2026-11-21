@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { detectPage, extractDocument } from '../../src';
+import { DetectionResult, ExtractedDocument, detectPage, extractDocument } from '../../src';
 import { DEMO_PAGES, loadExample, parse } from '../helpers';
 
 function detect(path: string, url: string) {
@@ -52,6 +52,16 @@ describe('cookie banners (TEST-DET-02)', () => {
   it('finds no banner in late.html at parse time (the banner is added by script later)', () => {
     const r = detect('cookies/late.html', 'https://gazette.example/late');
     expect(r.kinds).not.toContain('cookie_banner');
+  });
+
+  it('ignores a banner that is hidden, for example after the user already chose', () => {
+    const doc = parse(
+      '<main><h1>News</h1></main><div class="cookie-banner" hidden><div><p>We use cookies for analytics.</p>' +
+        '<button>Accept additional cookies</button><button>Reject additional cookies</button></div></div>',
+    );
+    const outcome = detectPage(doc, 'https://gov.example/');
+    if (outcome.excluded) throw new Error('unexpectedly excluded');
+    expect(outcome.result.kinds).not.toContain('cookie_banner');
   });
 
   it('records that no reject control was found', () => {
@@ -159,9 +169,13 @@ describe('no interference (TEST-NOINT-01)', () => {
     it(`leaves ${page.path} unchanged`, async () => {
       const doc = loadExample(page.path);
       const before = doc.documentElement.outerHTML;
-      detectPage(doc, page.url);
-      await extractDocument(doc, { kind: 'terms_of_service', source: 'page', url: page.url });
+      const outcome = detectPage(doc, page.url);
+      const extracted = await extractDocument(doc, { kind: 'terms_of_service', source: 'page', url: page.url });
       expect(doc.documentElement.outerHTML).toBe(before);
+      // Outputs are not validated inside detectPage/extractDocument (NFR-03), so the
+      // schema contract is enforced here instead (NFR-02).
+      if (!outcome.excluded) expect(DetectionResult.safeParse(outcome.result).success).toBe(true);
+      expect(ExtractedDocument.safeParse(extracted).success).toBe(true);
     });
   }
 });

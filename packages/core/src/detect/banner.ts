@@ -1,5 +1,13 @@
 import type { CookieControl } from '../schema';
-import { containsDeep, isFixedLike, parentDeep } from '../dom/walk';
+import { containsDeep, isFixedLike, isHidden, parentDeep } from '../dom/walk';
+
+/** Hidden itself or inside a hidden ancestor (across shadow boundaries). */
+function isHiddenDeep(el: Element): boolean {
+  for (let cur: Element | null = el; cur; cur = parentDeep(cur)) {
+    if (isHidden(cur)) return true;
+  }
+  return false;
+}
 import { visibleText } from '../dom/text';
 import { classifyControlLabel, controlLabel, isControlElement, toCookieControl } from './controls';
 
@@ -35,7 +43,8 @@ export function findBanner(elements: Element[]): BannerMatch | null {
   const controls = elements.filter((el) => {
     if (!isControlElement(el)) return false;
     const label = controlLabel(el);
-    return label !== null && classifyControlLabel(label) !== null;
+    // A banner the user already dismissed is hidden; it is not on the page any more.
+    return label !== null && classifyControlLabel(label) !== null && !isHiddenDeep(el);
   });
   if (controls.length === 0) return null;
 
@@ -67,13 +76,23 @@ export function findBanner(elements: Element[]): BannerMatch | null {
         continue;
       }
       const container = anc;
+      const inside = controls.filter((c) => containsDeep(container, c));
+      const roles = new Set(inside.map((c) => classifyControlLabel(controlLabel(c) ?? '')));
+      // A banner asks for a decision: it needs an accept or reject control. A
+      // footer "Cookie settings" link alone is not a banner. Outside a fixed
+      // container or dialog, it needs two different kinds of control (FR-DET-02).
+      const decides = roles.has('accept_all') || roles.has('reject_optional');
+      if (!decides || (!positioned && !dialog && roles.size < 2)) {
+        seen.set(anc, null);
+        continue;
+      }
       seen.set(anc, {
         el: anc,
         positioned,
         dialog,
         compact,
         textLength: text.length,
-        controlCount: controls.filter((c) => containsDeep(container, c)).length,
+        controlCount: inside.length,
       });
     }
   }

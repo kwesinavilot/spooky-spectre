@@ -74,10 +74,10 @@ regression corpus.
 
 ## Phase 7 — Corpus
 
-- [ ] 7.1 Write `scripts/corpus.ts` and the root `corpus:add` and `corpus:report` scripts (design §10): load each saved page in happy-dom, run `detectPage` and `extractDocument`, print a table and totals, write `corpus/report.json`, exit non-zero below the target. _FR-COR-02_
-- [ ] 7.2 Update the `extraction-on-corpus-add` hook to run `pnpm corpus:report`. _FR-COR-02_
-- [ ] 7.3 Capture at least 10 real pages (4 terms, 3 privacy, 3 cookie-banner) and fill in their manifest entries. Needs the user to pick or approve the sites. _FR-COR-01_
-- [ ] 7.4 Run the report, fix rule gaps that are general (not page-specific hacks), and record the totals in the README, failures included. _FR-COR-03, §7 criterion 1_
+- [x] 7.1 `scripts/corpus-add.mjs` (`pnpm corpus:add <url> <name>` or `--sources`) and the corpus runner as a Vitest file with its own config (`packages/core/test/corpus/corpus.test.ts`, `vitest.corpus.config.ts`, `pnpm corpus:report`): loads each saved page in happy-dom with resource loading off, runs `detectPage` and `extractDocument`, prints a table, writes `corpus/report.json`, fails below 7 of 10. A Vitest file instead of `scripts/corpus.ts` because core uses extensionless TypeScript imports that plain Node cannot load. _FR-COR-02_
+- [x] 7.2 The `extraction-on-corpus-add` hook runs `pnpm.cmd corpus:report` when a page is added to `corpus/pages/`. _FR-COR-02_
+- [x] 7.3 10 pages in `corpus/` (4 terms, 3 privacy including Signal's combined page, 3 cookie-banner home pages), listed in `sources.json` with manifest phrases copied from each saved page. Chosen by Specter on the user's instruction; ico.org.uk refused the request and was replaced by legislation.gov.uk. _FR-COR-01_
+- [x] 7.4 Result 7 of 10. General rule fixes from the corpus: multiple page kinds per page; root widened when the `<h1>` is outside `<main>`; folded sections read (FR-CMP-02 changed); collapsed tables of contents not counted; hidden banners ignored; a banner must offer accept or reject (FR-DET-02 refined). The 3 failures are script-injected banners, recorded in `corpus/README.md` and the README. _FR-COR-03, §7 criterion 1_
 
 ## Phase 8 — Verification and release
 

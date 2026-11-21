@@ -1,0 +1,88 @@
+[
+  {
+    "file": "github-terms.html",
+    "sourceUrl": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service",
+    "capturedAt": "2026-11-21",
+    "expectedKinds": ["terms_of_service"],
+    "mustContain": [
+      "Effective date: April 27, 2026",
+      "By agreeing to these Terms, you are giving us permission to charge your on-file credit card",
+      "You must provide a valid email address in order to complete the signup process."
+    ]
+  },
+  {
+    "file": "mozilla-terms.html",
+    "sourceUrl": "https://www.mozilla.org/en-US/about/legal/terms/services/",
+    "capturedAt": "2026-11-21",
+    "expectedKinds": ["terms_of_service"],
+    "mustContain": ["Mozilla Accounts Terms of Service", "Last Updated September 16, 2026"]
+  },
+  {
+    "file": "wordpress-terms.html",
+    "sourceUrl": "https://automattic.com/tos/",
+    "capturedAt": "2026-11-21",
+    "expectedKinds": ["terms_of_service"],
+    "mustContain": [
+      "These Terms govern your access to and use of the software, applications, extensions, and other products and services we provide through or for",
+      "Minimum Age Requirements",
+      "Fees, Payment, and Renewal"
+    ]
+  },
+  {
+    "file": "dropbox-terms.html",
+    "sourceUrl": "https://www.dropbox.com/terms",
+    "capturedAt": "2026-11-21",
+    "expectedKinds": ["terms_of_service"],
+    "mustContain": ["Thanks for using Dropbox!", "Our mission is to create a more enlightened way of working"]
+  },
+  {
+    "file": "mozilla-firefox-privacy.html",
+    "sourceUrl": "https://www.mozilla.org/en-US/privacy/firefox/",
+    "capturedAt": "2026-11-21",
+    "expectedKinds": ["privacy_policy"],
+    "mustContain": [
+      "Firefox Privacy Notice",
+      "Firefox is built with privacy and protection as the default.",
+      "Effective May 4, 2026"
+    ]
+  },
+  {
+    "file": "duckduckgo-privacy.html",
+    "sourceUrl": "https://duckduckgo.com/privacy",
+    "capturedAt": "2026-11-21",
+    "expectedKinds": ["privacy_policy"],
+    "mustContain": ["We don’t track you.", "That’s our Privacy Policy in a nutshell."]
+  },
+  {
+    "file": "signal-legal.html",
+    "sourceUrl": "https://signal.org/legal/",
+    "capturedAt": "2026-11-21",
+    "expectedKinds": ["terms_of_service", "privacy_policy"],
+    "mustContain": [
+      "Signal is designed to never collect or store any sensitive information.",
+      "You agree to our Terms of Service",
+      "Your calls and messages are always encrypted"
+    ]
+  },
+  {
+    "file": "govuk-home.html",
+    "sourceUrl": "https://www.gov.uk/",
+    "capturedAt": "2026-11-21",
+    "expectedKinds": ["cookie_banner"],
+    "mustContain": ["We use some essential cookies to make this website work."]
+  },
+  {
+    "file": "guardian-home.html",
+    "sourceUrl": "https://www.theguardian.com/uk",
+    "capturedAt": "2026-11-21",
+    "expectedKinds": ["cookie_banner"],
+    "mustContain": ["cookies"]
+  },
+  {
+    "file": "legislation-home.html",
+    "sourceUrl": "https://www.legislation.gov.uk/",
+    "capturedAt": "2026-11-21",
+    "expectedKinds": ["cookie_banner"],
+    "mustContain": ["cookies"]
+  }
+]

@@ -100,7 +100,10 @@ started and only with their one-time consent (see FR-EXT-08 and §8).
 - **FR-DET-02** The detection script shall detect cookie banners by combining at least two
   signals among: a fixed or sticky positioned container, a `dialog` role or element, keywords
   such as "cookie", "consent" or "tracking", and buttons whose labels match accept, reject or
-  manage patterns.
+  manage patterns. The container shall offer a decision (an accept or reject control); outside a
+  fixed container or dialog it shall have two different kinds of control. Controls that are
+  hidden, or inside a hidden ancestor, shall not count (a dismissed banner is not on the page).
+  (Refined from the corpus, task 7.4.)
 - **FR-DET-03** When a cookie banner is detected, the detection result shall list each control
   found with its role (`accept_all`, `reject_optional`, `manage`, `other`), its visible label,
   a certainty (`detected` for a real button with a recognized label, otherwise `uncertain`), and
@@ -171,9 +174,12 @@ started and only with their one-time consent (see FR-EXT-08 and §8).
 
 - **FR-CMP-01** The completeness score shall be the extracted character count divided by the sum
   of extracted characters and the estimated characters Specter could not read.
-- **FR-CMP-02** Unreadable text shall include collapsed sections (`details` not open,
-  `aria-expanded="false"` controlling hidden text), text in closed shadow roots or cross-origin
-  frames, and content behind "Read more" or pagination controls when detectable.
+- **FR-CMP-02** Collapsed sections that are in the page (`details` not open, regions controlled
+  by `aria-expanded="false"`) shall be read and shall not lower completeness; a collapsed table of
+  contents (mostly links) is navigation and is skipped. Unreadable text shall include text in
+  closed shadow roots or cross-origin frames, and content behind "Read more" or pagination
+  controls, which may not be in the page yet. (Changed after the corpus run, task 7.4: reading
+  folded text gives the user full coverage.)
 - **FR-CMP-03** Where the size of unreadable content cannot be estimated, extraction shall cap
   completeness at 0.9 and list the reason without an estimated size.
 - **FR-CMP-04** The side panel shall show coverage as "Coverage: complete" at 1, otherwise
@@ -235,8 +241,9 @@ started and only with their one-time consent (see FR-EXT-08 and §8).
   `documentHash` unchanged; changing any single word changes it.
 - **TEST-EXT-03 (fixture)** Streamly v1 and v2 produce different hashes and identical section ids.
 - **TEST-EXT-04 (fixture)** Section ids follow the heading numbering on Streamly ("4.2" → `s-4-2`).
-- **TEST-CMP-01 (fixture)** A page with a closed `details` element and a "Read more" collapse
-  scores below 1 and lists both reasons; a fully visible page scores 1.
+- **TEST-CMP-01 (fixture)** A page with a closed `details` element and a "Read more" collapse reads
+  the folded text, scores at most 0.9 and lists the "Read more" reason; a fully visible page
+  scores 1; a page with pagination is capped and says why.
 - **TEST-NOINT-01** Running detection and extraction on each demo page leaves the page's DOM
   identical apart from the overlay host.
 - **TEST-COR-01** The corpus runner meets FR-COR-02 and the totals meet the acceptance target.

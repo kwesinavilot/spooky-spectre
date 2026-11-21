@@ -1,0 +1,171 @@
+{
+  "generatedAt": "2026-11-21T18:52:55.174Z",
+  "passes": 7,
+  "total": 10,
+  "rows": [
+    {
+      "file": "github-terms.html",
+      "source": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service",
+      "expected": [
+        "terms_of_service"
+      ],
+      "detected": [
+        "terms_of_service"
+      ],
+      "unexpected": [],
+      "sections": 69,
+      "completeness": 1,
+      "reasons": [],
+      "pass": true,
+      "why": "ok"
+    },
+    {
+      "file": "mozilla-terms.html",
+      "source": "https://www.mozilla.org/en-US/about/legal/terms/services/",
+      "expected": [
+        "terms_of_service"
+      ],
+      "detected": [
+        "cookie_banner",
+        "terms_of_service"
+      ],
+      "unexpected": [
+        "cookie_banner"
+      ],
+      "sections": 15,
+      "completeness": 1,
+      "reasons": [],
+      "pass": true,
+      "why": "ok"
+    },
+    {
+      "file": "wordpress-terms.html",
+      "source": "https://automattic.com/tos/",
+      "expected": [
+        "terms_of_service"
+      ],
+      "detected": [
+        "terms_of_service"
+      ],
+      "unexpected": [],
+      "sections": 27,
+      "completeness": 0.9,
+      "reasons": [
+        "read_more"
+      ],
+      "pass": true,
+      "why": "ok"
+    },
+    {
+      "file": "dropbox-terms.html",
+      "source": "https://www.dropbox.com/terms",
+      "expected": [
+        "terms_of_service"
+      ],
+      "detected": [
+        "terms_of_service"
+      ],
+      "unexpected": [],
+      "sections": 1,
+      "completeness": 1,
+      "reasons": [],
+      "pass": true,
+      "why": "ok"
+    },
+    {
+      "file": "mozilla-firefox-privacy.html",
+      "source": "https://www.mozilla.org/en-US/privacy/firefox/",
+      "expected": [
+        "privacy_policy"
+      ],
+      "detected": [
+        "cookie_banner",
+        "privacy_policy"
+      ],
+      "unexpected": [
+        "cookie_banner"
+      ],
+      "sections": 36,
+      "completeness": 1,
+      "reasons": [],
+      "pass": true,
+      "why": "ok"
+    },
+    {
+      "file": "duckduckgo-privacy.html",
+      "source": "https://duckduckgo.com/privacy",
+      "expected": [
+        "privacy_policy"
+      ],
+      "detected": [
+        "privacy_policy"
+      ],
+      "unexpected": [],
+      "sections": 18,
+      "completeness": 1,
+      "reasons": [],
+      "pass": true,
+      "why": "ok"
+    },
+    {
+      "file": "signal-legal.html",
+      "source": "https://signal.org/legal/",
+      "expected": [
+        "terms_of_service",
+        "privacy_policy"
+      ],
+      "detected": [
+        "terms_of_service",
+        "privacy_policy"
+      ],
+      "unexpected": [],
+      "sections": 14,
+      "completeness": 1,
+      "reasons": [],
+      "pass": true,
+      "why": "ok"
+    },
+    {
+      "file": "govuk-home.html",
+      "source": "https://www.gov.uk/",
+      "expected": [
+        "cookie_banner"
+      ],
+      "detected": [],
+      "unexpected": [],
+      "sections": 32,
+      "completeness": 1,
+      "reasons": [],
+      "pass": false,
+      "why": "missing kinds: cookie_banner; missing phrases: 1"
+    },
+    {
+      "file": "guardian-home.html",
+      "source": "https://www.theguardian.com/uk",
+      "expected": [
+        "cookie_banner"
+      ],
+      "detected": [],
+      "unexpected": [],
+      "sections": 245,
+      "completeness": 1,
+      "reasons": [],
+      "pass": false,
+      "why": "missing kinds: cookie_banner; missing phrases: 1"
+    },
+    {
+      "file": "legislation-home.html",
+      "source": "https://www.legislation.gov.uk/",
+      "expected": [
+        "cookie_banner"
+      ],
+      "detected": [],
+      "unexpected": [],
+      "sections": 13,
+      "completeness": 1,
+      "reasons": [],
+      "pass": false,
+      "why": "missing kinds: cookie_banner"
+    }
+  ]
+}

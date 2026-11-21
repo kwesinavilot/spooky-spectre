@@ -1,15 +1,15 @@
-import { DetectionResult, type AgreementKind } from '../schema';
+import type { AgreementKind, DetectionResult } from '../schema';
 import { DEFAULT_EXCLUDED_DOMAINS, shouldAnalyze } from '../privacy';
 import { elementsDeep, type WalkContext } from '../dom/walk';
 import { findBanner, type BannerMatch } from './banner';
 import { findPolicyLinks } from './links';
-import { scorePageKind } from './pageKind';
+import { scorePageKinds } from './pageKind';
 import { findActionControls, hasConsentCheckbox, hasSubscriptionTerms } from './forms';
 
 export { findBanner, type BannerMatch } from './banner';
 export { classifyControlLabel, CONTROL_PATTERNS } from './controls';
 export { classifyLinkText, findPolicyLinks } from './links';
-export { scorePageKind, PAGE_KIND_THRESHOLD } from './pageKind';
+export { scorePageKind, scorePageKinds, PAGE_KIND_THRESHOLD } from './pageKind';
 export { findActionControls, hasConsentCheckbox, hasSubscriptionTerms } from './forms';
 
 export interface DetectOptions {
@@ -31,7 +31,7 @@ export function cleanUrl(pageUrl: string): string {
 /**
  * Detects agreements on a page using rules only (FR-DET-01). Checks the
  * excluded-domains list before touching the document (FR-PRV-01), never
- * writes to the DOM (FR-DET-12), and returns a validated result.
+ * writes to the DOM (FR-DET-12). The result matches the DetectionResult schema; it is validated where it is received (background worker, side panel), not in the page, so Zod stays out of the content script (NFR-03).
  * `banner` holds the live banner element for extraction; it is not part of
  * the serializable result.
  */
@@ -46,7 +46,7 @@ export function detectPage(doc: Document, pageUrl: string, opts: DetectOptions =
     return {
       excluded: false,
       banner: null,
-      result: DetectionResult.parse({
+      result: {
         url: cleanUrl(pageUrl),
         kinds: [],
         signals: ['page.pdf'],
@@ -58,7 +58,7 @@ export function detectPage(doc: Document, pageUrl: string, opts: DetectOptions =
         isPdf: true,
         confidence: 0,
         detectedAt,
-      }),
+      },
     };
   }
 
@@ -75,8 +75,7 @@ export function detectPage(doc: Document, pageUrl: string, opts: DetectOptions =
     confidence = Math.max(confidence, banner.confidence);
   }
 
-  const page = scorePageKind(doc, url.pathname);
-  if (page) {
+  for (const page of scorePageKinds(doc, url.pathname)) {
     kinds.push(page.kind);
     signals.push(...page.signals);
     confidence = Math.max(confidence, page.score);
@@ -97,7 +96,7 @@ export function detectPage(doc: Document, pageUrl: string, opts: DetectOptions =
   return {
     excluded: false,
     banner,
-    result: DetectionResult.parse({
+    result: {
       url: cleanUrl(pageUrl),
       kinds,
       signals,
@@ -112,6 +111,6 @@ export function detectPage(doc: Document, pageUrl: string, opts: DetectOptions =
       isPdf: false,
       confidence,
       detectedAt,
-    }),
+    },
   };
 }

@@ -51,6 +51,17 @@ function hasBlockDescendant(el: Element): boolean {
   }
 }
 
+/** Navigation-like content: most of its text is link text (for example a table of contents). */
+export function isMostlyLinks(el: Element): boolean {
+  const total = normalizeInline(el.textContent ?? '').length;
+  if (total === 0) return true;
+  let linked = 0;
+  el.querySelectorAll('a').forEach((a) => {
+    linked += normalizeInline(a.textContent ?? '').length;
+  });
+  return linked / total >= 0.6;
+}
+
 function isPaginationLink(el: Element): boolean {
   if (el.localName !== 'a') return false;
   if ((el.getAttribute('rel') ?? '').split(/\s+/).includes('next')) return true;
@@ -71,11 +82,6 @@ export function collectBlocks(root: Element, opts: CollectOptions): Collected {
     ),
   );
 
-  const addSkipped = (code: CompletenessReasonCode, chars: number) => {
-    if (chars <= 0) return;
-    out.skippedChars.set(code, (out.skippedChars.get(code) ?? 0) + chars);
-  };
-
   const emit = (raw: string, el: Element, level: number) => {
     const text = normalizeInline(raw);
     if (text) out.blocks.push({ text, el, level });
@@ -95,8 +101,11 @@ export function collectBlocks(root: Element, opts: CollectOptions): Collected {
     }
     if (isHidden(el)) {
       const id = el.getAttribute('id');
-      if (id && collapsedIds.has(id)) {
-        addSkipped('collapsed_section', normalizeInline(el.textContent ?? '').length);
+      // A collapsed region the page can expand (aria-expanded="false") is part
+      // of the agreement and is already in the page, so it is read. A collapsed
+      // table of contents is navigation, not agreement text (task 7.4).
+      if (id && collapsedIds.has(id) && !isMostlyLinks(el)) {
+        visit(el, el);
       }
       return true;
     }
@@ -161,13 +170,10 @@ export function collectBlocks(root: Element, opts: CollectOptions): Collected {
         return;
       }
       if (el.localName === 'details' && !el.hasAttribute('open')) {
+        // A closed <details> is folded away, not missing: its text is in the
+        // page, so it is read in full (corpus finding, task 7.4).
         flush();
-        let hidden = 0;
-        Array.from(el.children).forEach((c) => {
-          if (c.localName === 'summary') emit(inlineText(c), c, 0);
-          else hidden += normalizeInline(c.textContent ?? '').length;
-        });
-        addSkipped('collapsed_section', hidden);
+        visit(el, el);
         return;
       }
       const level = headingLevel(el);
