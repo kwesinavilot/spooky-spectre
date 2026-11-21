@@ -20,12 +20,12 @@ happy-dom.
 
 | Surface | Entry | State today |
 | --- | --- | --- |
-| Background service worker | `entrypoints/background.ts` | Opens onboarding on install, turns off the old "open the panel on click" behavior, answers `ping` and `get-status` |
-| Toolbar popup | `entrypoints/popup/` | Host, status chip (Not checked, Excluded, Unsupported page), Open Specter (opens the side panel), Settings, Graveyard and Help links |
-| Content script | `entrypoints/content.ts` | Registered at runtime only; mounts an empty Shadow DOM host. Detection wiring is Spec 2 Phase 5 |
-| Side panel | `entrypoints/sidepanel/` | Header (AI connectivity, Settings and profile), Page, Findings and Ask tabs, History opening the Graveyard, and Settings and AI drill-ins with a back arrow. Page shows the excluded, unsupported and idle states; Analyze is disabled until Phase 5 |
+| Background service worker | `entrypoints/background.ts` | Opens onboarding on install; keeps the detection script registration in line with permissions and excluded sites; stores validated detection results per tab and sets the dot badge |
+| Toolbar popup | `entrypoints/popup/` | Host, status from the tab state, Open Specter, "Specter on this site", Settings, Graveyard and Help links |
+| Content script | `entrypoints/content.ts` | Registered at runtime (background detection or per site) or injected on demand; detects, watches for late banners, extracts on request. Mounts only an empty Shadow DOM host |
+| Side panel | `entrypoints/sidepanel/` | Page tab with detection, document choice, cookie controls, reading and coverage; Findings and Ask placeholders; History opens the Graveyard; Settings (with the linked-policy switch) and AI drill-ins |
+| Options | `entrypoints/options/` | Site access (background detection, linked policies, per-site and paused lists) plus placeholder sections |
 | Graveyard | `entrypoints/graveyard/` | Search field, stat cards, empty list |
-| Options | `entrypoints/options/` | Placeholder sections |
 | Onboarding | `entrypoints/onboarding/` | Welcome screen |
 | Help Center | `entrypoints/help/` | Searchable article titles |
 
@@ -33,10 +33,8 @@ happy-dom.
 an extension's popup, so the side panel opened from it can read that tab when the user asks,
 without any host permission. `describePage()` in `src/pageInfo.ts` classifies the active tab as
 supported, excluded or unsupported (browser pages, the Web Store, PDFs), and both the popup and the
-side panel use it. This still needs a manual check in Chrome (Spec 2 task 6.4).
-
-Still to come on these surfaces: detection state, the "Specter on this site" toggle, cookie
-controls and extraction results (Spec 2 Phases 5 and 6).
+side panel use it. This still needs a manual check in Chrome (Spec 2 task 6.4). Detection and
+extraction in the extension are described in [Detection and extraction](detection-extraction.md).
 
 ## Data
 
@@ -49,12 +47,16 @@ controls and extraction results (Spec 2 Phases 5 and 6).
 - **Secrets:** API keys only through `apps/extension/src/secrets.ts`, which uses
   `chrome.storage.local`.
 
-## Flow (target for Spec 2, partly built)
+## Flow
 
 ```
-page loads -> content script (if access granted) -> detectPage()  [built]
-           -> background stores the result per tab, sets the dot badge   [Phase 5]
-side panel opens -> shows the detected state                          [Phase 6]
-user clicks Analyze -> content script runs extractDocument()          [built, wiring in Phase 5]
-           -> side panel shows sections and coverage (in memory only) [Phase 6]
+page loads -> content script (if access granted) -> detectPage()
+           -> background validates the result, stores it per tab, sets the dot badge
+popup -> Open Specter -> side panel shows the detected state (checks now if nothing is stored)
+user clicks Analyze -> content script runs extractDocument(), or the side panel reads a linked policy
+           -> side panel validates the document and shows sections and coverage (in memory only)
 ```
+
+Messages between the parts are typed in `src/messaging.ts`; anything coming from the content
+script is validated with the Zod schemas before use, because the content script runs inside the
+web page.

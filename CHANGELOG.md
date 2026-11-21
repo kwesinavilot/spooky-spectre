@@ -84,6 +84,13 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 - Background worker keeps per-tab detection results in `chrome.storage.session`, clears them on navigation and close, and shows a small dot badge in the medium color (never a number).
 - Tested: 23 extension tests (new: access, tab state, manifest permissions) with a mocked `chrome`, extension typecheck and ESLint pass. Not yet checked in Chrome.
 
+### Added (Spec 2 Phase 6: side panel, popup, Options)
+- Side panel Page tab: checks the page on open, then shows excluded, unsupported, "needs your OK" (Allow on this site), detected (agreement kinds in plain words, a document choice when there are several, cookie controls marked Detected or Uncertain with "Specter never clicks them", a note when no reject button was found), reading (progress stepper, Cancel), extracted ("Coverage: complete" or "Partial coverage: N% read", reasons, sections, Try again below 80%, "Limited · on-device only") and plain failure messages. Navigation resets it with "The page changed. Run analysis again."
+- Popup: Review available, Quiet, Not checked, Paused, Excluded and Unsupported states, and the "Specter on this site" switch.
+- Options "Site access": background detection switch with a plain explainer of Chrome's warning before the prompt and "Not now" beside "Continue", the "Read linked policies automatically" switch (also in side panel Settings), sites turned on one by one with Remove, and paused sites with Resume.
+- New tests: document choice and default selection, coverage wording.
+- Tested: extension typecheck, 28 extension tests, repo-wide ESLint and the build pass. Not yet checked by hand in Chrome.
+
 ### Added (Spec 2 Phase 5: content script, Analyze path, linked policies)
 - Content script: checks excluded and paused sites before reading anything, detects when the browser is idle, watches for late cookie banners for 15 seconds in background mode, and answers detection and extraction requests (retrying once if the page changes mid-read). It never changes the page apart from the empty overlay host. Bundle: 25 KB (was 81 KB with Zod inside).
 - Analyze path: the side panel injects the content script using the popup's `activeTab` grant, or asks for one site's access from an "Allow on this site" click. Stale replies are ignored.

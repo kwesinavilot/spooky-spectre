@@ -2,6 +2,7 @@ import { AppShell, Button, SectionCard, TextInput } from '@specter/ui';
 import { useSettings } from '../../src/store/settings';
 import { openTab } from '../../src/nav';
 import { DEFAULT_EXCLUDED_DOMAINS } from '@specter/core';
+import { SiteAccess } from './SiteAccess';
 
 export default function App() {
   const providerId = useSettings((s) => s.providerId);
@@ -24,11 +25,7 @@ export default function App() {
         <SectionCard title="Haunting level">
           <p className="text-muted">Immersive, Subtle, or Quiet (set up in onboarding).</p>
         </SectionCard>
-        <SectionCard title="Site access">
-          <p className="text-muted">
-            Ask me on each site (default). Chrome asks for permission when needed.
-          </p>
-        </SectionCard>
+        <SiteAccess />
         <SectionCard title="Excluded domains">
           <ul className="list-inside list-disc text-muted">
             {DEFAULT_EXCLUDED_DOMAINS.map((d) => (
