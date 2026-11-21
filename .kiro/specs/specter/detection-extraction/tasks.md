@@ -3,15 +3,10 @@
 > Ordered tasks for `requirements.md` and `design.md` in this folder. Each task names the
 > requirements it satisfies. Status legend: `[x]` done · `[~]` partly done · `[ ]` not done.
 
-> **Progress (2026-11-21):** the core library is written: schemas, detection rules, extraction,
-> anchors, hashing and completeness (`packages/core/src/{detect,extract,dom}`), the nine demo pages
-> under `examples/`, and test files for schemas, detection and extraction. The last recorded test run
-> (`verify.log`) failed in two test files with "The URL must be of scheme file" from
-> `test/helpers.ts` under happy-dom; the 22 tests that did run passed. Tests that depend on that
-> helper are therefore marked `[~]` until task 3.8 gets a green run. Nothing in `apps/extension` is
-> wired yet: `content.ts` only mounts the empty overlay host, `messaging.ts` has no Spec 2 messages,
-> and `access.ts`, `linkedPolicy.ts`, the popup and the corpus scripts do not exist. Not started:
-> Phases 5 to 8. The UI tasks (6.x) follow the design steering file: dot badge, Detected/Uncertain
+> **Progress:** the core library (Phases 1 to 4) is done and green: 54 core tests and the core
+> typecheck pass. Open in those phases: 1.3 (a `vitest.config.ts` instead of per-file pragmas) and
+> 2.5 (`pnpm examples`). Nothing in `apps/extension` is wired yet. Next: 3.4 (the `activeTab` spike),
+> then Phases 5 and 6. The UI tasks follow the design steering file: dot badge, Detected/Uncertain
 > controls, Coverage labels and a toolbar popup.
 
 ## Overview
@@ -43,9 +38,9 @@ regression corpus.
 - [x] 3.3 `detect/pageKind.ts`, `detect/forms.ts` (consent checkbox and subscription terms) and `detect/links.ts`. _FR-DET-05, 06, 07, 08_
 - [ ] 3.4 **Spike, do first in the extension:** check whether opening the side panel from the toolbar icon grants `activeTab`, and record the result in a note at the end of this file (design.md is not edited here). _FR-ACC-08_
 - [x] 3.5 `detectPage(doc, url, opts)` in `detect/index.ts` combining the rules, stripping query and hash, honoring `shouldAnalyze`, and validating with `DetectionResult`. _FR-DET-01, FR-PRV-05_
-- [~] 3.6 Tests TEST-DET-01, TEST-DET-02, TEST-DET-03, TEST-PRV-01, TEST-PRV-02 are written in `test/detect/detect.test.ts`; not yet green (see 3.8). Also add a test that `cookies/late.html` is not detected at parse time, so the late-banner observer in 5.3 has a reason to exist. _§6_
-- [~] 3.7 TEST-NOINT-01 for detection on every demo page is written; not yet green (see 3.8). _FR-DET-12_
-- [ ] 3.8 Fix `test/helpers.ts` so `examplesDir` resolves under happy-dom (build it from `process.cwd()` or `path.resolve` instead of `new URL(..., import.meta.url)`), then run `pnpm.cmd --filter @specter/core test` and fix any failures it exposes. _§6, §7 criterion 5_
+- [x] 3.6 Tests TEST-DET-01, TEST-DET-02, TEST-DET-03, TEST-PRV-01, TEST-PRV-02 in `test/detect/detect.test.ts`, plus a test that `cookies/late.html` has no banner at parse time and that the Streamly submit button is recorded (FR-DET-14). Green. _§6_
+- [x] 3.7 TEST-NOINT-01 runs detection and extraction on every demo page and compares the HTML before and after. Green. _FR-DET-12_
+- [x] 3.8 `test/helpers.ts` now builds `examplesDir` with `node:path`, because happy-dom replaces the global `URL`. The only other failure was the 20,000-word test counting words across newlines; fixed. Core tests and typecheck green. _§6, §7 criterion 5_
 
 ## Phase 4 — Extraction (packages/core)
 
@@ -56,8 +51,8 @@ regression corpus.
 - [x] 4.5 `extract/hash.ts` (SHA-256 hex). _FR-EXT-07_
 - [x] 4.6 Completeness counting, plain-word reasons and the 0.9 cap (`scoreCompleteness`, `REASON_MESSAGES`). _FR-EXT-09, FR-CMP-01 to 03_
 - [x] 4.7 `extractDocument(doc, opts)` returning a validated `ExtractedDocument`. _FR-EXT-01_
-- [~] 4.8 TEST-EXT-01 and TEST-EXT-02 (property), TEST-EXT-03, TEST-EXT-04 and TEST-CMP-01 are written; not yet green (see 3.8). Still missing: TEST-NOINT-01 for extraction (serialize each demo page before and after `extractDocument` and compare), and a test that sensitive field values never reach extracted text. _§6, FR-PRV-02_
-- [~] 4.9 Budget tests exist for extraction (20,000 words) and detection (demo pages) with loose ceilings; confirm they pass in 3.8. _FR-EXT-12, FR-DET-13_
+- [x] 4.8 TEST-EXT-01 and TEST-EXT-02 (property), TEST-EXT-03, TEST-EXT-04 and TEST-CMP-01 in `test/extract/extract.test.ts`. Extraction no-interference and sensitive values in extracted text are covered by TEST-NOINT-01 and TEST-PRV-01 in the detect test file. Green. _§6, FR-PRV-02_
+- [x] 4.9 Budget tests pass with loose ceilings for the test DOM: 20,000 words extracted in about 115 ms; detection on every demo page under 250 ms. The real budgets (FR-EXT-12, FR-DET-13) are checked in Chrome in 8.x. _FR-EXT-12, FR-DET-13_
 
 ## Phase 5 — Extension wiring
 

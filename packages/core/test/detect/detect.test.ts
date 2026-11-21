@@ -50,6 +50,11 @@ describe('cookie banners (TEST-DET-02)', () => {
     expect(r.cookieControls.every((c) => c.certainty === 'detected')).toBe(true);
   });
 
+  it('finds no banner in late.html at parse time (the banner is added by script later)', () => {
+    const r = detect('cookies/late.html', 'https://gazette.example/late');
+    expect(r.kinds).not.toContain('cookie_banner');
+  });
+
   it('records that no reject control was found', () => {
     const r = detect('cookies/no-reject.html', 'https://gazette.example/no-reject');
     expect(r.kinds).toContain('cookie_banner');

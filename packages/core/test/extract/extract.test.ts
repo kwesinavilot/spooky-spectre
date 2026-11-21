@@ -165,7 +165,7 @@ describe('extraction budget (FR-EXT-12, loose ceiling for the test DOM)', () => 
     const html = `<main>${Array.from({ length: 20 }, (_, i) => `<h2>${i + 1}. Part</h2>${para.repeat(10)}`).join('')}</main>`;
     const t0 = performance.now();
     const doc = await extract(html);
-    expect(doc.text.split(' ').length).toBeGreaterThanOrEqual(20000);
+    expect(doc.text.split(/\s+/).length).toBeGreaterThanOrEqual(20000);
     expect(performance.now() - t0).toBeLessThan(3000);
   });
 });

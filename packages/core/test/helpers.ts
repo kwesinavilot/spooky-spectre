@@ -1,10 +1,13 @@
 import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const examplesDir = fileURLToPath(new URL('../../../examples/', import.meta.url));
+// happy-dom replaces the global URL class, so build the path with node:path
+// from the file path string instead of `new URL(..., import.meta.url)`.
+const examplesDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../examples');
 
 export function readExample(path: string): string {
-  return readFileSync(`${examplesDir}${path}`, 'utf8');
+  return readFileSync(resolve(examplesDir, path), 'utf8');
 }
 
 /** Parses HTML into a standalone Document (no scripts run, no window). */
