@@ -62,6 +62,13 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 - Segmented segments are 44px instead of the steering's 40px so every target meets 44px.
 - Tested: typecheck in all workspaces, ESLint on `apps` and `packages`, and the extension build pass. Root `pnpm lint` still fails, only on `update-tasks.cjs` (a committed one-off script, not part of this change).
 
+### Added (UI: popup and side panel shell)
+- Toolbar popup: logo, Settings, the current host in mono, a status chip (Not checked, Excluded, Unsupported page), "Open Specter" (opens the side panel for that tab), and Graveyard and Help links. Opening the popup grants `activeTab`, which settles Spec 2 task 3.4 by design.
+- Side panel rebuilt as the four-tab shell: header with AI connectivity and Settings buttons, Page, Findings and Ask tabs, History opening the Graveyard, and Settings and AI drill-ins with a back arrow that returns to the same tab. The Page tab shows excluded, unsupported and idle states; Analyze stays disabled until Spec 2 Phase 5.
+- `describePage()` classifies the active tab (supported, excluded, unsupported with a reason) for both surfaces.
+- The background worker no longer opens the side panel directly from the toolbar.
+- New tests: `test/pageInfo.test.ts` and `test/sidepanel.test.ts` (navigation and back behavior).
+
 ### Added (docs)
 - `docs/` folder with an index, architecture, detection and extraction, effects and scares, privacy model, and development pages, describing what exists today and marking what is unverified or planned.
 
