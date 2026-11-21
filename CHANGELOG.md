@@ -42,6 +42,10 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 ### Changed
 - Design steering motion rules rewritten: scares are rare and earned. Ghosts appear in every mode (drifting in Immersive, rising in Subtle, still in Quiet and reduced motion). Possession returns with an edge-only vignette, slow red pulses, three drifting ghosts and a callout, triggered only for a verified high-impact finding at the moment of agreement, at most once per site per day and three times a day. No flashing, nothing blocks the site, Esc dismisses everything, sound is opt-in.
 - Product steering gains the scare principles (moment of agreement, Resurrection on revisit, rationing, warn never block) and the three-minute demo arc.
+- New workflow steering (`.kiro/steering/workflow.md`): every unit of work updates `docs/`, its spec tasks and this changelog, and gets its own commit and push. Untested work is committed and labeled untested.
+
+### Added (docs)
+- `docs/` folder with an index, architecture, detection and extraction, effects and scares, privacy model, and development pages, describing what exists today and marking what is unverified or planned.
 
 ## [0.6.0] - 2026-10-31
 
