@@ -11,7 +11,7 @@ export default function App() {
     <AppShell title="Options" onHelp={() => openTab('help')}>
       <div className="space-y-4">
         <SectionCard title="AI provider">
-          <p className="mb-2 text-specter-muted">
+          <p className="mb-2 text-muted">
             Choose a provider and add your key. The key stays only in this browser.
           </p>
           <TextInput
@@ -21,15 +21,15 @@ export default function App() {
           />
         </SectionCard>
         <SectionCard title="Haunting level">
-          <p className="text-specter-muted">Immersive, Subtle, or Quiet (set up in onboarding).</p>
+          <p className="text-muted">Immersive, Subtle, or Quiet (set up in onboarding).</p>
         </SectionCard>
         <SectionCard title="Site access">
-          <p className="text-specter-muted">
+          <p className="text-muted">
             Ask me on each site (default). Chrome asks for permission when needed.
           </p>
         </SectionCard>
         <SectionCard title="Excluded domains">
-          <ul className="list-inside list-disc text-specter-muted">
+          <ul className="list-inside list-disc text-muted">
             {DEFAULT_EXCLUDED_DOMAINS.map((d) => (
               <li key={d}>{d}</li>
             ))}

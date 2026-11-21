@@ -5,10 +5,10 @@ export default function App() {
   return (
     <AppShell title="Welcome" onHelp={() => openTab('help')}>
       <div className="space-y-6 py-10 text-center">
-        <h2 className="font-display text-3xl text-specter-text">
+        <h2 className="font-display text-3xl text-fg">
           See what haunts your digital life.
         </h2>
-        <p className="mx-auto max-w-md text-specter-muted">
+        <p className="mx-auto max-w-md text-muted">
           Specter reads the agreements you are about to accept, shows the clauses that matter,
           and remembers what changed.
         </p>
@@ -18,7 +18,7 @@ export default function App() {
             How Specter works
           </Button>
         </div>
-        <p className="text-xs text-specter-muted">The full seven-screen flow arrives in Spec 7.</p>
+        <p className="text-xs text-muted">The full seven-screen flow arrives in Spec 7.</p>
       </div>
     </AppShell>
   );

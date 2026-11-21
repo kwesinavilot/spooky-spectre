@@ -7,6 +7,7 @@ today; plans live in `.kiro/specs/`, and user-facing help lives in `packages/hel
 | --- | --- |
 | [Architecture](architecture.md) | Packages, surfaces, how data moves, and the rules between packages |
 | [Detection and extraction](detection-extraction.md) | How Specter finds agreements and reads them (Spec 2) |
+| [UI and design tokens](ui.md) | Colors, fonts, Tailwind classes, contrast checks and components |
 | [Effects and scares](effects.md) | Ghosts, Possession, Resurrection and their limits |
 | [Privacy model](privacy.md) | What is read, what is stored, what leaves the device |
 | [Development](development.md) | Setup, commands, tests, demo pages and known tooling issues |

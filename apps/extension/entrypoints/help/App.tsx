@@ -26,17 +26,17 @@ export default function App() {
           if (!arts.length) return null;
           return (
             <Card key={cat}>
-              <h2 className="mb-3 font-display text-lg text-specter-text">{cat}</h2>
+              <h2 className="mb-3 font-display text-lg text-fg">{cat}</h2>
               <ul className="space-y-2">
                 {arts.map((a) => (
                   <li key={a.slug}>
                     <button
                       type="button"
-                      className="text-left text-specter-pale-violet hover:underline focus-visible:outline-2 focus-visible:outline-specter-pale-violet"
+                      className="text-left text-ghost hover:underline focus-visible:outline-2 focus-visible:outline-ghost"
                     >
                       {a.title}
                     </button>
-                    <p className="text-sm text-specter-muted">{a.description}</p>
+                    <p className="text-sm text-muted">{a.description}</p>
                   </li>
                 ))}
               </ul>
@@ -45,7 +45,7 @@ export default function App() {
         })}
         {!filtered.length ? (
           <Card>
-            <p className="text-specter-muted">No articles match your search.</p>
+            <p className="text-muted">No articles match your search.</p>
           </Card>
         ) : null}
       </div>

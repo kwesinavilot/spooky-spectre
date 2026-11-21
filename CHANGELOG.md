@@ -44,6 +44,17 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 - Product steering gains the scare principles (moment of agreement, Resurrection on revisit, rationing, warn never block) and the three-minute demo arc.
 - New workflow steering (`.kiro/steering/workflow.md`): every unit of work updates `docs/`, its spec tasks and this changelog, and gets its own commit and push. Untested work is committed and labeled untested.
 
+### Fixed
+- Core DOM tests could not load because happy-dom replaces the global `URL`; `test/helpers.ts` now builds the examples path with `node:path`. The 20,000-word budget test counted words across newlines; it now splits on all whitespace. Added a test that `cookies/late.html` has no banner at parse time. Tested: 54 of 54 core tests pass, core typecheck passes.
+
+### Changed (UI: design tokens and fonts)
+- Moved to the design steering tokens: `bg`, `bg-deep`, `surface`, `surface-2`, `inset`, `ghost`, `lavender`, `text` (class `fg`), `muted`, `high`, `high-text`, `medium`, `ok`, `line`, as Tailwind classes and CSS variables. The old `specter-*` classes are gone; every existing screen was renamed mechanically.
+- Fonts: Inter and JetBrains Mono replace IBM Plex Sans; Fraunces stays for headings. All bundled locally.
+- Tailwind preset adds the steering type scale, radii (control 12, card 16, quote 10) and the floating shadow.
+- The danger button is now an outline (`high` border, `high-text` label), because dark text on `high` fails contrast.
+- Contrast tests now cover every text color on every background at 4.5:1 and borders, focus ring and dots at 3:1.
+- New docs page `docs/ui.md`.
+
 ### Added (docs)
 - `docs/` folder with an index, architecture, detection and extraction, effects and scares, privacy model, and development pages, describing what exists today and marking what is unverified or planned.
 

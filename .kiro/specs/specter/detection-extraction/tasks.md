@@ -88,7 +88,10 @@ regression corpus.
 
 ## Notes
 
-- Tasks 3.4 and 3.8 come first: 3.4 decides the per-site access path, 3.8 unblocks every test.
+- Task 3.4 comes first among the open tasks: it decides the per-site access path.
+- Before the Phase 6 screens, the UI moves to the design steering file: tokens and fonts first
+  (done, see `docs/ui.md`), then the component set (Chip, Toggle, Segmented, SourceQuote and the
+  others in design §3), then the popup and the four-tab side panel shell.
 - Privacy gates apply to every task: no page text in logs, no sensitive field reads, no storage of extracted text.
 
 ## Task Dependency Graph

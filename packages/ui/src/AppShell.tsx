@@ -17,15 +17,15 @@ export function AppShell({
   children: ReactNode;
 }) {
   return (
-    <div className="min-h-full bg-specter-ink text-specter-text">
-      <header className="flex items-center justify-between border-b border-specter-line px-4 py-3">
-        <h1 className="font-display text-xl text-specter-text">{title}</h1>
+    <div className="min-h-full bg-bg text-fg">
+      <header className="flex items-center justify-between border-b border-line px-4 py-3">
+        <h1 className="font-display text-xl text-fg">{title}</h1>
         {onHelp ? (
           <button
             type="button"
             onClick={onHelp}
             aria-label="Open Help Center"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-md text-specter-muted hover:bg-specter-panel focus-visible:outline-2 focus-visible:outline-specter-pale-violet focus-visible:outline-offset-2"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-md text-muted hover:bg-surface focus-visible:outline-2 focus-visible:outline-ghost focus-visible:outline-offset-2"
           >
             <Icon name="help" label="Open Help Center" />
           </button>

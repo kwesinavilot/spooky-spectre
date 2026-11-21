@@ -26,11 +26,11 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div role="alert" className="p-4">
-          <p className="font-display text-lg text-specter-text">Something went wrong</p>
+          <p className="font-display text-lg text-fg">Something went wrong</p>
           <button
             type="button"
             onClick={() => this.setState({ hasError: false })}
-            className="mt-3 text-specter-pale-violet underline"
+            className="mt-3 text-ghost underline"
           >
             Try again
           </button>

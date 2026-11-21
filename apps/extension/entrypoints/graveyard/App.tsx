@@ -12,7 +12,7 @@ export default function App() {
           <StatCard label="Policies changed" value="0" />
         </div>
         <Card>
-          <p className="text-specter-muted">
+          <p className="text-muted">
             No saved agreements yet. Save one from the side panel.
           </p>
         </Card>

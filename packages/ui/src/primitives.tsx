@@ -6,7 +6,7 @@ import type {
   ReactNode,
 } from 'react';
 
-const focusRing = 'focus-visible:outline-2 focus-visible:outline-specter-pale-violet focus-visible:outline-offset-2';
+const focusRing = 'focus-visible:outline-2 focus-visible:outline-ghost focus-visible:outline-offset-2';
 
 export function Button({
   variant = 'primary',
@@ -16,9 +16,10 @@ export function Button({
   variant?: 'primary' | 'ghost' | 'danger';
 }) {
   const styles: Record<string, string> = {
-    primary: 'bg-specter-violet text-specter-ink hover:opacity-90',
-    ghost: 'border border-specter-line text-specter-text hover:bg-specter-panel',
-    danger: 'bg-specter-blood text-specter-ink hover:opacity-90',
+    primary: 'bg-ghost text-bg hover:opacity-90',
+    ghost: 'border border-line text-fg hover:bg-surface',
+    // danger-outline (design steering section 3): --high border, --high-text label.
+    danger: 'border border-high text-high-text hover:bg-surface',
   };
   return (
     <button
@@ -37,7 +38,7 @@ export function Link({ className, ...props }: AnchorHTMLAttributes<HTMLAnchorEle
   return (
     <a
       className={clsx(
-        'inline-flex min-h-[44px] items-center text-specter-pale-violet underline-offset-2 hover:underline',
+        'inline-flex min-h-[44px] items-center text-ghost underline-offset-2 hover:underline',
         focusRing,
         className,
       )}
@@ -50,7 +51,7 @@ export function TextInput({ className, ...props }: InputHTMLAttributes<HTMLInput
   return (
     <input
       className={clsx(
-        'min-h-[44px] w-full rounded-md border border-specter-line bg-specter-panel px-3 text-specter-text placeholder:text-specter-muted',
+        'min-h-[44px] w-full rounded-md border border-line bg-surface px-3 text-fg placeholder:text-muted',
         focusRing,
         className,
       )}
@@ -65,7 +66,7 @@ export function SearchField({ className, ...props }: InputHTMLAttributes<HTMLInp
       type="search"
       aria-label="Search"
       className={clsx(
-        'min-h-[44px] w-full rounded-md border border-specter-line bg-specter-panel px-3 text-specter-text placeholder:text-specter-muted',
+        'min-h-[44px] w-full rounded-md border border-line bg-surface px-3 text-fg placeholder:text-muted',
         focusRing,
         className,
       )}
@@ -76,7 +77,7 @@ export function SearchField({ className, ...props }: InputHTMLAttributes<HTMLInp
 
 export function Card({ className, children }: { className?: string; children: ReactNode }) {
   return (
-    <div className={clsx('rounded-lg border border-specter-line bg-specter-panel p-4', className)}>
+    <div className={clsx('rounded-lg border border-line bg-surface p-4', className)}>
       {children}
     </div>
   );
@@ -85,7 +86,7 @@ export function Card({ className, children }: { className?: string; children: Re
 export function SectionCard({ title, children }: { title: string; children: ReactNode }) {
   return (
     <Card>
-      <h2 className="mb-3 font-display text-lg text-specter-text">{title}</h2>
+      <h2 className="mb-3 font-display text-lg text-fg">{title}</h2>
       {children}
     </Card>
   );
@@ -94,8 +95,8 @@ export function SectionCard({ title, children }: { title: string; children: Reac
 export function StatCard({ label, value }: { label: string; value: ReactNode }) {
   return (
     <Card>
-      <p className="text-sm text-specter-muted">{label}</p>
-      <p className="font-display text-2xl text-specter-text">{value}</p>
+      <p className="text-sm text-muted">{label}</p>
+      <p className="font-display text-2xl text-fg">{value}</p>
     </Card>
   );
 }
@@ -110,7 +111,7 @@ export function Tabs({
   onChange: (id: string) => void;
 }) {
   return (
-    <div role="tablist" className="flex gap-1 border-b border-specter-line">
+    <div role="tablist" className="flex gap-1 border-b border-line">
       {tabs.map((t) => (
         <button
           key={t.id}
@@ -120,8 +121,8 @@ export function Tabs({
           className={clsx(
             'min-h-[44px] px-3 font-medium',
             active === t.id
-              ? 'border-b-2 border-specter-violet text-specter-pale-violet'
-              : 'text-specter-muted',
+              ? 'border-b-2 border-ghost text-ghost'
+              : 'text-muted',
             focusRing,
           )}
         >
@@ -142,7 +143,7 @@ export function IconButton({
     <button
       aria-label={label}
       className={clsx(
-        'inline-flex h-11 w-11 items-center justify-center rounded-md text-specter-text hover:bg-specter-panel',
+        'inline-flex h-11 w-11 items-center justify-center rounded-md text-fg hover:bg-surface',
         focusRing,
         className,
       )}

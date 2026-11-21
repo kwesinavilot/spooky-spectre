@@ -12,7 +12,7 @@ export default function App() {
     <AppShell title="Specter" onHelp={() => openTab('help')}>
       {status === 'idle' ? (
         <div className="space-y-4">
-          <p className="text-specter-muted">No agreement detected on this page.</p>
+          <p className="text-muted">No agreement detected on this page.</p>
           <Button onClick={() => setStatus('analyzing')}>Analyze this page anyway</Button>
         </div>
       ) : (
@@ -32,7 +32,7 @@ export default function App() {
             onChange={(id) => setActiveTab(id as SidePanelTab)}
           />
           <Card className="mt-4">
-            <p className="text-specter-muted">
+            <p className="text-muted">
               {activeTab === 'ask'
                 ? 'Ask Specter about the clauses on this page.'
                 : 'No findings yet.'}

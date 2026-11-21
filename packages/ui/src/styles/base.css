@@ -1,23 +1,29 @@
-/* Local fonts (design section 5, FR-WXT-09). The @fontsource CSS files are
-   plain @font-face rules that point at bundled woff2 files — nothing is
-   fetched remotely. Every surface that imports this base sheet gets the
-   fonts and the token custom properties. */
-@import '@fontsource/fraunces/400.css';
-@import '@fontsource/fraunces/500.css';
+/* Local fonts (design steering sections 2 and 12). The @fontsource CSS files
+   are plain @font-face rules pointing at bundled woff2 files; nothing is
+   fetched remotely. Every surface that imports this sheet gets the fonts and
+   the token custom properties. The overlay (Shadow DOM) declares the same
+   variables on :host instead of importing this file. */
 @import '@fontsource/fraunces/600.css';
-@import '@fontsource/ibm-plex-sans/400.css';
-@import '@fontsource/ibm-plex-sans/500.css';
-@import '@fontsource/ibm-plex-sans/600.css';
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/500.css';
 
 :root {
-  --specter-ink: #0e0b14;
-  --specter-panel: #14101d;
-  --specter-border: #2b2340;
-  --specter-violet: #8b5cf6;
-  --specter-pale-violet: #c9b5ff;
-  --specter-blood: #f0506e;
-  --specter-amber: #f5b84b;
-  --specter-verified: #7fe0ad;
-  --specter-text: #e9e4f2;
-  --specter-muted: #a79fba;
+  --bg: #0d101b;
+  --bg-deep: #080a12;
+  --surface: #191c2b;
+  --surface-2: #232744;
+  --inset: #121528;
+  --ghost: #c7a7ff;
+  --lavender: #8b6bc3;
+  --text: #f4eaff;
+  --muted: #bdb8ce;
+  --high: #dc4667;
+  --high-text: #ff9db0;
+  --medium: #e4b15c;
+  --ok: #65bda6;
+  --line: #2e3252;
+  color-scheme: dark;
 }
