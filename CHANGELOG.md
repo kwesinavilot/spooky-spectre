@@ -13,7 +13,7 @@ Spec roadmap:
 
 | Spec | Title | Scope | Status |
 | --- | --- | --- | --- |
-| 1 | Foundation | MVP | Code complete, build verification pending |
+| 1 | Foundation | MVP | Done (v0.6.0) |
 | 2 | Detection and extraction (incl. opt-in background detection, cookie banners) | MVP | Not started |
 | 3 | Candidate finding and segmentation | MVP | Not started |
 | 4 | AI provider layer and BYOK | MVP | Not started |
@@ -41,6 +41,12 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 - Added product scenarios A to D (cookie banners, free trials, terms and policies, checkout pages) and consent search over saved records to the product steering.
 - Manifest permissions reduced to `activeTab`, `storage`, `sidePanel`, `scripting`. `alarms` and `notifications` return when reminders are built. FR-WXT-02 and FR-WXT-03 updated to match.
 - Tech steering now says React 19, matching the installed version.
+- FR-SURF-05: the Onboarding Begin button stays enabled and opens the Graveyard until Spec 7 replaces the screen.
+
+### Verified
+- Spec 1 (Foundation) closed. Typecheck, lint, 19 unit tests and `wxt build` pass. The built manifest has version 0.6.0, only `activeTab`, `storage`, `sidePanel` and `scripting`, and http/https host access as optional only.
+- The unpacked build loads in Chrome; the side panel, Graveyard, Options, Onboarding and Help Center all open without console errors.
+- Accepted as-is: the Help catalog stays in TypeScript until Spec 12 adds markdown bodies, and `no-console` is enforced by ESLint config without a separate rule test.
 
 ## [0.5.0] - 2026-10-31
 

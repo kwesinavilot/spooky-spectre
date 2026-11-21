@@ -36,7 +36,7 @@ haunting interface that is also a real product people could use daily.
 
 ## Current status
 
-Spec 1 (Foundation) is code-complete. What exists today:
+Spec 1 (Foundation) is done as of v0.6.0. What exists today:
 
 | Capability | State |
 | --- | --- |
@@ -44,7 +44,7 @@ Spec 1 (Foundation) is code-complete. What exists today:
 | Shared Zod schemas for all data models (Part 4 contract) | Done, 5 fixture tests |
 | Design tokens with enforced WCAG AA 4.5:1 pairings | Done, 13 contrast tests |
 | Dexie local database schema (agreements, versions, settings, tips) | Done, round-trip test |
-| Extension surfaces: side panel, Graveyard, Options, Onboarding, Help | Shells written, final build verification pending |
+| Extension surfaces: side panel, Graveyard, Options, Onboarding, Help | Placeholder screens, build verified in Chrome |
 | Agreement detection, extraction, AI analysis, overlays | Not yet (Specs 2–6) |
 
 ## Principles

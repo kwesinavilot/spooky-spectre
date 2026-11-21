@@ -85,7 +85,7 @@ Requirements are written in EARS. Each has a stable id for traceability.
 - **FR-SURF-02** The side panel shall expose placeholder tabs Findings, Evidence, and Ask Specter that render empty states.
 - **FR-SURF-03** The Graveyard tab shall render a shell with a search input, stats placeholders, and an empty records list.
 - **FR-SURF-04** The Options tab shall render shell sections for AI provider, haunting level, site access, excluded domains, data export, delete all, and replay onboarding.
-- **FR-SURF-05** The Onboarding tab shall render a placeholder welcome screen with the headline "See what haunts your digital life." and a disabled Begin path until at least this foundation is present.
+- **FR-SURF-05** The Onboarding tab shall render a placeholder welcome screen with the headline "See what haunts your digital life." and a Begin button that opens the Graveyard until the full seven-screen flow replaces it in Spec 7.
 - **FR-SURF-06** The Help Center tab shall render a searchable shell listing the article categories from Part 5 as headings with no article bodies.
 - **FR-SURF-07** The content script shall mount a Shadow DOM root and render nothing onto the page until a finding exists.
 - **FR-SURF-08** Every surface shall provide a "?" link affordance that is a real focusable control, even if it links to a placeholder anchor in this spec.
