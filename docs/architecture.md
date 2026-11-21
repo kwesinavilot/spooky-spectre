@@ -20,17 +20,23 @@ happy-dom.
 
 | Surface | Entry | State today |
 | --- | --- | --- |
-| Background service worker | `entrypoints/background.ts` | Opens the side panel from the toolbar, opens onboarding on install, answers `ping` and `get-status` |
+| Background service worker | `entrypoints/background.ts` | Opens onboarding on install, turns off the old "open the panel on click" behavior, answers `ping` and `get-status` |
+| Toolbar popup | `entrypoints/popup/` | Host, status chip (Not checked, Excluded, Unsupported page), Open Specter (opens the side panel), Settings, Graveyard and Help links |
 | Content script | `entrypoints/content.ts` | Registered at runtime only; mounts an empty Shadow DOM host. Detection wiring is Spec 2 Phase 5 |
-| Side panel | `entrypoints/sidepanel/` | Idle state and placeholder tabs |
+| Side panel | `entrypoints/sidepanel/` | Header (AI connectivity, Settings and profile), Page, Findings and Ask tabs, History opening the Graveyard, and Settings and AI drill-ins with a back arrow. Page shows the excluded, unsupported and idle states; Analyze is disabled until Phase 5 |
 | Graveyard | `entrypoints/graveyard/` | Search field, stat cards, empty list |
 | Options | `entrypoints/options/` | Placeholder sections |
 | Onboarding | `entrypoints/onboarding/` | Welcome screen |
 | Help Center | `entrypoints/help/` | Searchable article titles |
 
-The design steering file now describes a toolbar popup, a four-tab side panel (Page, Findings, Ask,
-History) and new tokens and fonts. Those are not built yet; moving the UI over is the next planned
-step.
+**Access path.** The toolbar icon opens the popup. Chrome grants `activeTab` when the user opens
+an extension's popup, so the side panel opened from it can read that tab when the user asks,
+without any host permission. `describePage()` in `src/pageInfo.ts` classifies the active tab as
+supported, excluded or unsupported (browser pages, the Web Store, PDFs), and both the popup and the
+side panel use it. This still needs a manual check in Chrome (Spec 2 task 6.4).
+
+Still to come on these surfaces: detection state, the "Specter on this site" toggle, cookie
+controls and extraction results (Spec 2 Phases 5 and 6).
 
 ## Data
 

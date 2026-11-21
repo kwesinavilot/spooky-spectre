@@ -1,10 +1,10 @@
 import { onMessage } from '../src/messaging';
 
 export default defineBackground(() => {
-  // Toolbar icon opens the side panel (FR-WXT-08).
-  chrome.sidePanel
-    .setPanelBehavior({ openPanelOnActionClick: true })
-    .catch(() => {});
+  // The toolbar icon opens the popup (design steering 6B), which opens the side
+  // panel. Turn off the older "open the panel on click" behavior, which Chrome
+  // remembers between sessions.
+  chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false }).catch(() => {});
 
   // Open onboarding in a new tab on install.
   chrome.runtime.onInstalled.addListener((details) => {

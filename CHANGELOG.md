@@ -68,6 +68,7 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 - `describePage()` classifies the active tab (supported, excluded, unsupported with a reason) for both surfaces.
 - The background worker no longer opens the side panel directly from the toolbar.
 - New tests: `test/pageInfo.test.ts` and `test/sidepanel.test.ts` (navigation and back behavior).
+- Tested: extension typecheck, 7 extension tests, ESLint on `apps` and `packages`, and the build pass; the built manifest has `default_popup` and no host access at install. Not yet checked by hand in Chrome.
 
 ### Added (docs)
 - `docs/` folder with an index, architecture, detection and extraction, effects and scares, privacy model, and development pages, describing what exists today and marking what is unverified or planned.
