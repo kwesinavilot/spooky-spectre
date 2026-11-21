@@ -32,3 +32,24 @@
     outline-offset: 2px;
   }
 }
+
+/* A ghost that rises once and settles (onboarding). Never loops; skipped
+   under reduced motion (design steering section 5). */
+@keyframes specter-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.specter-rise {
+  animation: specter-rise 1.2s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .specter-rise {
+    animation: none;
+  }
+}

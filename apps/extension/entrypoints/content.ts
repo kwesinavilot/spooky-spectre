@@ -49,6 +49,19 @@ export default defineContentScript({
     let outcome: DetectOutcome | null = null;
     const run = () => {
       outcome = detectPage(document, location.href, { excludedDomains: blocked });
+      // "Detect cookie banners" off (onboarding step 4): drop the banner from the result.
+      if (!outcome.excluded && !prefs.detectCookieBanners) {
+        outcome = {
+          ...outcome,
+          banner: null,
+          result: {
+            ...outcome.result,
+            kinds: outcome.result.kinds.filter((k) => k !== 'cookie_banner'),
+            cookieControls: [],
+            noRejectControlFound: false,
+          },
+        };
+      }
       const result = outcome.excluded ? undefined : outcome.result;
       void chrome.runtime.sendMessage({ type: 'detected', result } satisfies SpecterMessage).catch(() => {});
       return result;

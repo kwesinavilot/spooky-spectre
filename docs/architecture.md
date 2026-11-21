@@ -26,7 +26,7 @@ happy-dom.
 | Side panel | `entrypoints/sidepanel/` | Page tab with detection, document choice, cookie controls, reading and coverage; Findings and Ask placeholders; History opens the Graveyard; Settings (with the linked-policy switch) and AI drill-ins |
 | Options | `entrypoints/options/` | Site access (background detection, linked policies, per-site and paused lists) plus placeholder sections |
 | Graveyard | `entrypoints/graveyard/` | Search field, stat cards, empty list |
-| Onboarding | `entrypoints/onboarding/` | Welcome screen |
+| Onboarding | `entrypoints/onboarding/` | Six steps from `docs/design/`: welcome, privacy promise, permissions with the background-detection opt-in, effects and privacy defaults, optional AI key with Test connection (`src/aiConnect.ts`), ready. Choices go to `src/prefs.ts` and the settings store; the demo link is `src/demo.ts` |
 | Help Center | `entrypoints/help/` | Searchable article titles |
 
 **Access path.** The toolbar icon opens the popup. Chrome grants `activeTab` when the user opens

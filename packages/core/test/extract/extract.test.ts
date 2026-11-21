@@ -29,7 +29,7 @@ describe('Streamly terms', () => {
     expect(ids).toEqual(expect.arrayContaining(['s-1', 's-4', 's-4-1', 's-4-2', 's-8']));
     const renewal = doc.sections.find((s) => s.id === 's-4-2')!;
     expect(doc.text.slice(renewal.startOffset, renewal.endOffset)).toContain(
-      'Your subscription automatically renews at GHS 120 per month following the trial period.',
+      'After the trial ends, your subscription renews automatically at $14.99 per month until you cancel.',
     );
     checkSectionInvariants(doc);
   });
@@ -109,7 +109,7 @@ describe('hash stability (TEST-EXT-02, property)', () => {
 
   it('changes when any single word changes', async () => {
     const base = await extract(v1);
-    const words = ['automatically', 'GHS', 'binding', 'royalty-free', 'reasonably'];
+    const words = ['automatically', '$14.99', 'binding', 'royalty-free', 'reasonably'];
     for (const w of words) {
       const changed = await extract(v1.replace(w, `${w}x`));
       expect(changed.documentHash).not.toBe(base.documentHash);

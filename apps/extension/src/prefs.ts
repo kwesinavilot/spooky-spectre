@@ -13,12 +13,27 @@ export interface SpecterPrefs {
   pausedDomains: string[];
   /** One-time consent to read linked policies automatically (Spec 2 requirements section 8). */
   readLinkedPolicies: boolean;
+  /** Effect level, readable by the overlay (design steering section 5). */
+  effectLevel: 'immersive' | 'subtle' | 'quiet';
+  /** Show what will be sent before any AI call (design steering 6C). */
+  previewBeforeSending: boolean;
+  /** List cookie banner choices on-device. */
+  detectCookieBanners: boolean;
+  /** Offer to log consent choices that Specter clearly observes. */
+  offerConsentLog: boolean;
+  /** Set when onboarding finishes or is skipped. */
+  onboardingComplete: boolean;
 }
 
 export const DEFAULT_PREFS: SpecterPrefs = {
   excludedDomains: [...DEFAULT_EXCLUDED_DOMAINS],
   pausedDomains: [],
   readLinkedPolicies: false,
+  effectLevel: 'subtle',
+  previewBeforeSending: true,
+  detectCookieBanners: true,
+  offerConsentLog: false,
+  onboardingComplete: false,
 };
 
 const KEY = 'specterPrefs';

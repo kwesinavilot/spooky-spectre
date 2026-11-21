@@ -33,7 +33,8 @@ function prefersReducedMotion(): boolean {
 }
 
 export const useSettings = create<SettingsState>((set) => ({
-  hauntingLevel: 'immersive',
+  // Subtle is the default effect level (design steering section 5).
+  hauntingLevel: 'subtle',
   reduceMotion: false,
   excludedDomains: [...DEFAULT_EXCLUDED_DOMAINS],
   providerId: null,
@@ -55,7 +56,7 @@ export async function hydrateSettings(): Promise<void> {
   const row = await db.settings.get(SETTINGS_KEY);
   const saved = (row?.value ?? {}) as Partial<PersistedSettings>;
   useSettings.setState({
-    hauntingLevel: saved.hauntingLevel ?? 'immersive',
+    hauntingLevel: saved.hauntingLevel ?? 'subtle',
     reduceMotion: saved.reduceMotion ?? prefersReducedMotion(),
     excludedDomains: saved.excludedDomains ?? [...DEFAULT_EXCLUDED_DOMAINS],
     providerId: saved.providerId ?? null,

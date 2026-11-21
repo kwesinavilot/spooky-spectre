@@ -34,6 +34,16 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 
 ## [Unreleased]
 
+### Added (onboarding)
+- Six-step onboarding built from the reference screens in `docs/design/`: Welcome, Privacy promise, Permissions, Effects and privacy defaults, Connect AI (optional), Ready. Skip setup jumps to the last step with defaults; each step saves its choices on Continue; focus moves to each step's heading.
+- Permissions step includes the optional background-detection opt-in, with Chrome's warning explained before the prompt and "Not now" beside "Continue to Chrome".
+- Privacy defaults: ask before analyzing, detect cookie banners (the content script now honors it), read linked policies automatically, offer to log consent choices, and save only when I choose (always on).
+- Connect AI: Anthropic, OpenAI, Google or a local Ollama model. "Test connection" asks Chrome for access to that provider only, checks the key, and saves it only if it works; the key is never shown again, with Replace and Remove.
+- Effect level defaults to Subtle. New UI pieces: `Eyebrow`, `MiniChrome`, and icons for shield, clock, lock, ban and puzzle.
+
+### Changed
+- Streamly demo now matches the reference screens: $14.99 per month after a 14-day trial, and an "Accept and start trial" button.
+
 ## [0.7.0] - 2026-11-21
 
 Spec 2 (Detection and extraction) code complete, plus the move to the design steering UI. Tested:

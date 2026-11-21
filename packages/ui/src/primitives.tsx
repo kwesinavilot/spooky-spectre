@@ -293,6 +293,33 @@ const ICON_PATHS = {
     </>
   ),
   external: <path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6" />,
+  shield: (
+    <>
+      <path d="M12 3 5 6v6c0 4.5 3 7.7 7 9 4-1.3 7-4.5 7-9V6z" />
+      <path d="m9 12 2 2 4-4" />
+    </>
+  ),
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </>
+  ),
+  lock: (
+    <>
+      <rect x="5" y="11" width="14" height="10" rx="2" />
+      <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+    </>
+  ),
+  ban: (
+    <>
+      <rect x="4" y="4" width="16" height="16" rx="2" />
+      <path d="m8 8 8 8M16 8l-8 8" />
+    </>
+  ),
+  puzzle: (
+    <path d="M9 4h3a2 2 0 1 1 4 0h2v4a2 2 0 1 1 0 4v4h-4a2 2 0 1 0-4 0H6v-4a2 2 0 1 0 0-4V4z" />
+  ),
 } as const;
 
 export type IconName = keyof typeof ICON_PATHS;

@@ -102,7 +102,7 @@ export function OptionCard({
   value: string;
   checked: boolean;
   onChange: (value: string) => void;
-  title: string;
+  title: ReactNode;
   description?: string;
 }) {
   return (
@@ -283,6 +283,42 @@ export function ProgressStepper({
           </li>
         ))}
       </ol>
+    </div>
+  );
+}
+
+/** Eyebrow label: 12px, 600, uppercase, wide tracking, --ghost (design steering section 2). */
+export function Eyebrow({ children }: { children: ReactNode }) {
+  return <p className="text-caption font-semibold uppercase tracking-[0.14em] text-ghost">{children}</p>;
+}
+
+/**
+ * Fake browser frame (three dots and a mono URL) for onboarding and demo
+ * imagery only, never in the real UI (design steering section 3).
+ */
+export function MiniChrome({
+  url,
+  actions,
+  children,
+  className,
+}: {
+  url: string;
+  actions?: ReactNode;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div aria-hidden="true" className={clsx('overflow-hidden rounded-card border border-line bg-surface', className)}>
+      <div className="flex items-center gap-3 border-b border-line bg-inset px-4 py-3">
+        <span className="flex gap-1.5">
+          <span className="h-3 w-3 rounded-full bg-line" />
+          <span className="h-3 w-3 rounded-full bg-line" />
+          <span className="h-3 w-3 rounded-full bg-line" />
+        </span>
+        <span className="flex-1 truncate font-mono text-small text-muted">{url}</span>
+        {actions}
+      </div>
+      <div className="p-5">{children}</div>
     </div>
   );
 }

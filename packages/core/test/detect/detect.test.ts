@@ -16,7 +16,7 @@ describe('demo pages (TEST-DET-01)', () => {
     expect(r.kinds).not.toContain('cookie_banner');
     expect(r.links.some((l) => l.kind === 'terms')).toBe(true);
     // The submit button is recorded for the moment-of-agreement trigger (FR-DET-14).
-    expect(r.actionControls.map((c) => c.label)).toEqual(['Start free trial']);
+    expect(r.actionControls.map((c) => c.label)).toEqual(['Accept and start trial']);
   });
 
   it('Streamly terms is a terms of service page', () => {
