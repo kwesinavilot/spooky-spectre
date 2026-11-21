@@ -15,6 +15,7 @@ export default function App() {
             Choose a provider and add your key. The key stays only in this browser.
           </p>
           <TextInput
+            label="Provider"
             value={providerId ?? ''}
             onChange={(e) => setProviderId(e.target.value)}
             placeholder="anthropic, openai, google, ollama, or none"
@@ -36,13 +37,13 @@ export default function App() {
           </ul>
         </SectionCard>
         <SectionCard title="Data export">
-          <Button variant="ghost">Export (JSON)</Button>
+          <Button variant="secondary">Export JSON</Button>
         </SectionCard>
         <SectionCard title="Delete all">
-          <Button variant="danger">Delete all data</Button>
+          <Button variant="danger">Delete all</Button>
         </SectionCard>
         <SectionCard title="Replay onboarding">
-          <Button variant="ghost" onClick={() => openTab('onboarding')}>
+          <Button variant="quiet" onClick={() => openTab('onboarding')}>
             Replay onboarding
           </Button>
         </SectionCard>

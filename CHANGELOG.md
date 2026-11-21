@@ -55,6 +55,13 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 - Contrast tests now cover every text color on every background at 4.5:1 and borders, focus ring and dots at 3:1.
 - New docs page `docs/ui.md`.
 
+### Added (UI: component set)
+- Components from design steering §3 in `@specter/ui`: `Button` (primary, secondary, quiet, danger; block), `IconButton`, `Chip`, `Card` variants and `InsetCard`, labeled `TextInput` and `Select`, `SearchField`, `Toggle` (switch), `OptionCard` (radio), `Segmented`, `SourceQuote`, `DiffText`, `ProgressStepper`, `Logo`, `PanelHeader` and `PanelNav`. Icons now use stroke 1.8 and are decorative unless labeled; new icons for back, check, settings, key, user, page, list, chat, history and external.
+- `AppShell` shows the logo, page title and an icon Help button on a 960px layout.
+- Existing screens updated to the new button variants; the Options provider field now has a visible label.
+- Segmented segments are 44px instead of the steering's 40px so every target meets 44px.
+- Tested: typecheck in all workspaces, ESLint on `apps` and `packages`, and the extension build pass. Root `pnpm lint` still fails, only on `update-tasks.cjs` (a committed one-off script, not part of this change).
+
 ### Added (docs)
 - `docs/` folder with an index, architecture, detection and extraction, effects and scares, privacy model, and development pages, describing what exists today and marking what is unverified or planned.
 

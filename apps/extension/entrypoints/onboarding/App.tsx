@@ -14,7 +14,7 @@ export default function App() {
         </p>
         <div className="flex justify-center gap-3">
           <Button onClick={() => openTab('graveyard')}>Begin</Button>
-          <Button variant="ghost" onClick={() => openTab('help')}>
+          <Button variant="secondary" onClick={() => openTab('help')}>
             How Specter works
           </Button>
         </div>

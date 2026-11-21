@@ -18,7 +18,7 @@ export default function App() {
       ) : (
         <>
           <div className="mb-4">
-            <Button variant="ghost" onClick={() => setStatus('idle')}>
+            <Button variant="quiet" onClick={() => setStatus('idle')}>
               Back
             </Button>
           </div>

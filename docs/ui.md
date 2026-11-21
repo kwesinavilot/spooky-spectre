@@ -47,7 +47,29 @@ and high borders, dots) at 3:1.
 
 ## Components
 
-`packages/ui/src/primitives.tsx` has `Button` (primary, ghost, danger outline), `Link`,
-`TextInput`, `SearchField`, `Card`, `SectionCard`, `StatCard`, `Tabs`, `IconButton` and `Icon`,
-plus `AppShell` and `ErrorBoundary`. They use the new tokens but not yet the full component specs
-in design steering §3 (Chip, Toggle, Segmented, SourceQuote and others are next).
+All in `@specter/ui` (`packages/ui/src/primitives.tsx` and `components.tsx`), built to design
+steering §3. Every interactive part is a real `button`, `input`, `select`, `a` or `label`, has a
+44px target and shows the 2px `--ghost` focus ring.
+
+| Component | Notes |
+| --- | --- |
+| `Button` | Variants `primary` (ghost fill, dark text), `secondary` (lavender border), `quiet` (line border, muted), `danger` (high border, high-text label); `block` for full width |
+| `IconButton` | 44x44, line border, muted icon; `label` is required and becomes `aria-label` |
+| `Icon` | Inline stroke SVG, stroke 1.8, 20px. Decorative (`aria-hidden`) unless `label` is passed |
+| `Chip` | Pill status label: `neutral`, `ghost`, `high` (uses `high-text`), `medium`, `ok` |
+| `Card`, `InsetCard`, `SectionCard`, `StatCard` | Card variants `default`, `high`, `medium`, `ok`, `dashed` |
+| `TextInput`, `Select`, `SearchField` | Visible label always (search uses a screen-reader-only label); `mono` for keys |
+| `Toggle` | `role="switch"` with `aria-checked`, 52x44 hit area, text label beside it |
+| `OptionCard` | A real radio in a bordered row |
+| `Segmented` | `role="radiogroup"` of radio buttons |
+| `SourceQuote` | Quote as text in JetBrains Mono, matched passage in `<mark>`; never HTML |
+| `DiffText` | Removed is struck through, added is underlined, with screen-reader prefixes |
+| `ProgressStepper` | 6px bar plus steps (done, running, waiting), `aria-live="polite"`, no bar animation under reduced motion |
+| `Logo`, `PanelHeader`, `PanelNav` | Ghost glyph plus "Specter"; side panel header with back arrow; 64px bottom nav with the active tab in `--ghost` and a 2px top line |
+| `Tabs` | Simple horizontal tabs for full-page surfaces |
+| `AppShell` | Full-page layout: logo, page title, Help button, 960px content |
+
+Deviation from the steering: `Segmented` segments are 44px high instead of 40px, so every target
+meets the 44px minimum.
+
+Not built yet: `FindingCard` (Spec 6) and `MiniChrome` (onboarding, Spec 7).

@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react';
-import { Icon } from './primitives';
+import { Icon, IconButton } from './primitives';
+import { Logo } from './components';
 
 /**
- * Shared layout for every surface: header with title and a "?" help affordance.
- * The "?" is a real focusable button (FR-SURF-08 / FR-A11Y-01). Surfaces pass an
- * `onHelp` callback so the side panel can open Help in a new tab instead of
- * navigating inside the narrow panel.
+ * Layout for full-page surfaces (Graveyard, Options, Onboarding, Help): logo,
+ * page title, and a "?" help button (FR-SURF-08). The side panel uses
+ * PanelHeader and PanelNav instead.
  */
 export function AppShell({
   title,
@@ -18,20 +18,19 @@ export function AppShell({
 }) {
   return (
     <div className="min-h-full bg-bg text-fg">
-      <header className="flex items-center justify-between border-b border-line px-4 py-3">
-        <h1 className="font-display text-xl text-fg">{title}</h1>
+      <header className="flex items-center justify-between gap-4 border-b border-line px-6 py-3">
+        <div className="flex items-center gap-4">
+          <Logo />
+          <span aria-hidden="true" className="h-6 w-px bg-line" />
+          <h1 className="font-display text-h3 font-semibold text-fg">{title}</h1>
+        </div>
         {onHelp ? (
-          <button
-            type="button"
-            onClick={onHelp}
-            aria-label="Open Help Center"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-md text-muted hover:bg-surface focus-visible:outline-2 focus-visible:outline-ghost focus-visible:outline-offset-2"
-          >
-            <Icon name="help" label="Open Help Center" />
-          </button>
+          <IconButton label="Open Help Center" onClick={onHelp}>
+            <Icon name="help" />
+          </IconButton>
         ) : null}
       </header>
-      <main className="p-4">{children}</main>
+      <main className="mx-auto max-w-[960px] p-6">{children}</main>
     </div>
   );
 }
