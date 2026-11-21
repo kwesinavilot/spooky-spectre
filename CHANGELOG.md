@@ -41,6 +41,9 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 - Connect AI: Anthropic, OpenAI, Google or a local Ollama model. "Test connection" asks Chrome for access to that provider only, checks the key, and saves it only if it works; the key is never shown again, with Replace and Remove.
 - Effect level defaults to Subtle. New UI pieces: `Eyebrow`, `MiniChrome`, and icons for shield, clock, lock, ban and puzzle.
 
+### Fixed
+- Onboarding claimed that AI runs only on Analyze and that you see what will be sent first. The preview does not exist yet, so the copy now says so, and the "Ask before analyzing" switch is shown as always on and disabled until the preview is built. Permissions text covers the linked-policy read, which is not AI.
+
 ### Changed
 - Streamly demo now matches the reference screens: $14.99 per month after a 14-day trial, and an "Accept and start trial" button.
 

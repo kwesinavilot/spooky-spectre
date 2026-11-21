@@ -114,8 +114,9 @@ export function Step2() {
           <Point icon="shield" title="Detection happens on your device">
             Spotting terms links and cookie banners uses simple on-page rules. No page content is uploaded.
           </Point>
-          <Point icon="clock" title="AI runs only when you press Analyze">
-            Never during normal browsing. You see what will be sent before it goes.
+          <Point icon="clock" title="No AI runs while you browse">
+            AI is off until you connect a provider and ask for an analysis. Showing exactly what will be sent first is
+            still being built.
           </Point>
           <Point icon="ban" title="Specter never clicks Accept for you">
             You make every choice with the website's own buttons.
@@ -144,8 +145,8 @@ export function Step2() {
             Leaves only if you analyze with AI
           </p>
           <p className="mt-3 text-body text-muted">
-            Selected agreement excerpts go to the provider you choose, using your own key. Skip AI and Specter still works
-            with on-device scanning.
+            Excerpts go to the AI provider you choose, with your own key, and only when you ask. A linked policy page is
+            read only during an analysis you started. Skip AI and Specter still works on your device.
           </p>
         </Card>
       </div>
@@ -330,9 +331,10 @@ export function Step4({ prefs, onChange }: { prefs: SpecterPrefs; onChange: (p: 
           <div className="py-4">
             <Toggle
               label="Ask before analyzing a page"
-              description="Specter never analyzes in the background. With AI on, you see what will be sent first."
-              checked={prefs.previewBeforeSending}
-              onChange={(v) => onChange({ previewBeforeSending: v })}
+              description="Specter never analyzes in the background. The preview of what gets sent is coming in a later version."
+              checked
+              disabled
+              onChange={() => {}}
             />
           </div>
           <div className="py-4">
@@ -542,7 +544,7 @@ export function Step6({ state, onDemo, onFinish }: { state: OnboardingState; onD
         <Card className="px-6 py-2">
           <dl className="divide-y divide-line">
             <SummaryRow label="Effects">{effect}</SummaryRow>
-            <SummaryRow label="Analysis">{state.prefs.previewBeforeSending ? 'Ask every time' : 'When I press Analyze'}</SummaryRow>
+            <SummaryRow label="Analysis">Only when I press Analyze</SummaryRow>
             <SummaryRow label="Background detection">{state.background ? 'On' : 'Off'}</SummaryRow>
             <SummaryRow label="Linked policies">{state.prefs.readLinkedPolicies ? 'Read automatically' : 'Ask each time'}</SummaryRow>
             <SummaryRow label="AI model">
