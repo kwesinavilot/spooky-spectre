@@ -36,16 +36,37 @@ haunting interface that is also a real product people could use daily.
 
 ## Current status
 
-Spec 1 (Foundation) is done as of v0.6.0. What exists today:
+Spec 1 (Foundation) is done at v0.6.0. Spec 2 (Detection and extraction) is code complete at
+v0.7.0; two manual checks in Chrome are still open (see below).
 
 | Capability | State |
 | --- | --- |
 | pnpm monorepo, strict TypeScript, lint boundaries | Done |
-| Shared Zod schemas for all data models (Part 4 contract) | Done, 5 fixture tests |
-| Design tokens with enforced WCAG AA 4.5:1 pairings | Done, 13 contrast tests |
-| Dexie local database schema (agreements, versions, settings, tips) | Done, round-trip test |
-| Extension surfaces: side panel, Graveyard, Options, Onboarding, Help | Placeholder screens, build verified in Chrome |
-| Agreement detection, extraction, AI analysis, overlays | Not yet (Specs 2–6) |
+| Shared Zod schemas (findings, agreements, detection, extraction) | Done, fixture tests |
+| Design system tokens, fonts and components (design steering) | Done, 33 contrast tests |
+| Dexie local database schema | Done, round-trip test |
+| Toolbar popup and four-tab side panel | Done |
+| Rule-based detection: cookie banners, terms, privacy, licenses, sign-up checkboxes, subscription wording | Done, 77 core tests |
+| Extraction with sections, anchors, hash and coverage | Done |
+| Opt-in background detection, per-site access, dot badge, Options "Site access" | Done, 28 extension tests |
+| Real-page corpus | 7 of 10 pass (below) |
+| Manual check in Chrome on the demo pages, network check in DevTools | Open |
+| Clause screening, AI analysis, findings, overlays | Not yet (Specs 3 to 6) |
+
+### Corpus results (2026-11-21)
+
+Ten saved public pages, measured with `pnpm corpus:report` ([details](corpus/README.md)):
+
+| Pages | Passed |
+| --- | --- |
+| Terms of service (GitHub, Mozilla, Automattic, Dropbox) | 4 of 4 |
+| Privacy policies (Firefox, DuckDuckGo, Signal terms and privacy) | 3 of 3 |
+| Cookie-banner home pages (GOV.UK, the Guardian, legislation.gov.uk) | 0 of 3 |
+| **Total** | **7 of 10** |
+
+The cookie-banner failures are honest: those banners are added or revealed by each site's scripts,
+which saved copies do not run. Detection on live pages relies on the 15-second late-banner watch,
+which still needs the manual check in Chrome.
 
 ## Principles
 
@@ -119,8 +140,17 @@ pnpm test        # core + extension unit tests (Vitest)
 pnpm lint        # ESLint (boundaries, no emoji, no console in ai/secrets)
 ```
 
-On install the extension opens the onboarding tab; clicking Begin opens the
-Graveyard. The toolbar icon opens the side panel.
+On install the extension opens the onboarding tab. The toolbar icon opens a small
+popup; "Open Specter" opens the side panel for that tab. To try detection, run
+`pnpm examples` and open http://localhost:5178/streamly/signup.html or
+http://localhost:5178/cookies/index.html. Background detection can be turned on in
+Options, under Site access.
+
+Corpus:
+
+```bash
+pnpm corpus:report   # detection and extraction on the 10 saved real pages
+```
 
 ## Privacy model
 
@@ -129,16 +159,24 @@ Graveyard. The toolbar icon opens the side panel.
   analysis.
 - API keys live only in `chrome.storage.local` and are never logged.
 - Password and payment fields and the default excluded domains (banking,
-  health, email) are never read; analysis runs only on sites you allow, with
-  host permission requested per site at runtime.
-- Delete-one, delete-all, and JSON export are provided for saved data.
+  health, email) are never read. No site access is granted at install:
+  background detection is opt-in, otherwise Specter reads a page only when you
+  open it there or turn the site on.
+- Detection runs on the device with rules. Results are kept per tab and cleared
+  when you leave the page; extracted text stays in memory.
+- When an agreement is only linked, Specter can read that one linked page
+  without your cookies, automatically after a one-time consent (Settings and
+  Options), or from a button otherwise. Nothing is stored.
+- Delete-one, delete-all, and JSON export are planned for saved data (Spec 8).
+  See [docs/privacy.md](docs/privacy.md) for how each rule is met in the code.
 
 ## How Kiro specs, steering, and hooks were used
 
-- **Steering** (`.kiro/steering/`): five always-included rulesets — product tone
-  ("never legal advice", "every finding needs a verified quote"), stack and
-  permissions, package structure, design tokens and accessibility, and privacy
-  defaults — govern every change.
+- **Steering** (`.kiro/steering/`): six always-included rulesets govern every
+  change: product (tone, scares, MVP scope), tech (stack and permissions),
+  structure (package boundaries), design (tokens, components, motion and the
+  rules for scares), privacy, and workflow (every unit of work ships with its
+  docs, changelog entry and commit).
 - **Specs** (`.kiro/specs/`): the Foundation spec was authored first
   (EARS requirements, design, tasks) and implemented against it. Each later
   spec (detection, AI, overlay, onboarding, Graveyard, timeline, reminders,
@@ -154,8 +192,13 @@ Graveyard. The toolbar icon opens the side panel.
 - No agreements outside the browser, no private/authenticated pages.
 - Not legal advice, ever. Specter says "this clause says" and "the text does
   not state".
-- Analysis pipeline (detection through verification) is not yet implemented;
-  the current build is the foundation (Spec 1).
+- English keyword and label patterns only.
+- Cookie banners added by scripts are found only on live pages, not in saved
+  copies; banners in closed components or other sites' frames are reported as
+  unreadable, not guessed.
+- Clause screening, AI analysis and verification are not implemented yet
+  (Specs 3 to 5); the current build detects and reads agreements.
+- Developer documentation is in [docs/](docs/README.md).
 
 ## Versioning
 

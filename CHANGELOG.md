@@ -14,7 +14,7 @@ Spec roadmap:
 | Spec | Title | Scope | Status |
 | --- | --- | --- | --- |
 | 1 | Foundation | MVP | Done (v0.6.0) |
-| 2 | Detection and extraction (incl. opt-in background detection, cookie banners) | MVP | Not started |
+| 2 | Detection and extraction (incl. opt-in background detection, cookie banners) | MVP | Code complete (v0.7.0); manual Chrome checks open |
 | 3 | Candidate finding and segmentation | MVP | Not started |
 | 4 | AI provider layer and BYOK | MVP | Not started |
 | 5 | Clause analysis and validation | MVP | Not started |
@@ -33,6 +33,12 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 ---
 
 ## [Unreleased]
+
+## [0.7.0] - 2026-11-21
+
+Spec 2 (Detection and extraction) code complete, plus the move to the design steering UI. Tested:
+typecheck in every workspace, repo-wide ESLint, 77 core tests, 28 extension tests, the corpus report
+(7 of 10) and the extension build. Not yet checked by hand in Chrome.
 
 ### Added
 - Spec 2 (Detection and extraction) at `.kiro/specs/specter/detection-extraction/`: EARS requirements for access modes and opt-in background detection, privacy gates, rule-based detection (cookie banners with control roles, terms, privacy, subscription terms, EULA, signup checkboxes), extraction with section ids, offsets, anchors, SHA-256 hash and completeness, side panel states, demo fixtures and the 10-page corpus. Design and ordered tasks included. Documents only; no code yet.

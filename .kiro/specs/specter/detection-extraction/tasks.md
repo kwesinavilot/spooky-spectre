@@ -3,11 +3,8 @@
 > Ordered tasks for `requirements.md` and `design.md` in this folder. Each task names the
 > requirements it satisfies. Status legend: `[x]` done · `[~]` partly done · `[ ]` not done.
 
-> **Progress:** the core library (Phases 1 to 4) is done and green: 54 core tests and the core
-> typecheck pass. Open in those phases: 1.3 (a `vitest.config.ts` instead of per-file pragmas) and
-> 2.5 (`pnpm examples`). Nothing in `apps/extension` is wired yet. Next: 3.4 (the `activeTab` spike),
-> then Phases 5 and 6. The UI tasks follow the design steering file: dot badge, Detected/Uncertain
-> controls, Coverage labels and a toolbar popup.
+> **Progress (v0.7.0, 2026-11-21):** all phases built and green. Open: manual checks in Chrome
+> (3.4 confirmation, 6.4) and the DevTools network check (8.3).
 
 ## Overview
 
@@ -81,10 +78,14 @@ regression corpus.
 
 ## Phase 8 — Verification and release
 
-- [ ] 8.1 Typecheck, lint, test and build are green (`pnpm.cmd` on this Windows setup). _§7 criterion 5_
-- [ ] 8.2 Check that the content script bundle is under 60 KB minified. _NFR-03_
-- [ ] 8.3 Check that no request is made during detection, and only the clicked linked-policy request during extraction (DevTools network panel on the demo pages). _NFR-04, §7 criterion 6_
-- [ ] 8.4 Update the CHANGELOG (including the Spec 2 status row), bump versions to 0.7.0, commit and push.
+- [x] 8.1 Green on 2026-11-21: typecheck in every workspace, repo-wide ESLint, 77 core tests, 28 extension tests, the corpus report (7 of 10) and the extension build. _§7 criterion 5_
+- [x] 8.2 Content script bundle 25.19 KB minified (limit 60 KB). It was 81 KB until Zod validation moved from the page to the receivers (background worker, side panel). _NFR-03_
+- [~] 8.3 Static check done: the built content script contains no `fetch`, XHR, beacon, WebSocket or remote URL, and the only `fetch` in the extension is the linked-policy reader in the side panel. Still to do by hand: DevTools network panel on the demo pages (`pnpm examples`). _NFR-04, §7 criterion 6_
+- [x] 8.4 CHANGELOG released as 0.7.0 with the Spec 2 status row, versions bumped, committed and pushed.
+
+**Spec 2 status at v0.7.0:** code complete and green. Open: the manual Chrome checks in 6.4 and the
+DevTools network check in 8.3 (and the `activeTab` confirmation in 3.4, done during 6.4). These need
+a person at the browser.
 
 ## Notes
 

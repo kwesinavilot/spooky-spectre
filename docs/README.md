@@ -12,6 +12,6 @@ today; plans live in `.kiro/specs/`, and user-facing help lives in `packages/hel
 | [Privacy model](privacy.md) | What is read, what is stored, what leaves the device |
 | [Development](development.md) | Setup, commands, tests, demo pages and known tooling issues |
 
-Status: Spec 1 (Foundation) is done at v0.6.0. Spec 2 core detection and extraction are built and
-tested; wiring them into the extension is next. See [CHANGELOG.md](../CHANGELOG.md) for the full
-history.
+Status: Spec 1 (Foundation) is done at v0.6.0. Spec 2 (Detection and extraction) is code complete
+at v0.7.0, with the manual Chrome checks still open. See [CHANGELOG.md](../CHANGELOG.md) for the
+full history and [corpus/README.md](../corpus/README.md) for the real-page results.
