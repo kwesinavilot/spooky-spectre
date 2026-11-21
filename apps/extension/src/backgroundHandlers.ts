@@ -1,4 +1,4 @@
-import { cleanUrl } from '@specter/core';
+import { cleanUrl, DetectionResult } from '@specter/core';
 import type { SpecterMessage } from './messaging';
 import { clearTabState, getTabState, setTabState } from './tabState';
 import { syncRegistrations } from './access';
@@ -20,8 +20,12 @@ export async function handleBackgroundMessage(
       const tabId = sender.tab?.id;
       // Only the top frame reports for a tab.
       if (tabId === undefined || (sender.frameId ?? 0) !== 0) return undefined;
-      const url = sender.tab?.url ? cleanUrl(sender.tab.url) : message.result?.url ?? '';
-      await setTabState(tabId, { url, excluded: message.excluded === true, result: message.result });
+      // The content script runs inside the page, so its report is checked here (NFR-02).
+      const parsed = message.result === undefined ? undefined : DetectionResult.safeParse(message.result);
+      if (parsed && !parsed.success) return undefined;
+      const result = parsed?.data;
+      const url = sender.tab?.url ? cleanUrl(sender.tab.url) : result?.url ?? '';
+      await setTabState(tabId, { url, excluded: message.excluded === true, result });
       void chrome.runtime.sendMessage({ type: 'tab-state-changed', tabId }).catch(() => {});
       return undefined;
     }

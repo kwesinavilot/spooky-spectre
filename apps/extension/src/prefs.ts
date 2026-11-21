@@ -1,4 +1,5 @@
-import { DEFAULT_EXCLUDED_DOMAINS } from '@specter/core';
+// Subpath import: this file is bundled into the content script (NFR-03).
+import { DEFAULT_EXCLUDED_DOMAINS } from '@specter/core/privacy';
 
 /**
  * Preferences the content script and background worker need. They live in

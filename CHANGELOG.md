@@ -84,6 +84,13 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 - Background worker keeps per-tab detection results in `chrome.storage.session`, clears them on navigation and close, and shows a small dot badge in the medium color (never a number).
 - Tested: 23 extension tests (new: access, tab state, manifest permissions) with a mocked `chrome`, extension typecheck and ESLint pass. Not yet checked in Chrome.
 
+### Added (Spec 2 Phase 5: content script, Analyze path, linked policies)
+- Content script: checks excluded and paused sites before reading anything, detects when the browser is idle, watches for late cookie banners for 15 seconds in background mode, and answers detection and extraction requests (retrying once if the page changes mid-read). It never changes the page apart from the empty overlay host. Bundle: 25 KB (was 81 KB with Zod inside).
+- Analyze path: the side panel injects the content script using the popup's `activeTab` grant, or asks for one site's access from an "Allow on this site" click. Stale replies are ignored.
+- Linked policies: read without cookies, HTML only, never stored; automatic after the one-time consent, a button otherwise.
+- Background worker validates each detection report with the Zod schema before storing it.
+- Tested: extension typecheck, 28 extension tests, repo-wide ESLint and the build pass. Not yet checked by hand in Chrome.
+
 ### Added (Spec 2 Phase 7: corpus) and Changed (core rules)
 - Corpus of 10 saved public pages (`corpus/`): GitHub, Mozilla, Automattic and Dropbox terms; Firefox, DuckDuckGo and Signal privacy; GOV.UK, the Guardian and legislation.gov.uk home pages for cookie banners. `pnpm corpus:add` captures pages, `pnpm corpus:report` scores them and writes `corpus/report.json`. Result: 7 of 10. The 3 failures are cookie banners injected by scripts, which saved copies cannot contain.
 - Detection: a page can be more than one kind (Signal's "Terms & Privacy Policy"); a banner must offer accept or reject and, outside a fixed container or dialog, two kinds of control, which removes false positives from footer "Cookie settings" links; banners that are hidden (already dismissed) are ignored.

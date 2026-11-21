@@ -4,12 +4,12 @@
     {
       "name": "Run extraction on new corpus file",
       "trigger": "PostFileCreate",
-      "description": "When a corpus file is added, run extraction on it and print the completeness score.",
-      "matcher": "corpus",
+      "description": "When a page is added to corpus/pages, run the corpus report: detection, extraction and completeness for every saved page, written to corpus/report.json.",
+      "matcher": "corpus[\\\\/]pages[\\\\/].*\\.html$",
       "action": {
         "type": "command",
-        "command": "pnpm --filter @specter/extension exec tsx scripts/run-corpus-extraction.ts",
-        "timeout": 120
+        "command": "pnpm.cmd corpus:report",
+        "timeout": 300
       }
     }
   ]
