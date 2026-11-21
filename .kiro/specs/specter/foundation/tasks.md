@@ -57,8 +57,8 @@ This plan implements the Specter foundation: a pnpm monorepo, WXT-based Chrome M
 
 ### Phase D — packages/ui
 
-- [~] 4.1 Create `packages/ui/package.json` (`@specter/ui`) and `tsconfig.json`; add React 18, Tailwind, clsx.
-  - Both exist with React, Tailwind, clsx. **Deviation:** React is v19, not v18 — works but violates the tech rule. **Remaining:** align to React 18 if strict compliance is required.
+- [x] 4.1 Create `packages/ui/package.json` (`@specter/ui`) and `tsconfig.json`; add React, Tailwind, clsx.
+  - Both exist with React 19, Tailwind, clsx. React 19 was approved and `tech.md` updated to match (v0.6.0).
 - [x] 4.2 Create `packages/ui/src/tokens.ts` exporting the typed token object (design §5).
   - Re-exports `DESIGN_TOKENS` from `@specter/core`.
 - [x] 4.3 Create `packages/ui/tailwind.preset.ts` extending Tailwind theme with token colors and the two fonts.
@@ -163,7 +163,6 @@ Spec 1 is complete only when all Phase J checks pass and the acceptance criteria
 
 ### Open items before the spec can close
 
-- **4.1:** decide whether React 19 is acceptable or must downgrade to React 18.
 - **5.1 / 5.2:** decide whether markdown stub files are required or the TS catalog suffices.
 - **8.4:** align the Onboarding "Begin" button state with FR-SURF-05.
 - **9.2:** add a test for the `no-console` ESLint rule or accept config-only enforcement.
@@ -181,7 +180,7 @@ Spec 1 is complete only when all Phase J checks pass and the acceptance criteria
 ```json
 {
   "waves": [
-    { "id": 0, "tasks": ["4.1", "5.1", "5.2", "8.4", "9.2"] },
+    { "id": 0, "tasks": ["5.1", "5.2", "8.4", "9.2"] },
     { "id": 1, "tasks": ["10.5", "10.6"] }
   ]
 }
