@@ -77,6 +77,13 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 - Root scripts `corpus:add` and `corpus:report` reserved for the corpus (Phase 7).
 - Removed `update-tasks.cjs`, a one-off script that made `pnpm lint` fail. ESLint now knows Node globals in `scripts/`.
 
+### Added (Spec 2 Phase 5: access modes and tab state)
+- Typed messages for detection, tab state and extraction, with request ids (`src/messaging.ts`).
+- Access modes (`src/access.ts`): background detection for all http/https sites (opt-in), sites enabled one by one, and the registered detection script kept in line with granted permissions on install, startup, permission changes (including access revoked in Chrome's settings) and prefs changes. Excluded and paused domains are kept out with `excludeMatches`.
+- `src/prefs.ts`: excluded domains, paused domains and the linked-policy consent in `chrome.storage.local`, readable by the content script.
+- Background worker keeps per-tab detection results in `chrome.storage.session`, clears them on navigation and close, and shows a small dot badge in the medium color (never a number).
+- Tested: 23 extension tests (new: access, tab state, manifest permissions) with a mocked `chrome`, extension typecheck and ESLint pass. Not yet checked in Chrome.
+
 ### Added (docs)
 - `docs/` folder with an index, architecture, detection and extraction, effects and scares, privacy model, and development pages, describing what exists today and marking what is unverified or planned.
 

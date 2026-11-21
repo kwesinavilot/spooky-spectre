@@ -13,12 +13,15 @@ The rules are in `.kiro/steering/privacy.md`. This page records how the code mee
 | Detection results carry no page body text | Labels capped at 80 characters, link text at 120; URL is origin and path only |
 | API keys only in `chrome.storage.local` | `apps/extension/src/secrets.ts` |
 | No `console` logging in `packages/ai` or `secrets.ts` | ESLint config |
+| Background detection only after the user grants all-sites access; per-site access otherwise | `apps/extension/src/access.ts` |
+| Revoking access in Chrome's settings turns detection off | `syncRegistrations` on `permissions.onRemoved` |
+| Excluded and paused sites never get the detection script | `excludeMatches` in `access.ts`, plus the `shouldAnalyze` check in the content script |
+| Detection results kept per tab only, cleared on navigation and close, no page text | `apps/extension/src/tabState.ts`, `backgroundHandlers.ts` |
 
-## Planned (Spec 2 Phases 5 to 6, later specs)
+## Planned (Spec 2 Phase 6, later specs)
 
-- Background detection is opt-in, with Chrome's "read and change data on all websites" warning
-  explained first. Per-site access otherwise.
-- Detection results are kept per tab in `chrome.storage.session` and cleared on navigation.
+- The Options and onboarding screens that explain Chrome's "read and change data on all
+  websites" warning before asking.
 - Extracted text stays in memory until the user saves (Spec 8).
 - A linked policy page is read automatically during an analysis once the user has given the
   one-time consent (onboarding, changeable in Settings and Options), and on a button click
