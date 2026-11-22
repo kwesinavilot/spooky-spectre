@@ -15,7 +15,7 @@ Spec roadmap:
 | --- | --- | --- | --- |
 | 1 | Foundation | MVP | Done (v0.6.0) |
 | 2 | Detection and extraction (incl. opt-in background detection, cookie banners) | MVP | Done (v0.7.0); manual Chrome checks confirmed |
-| 3 | Candidate finding and segmentation | MVP | Done (`.kiro/specs/specter/candidate-segmentation`), with ranked cap, 15 unit tests and corpus-based keyword coverage |
+| 3 | Candidate finding and segmentation | MVP | Done in v0.8.0 (`.kiro/specs/specter/candidate-segmentation`), with ranked cap, 15 unit tests and corpus-based keyword coverage |
 | 4 | AI provider layer and BYOK | MVP | Done in code (`.kiro/specs/specter/ai-providers`). Open: live check with the user's own keys |
 | 5 | Clause analysis and validation | MVP | Built in core and AI, untested live. Possession moved to Spec 6 |
 | 6 | Side panel (Contract Exorcist) and Spectral Vision overlay | MVP | Not started |
@@ -46,12 +46,6 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 - A one-time reset applies the new default to saved profiles, since onboarding had saved the preview as on.
 - Onboarding privacy copy: "Analyze only when I press Analyze" replaces the old "Ask before analyzing a page" line.
 - Note for spec owners: `design steering` §6C still says the preview is on by default. That line is not changed here.
-
-### Changed (Spec 3 closed)
-- The candidate cap keeps the 40 strongest clauses (by keyword hits) rather than the first 40 in document order, so late sections of long agreements can reach the model. Returned in document order.
-- Keyword coverage widened from the corpus: liability ("liable"), disputes (governed by, choice of law, jurisdiction, court), account control (delete, automatic change/update), cancellation (withdraw, waive), privacy (disclose, consent, personalize, profile).
-- 15 unit tests for candidate finding in `packages/core/test/classify`. Core suite: 107 of 107 passing.
-- Abbreviations are still split at punctuation, by decision. Pinned by a test.
 
 ### Removed
 - Cost estimate and its "Price not set" placeholder. The Page preview shows the token count only. The price type file and its tests are gone.
@@ -123,6 +117,14 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 
 ### Changed
 - Streamly demo now matches the reference screens: $14.99 per month after a 14-day trial, and an "Accept and start trial" button.
+
+## [0.8.0] - 2026-10-31
+
+### Changed (Spec 3 closed)
+- The candidate cap keeps the 40 strongest clauses (by keyword hits) rather than the first 40 in document order, so late sections of long agreements can reach the model. Returned in document order.
+- Keyword coverage widened from the corpus: liability ("liable"), disputes (governed by, choice of law, jurisdiction, court), account control (delete, automatic change/update), cancellation (withdraw, waive), privacy (disclose, consent, personalize, profile).
+- 15 unit tests for candidate finding in `packages/core/test/classify`. Core suite: 107 of 107 passing.
+- Abbreviations are still split at punctuation, by decision. Pinned by a test.
 
 ## [0.7.0] - 2026-11-21
 
