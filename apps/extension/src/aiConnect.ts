@@ -4,10 +4,10 @@ import { getPrefs, setPrefs } from './prefs';
 /**
  * Key setup, "Test connection" and the model list for onboarding step 5 and
  * AI connectivity. The model list comes from each provider's own endpoint, so
- * no model name is hardcoded. The key never goes to a web page or content
- * script, and it is never logged.
+ * no model name is hardcoded. Keys never go to a web page or content script,
+ * and they are never logged. Calls to the model itself are in packages/ai.
  */
-export type ProviderId = 'anthropic' | 'openai' | 'google' | 'ollama';
+export type ProviderId = 'openai' | 'anthropic' | 'gemini' | 'deepseek' | 'mistral' | 'grok' | 'groq' | 'ollama';
 
 export interface ProviderInfo {
   id: ProviderId;
@@ -18,9 +18,13 @@ export interface ProviderInfo {
 }
 
 export const PROVIDERS: ProviderInfo[] = [
-  { id: 'anthropic', label: 'Anthropic', origin: 'https://api.anthropic.com/*', needsKey: true },
   { id: 'openai', label: 'OpenAI', origin: 'https://api.openai.com/*', needsKey: true },
-  { id: 'google', label: 'Google', origin: 'https://generativelanguage.googleapis.com/*', needsKey: true },
+  { id: 'anthropic', label: 'Anthropic', origin: 'https://api.anthropic.com/*', needsKey: true },
+  { id: 'gemini', label: 'Google Gemini', origin: 'https://generativelanguage.googleapis.com/*', needsKey: true },
+  { id: 'deepseek', label: 'DeepSeek', origin: 'https://api.deepseek.com/*', needsKey: true },
+  { id: 'mistral', label: 'Mistral', origin: 'https://api.mistral.ai/*', needsKey: true },
+  { id: 'grok', label: 'Grok (xAI)', origin: 'https://api.x.ai/*', needsKey: true },
+  { id: 'groq', label: 'Groq', origin: 'https://api.groq.com/*', needsKey: true },
   { id: 'ollama', label: 'Ollama (local model)', origin: 'http://localhost/*', needsKey: false },
 ];
 
@@ -58,14 +62,22 @@ function request(id: ProviderId, key: string): { url: string; init: RequestInit 
           },
         },
       };
-    case 'openai':
-      return { url: 'https://api.openai.com/v1/models', init: { headers: { authorization: `Bearer ${key}` } } };
-    case 'google':
+    case 'gemini':
       // Key in a header, not the URL, so it never appears in history or logs.
       return {
         url: 'https://generativelanguage.googleapis.com/v1beta/models',
         init: { headers: { 'x-goog-api-key': key } },
       };
+    case 'deepseek':
+      return { url: 'https://api.deepseek.com/models', init: { headers: { authorization: `Bearer ${key}` } } };
+    case 'mistral':
+      return { url: 'https://api.mistral.ai/v1/models', init: { headers: { authorization: `Bearer ${key}` } } };
+    case 'grok':
+      return { url: 'https://api.x.ai/v1/models', init: { headers: { authorization: `Bearer ${key}` } } };
+    case 'groq':
+      return { url: 'https://api.groq.com/openai/v1/models', init: { headers: { authorization: `Bearer ${key}` } } };
+    case 'openai':
+      return { url: 'https://api.openai.com/v1/models', init: { headers: { authorization: `Bearer ${key}` } } };
     case 'ollama':
       return { url: 'http://localhost:11434/api/tags', init: {} };
   }
@@ -87,19 +99,22 @@ export function statusFromHttp(id: ProviderId, status: number): ConnectionStatus
 export function parseModelIds(id: ProviderId, body: unknown): string[] {
   const b = body as Record<string, unknown> | null;
   if (!b) return [];
-  if (id === 'anthropic' || id === 'openai') {
-    const data = Array.isArray(b.data) ? (b.data as { id?: unknown }[]) : [];
-    return data.map((m) => m.id).filter((x): x is string => typeof x === 'string');
-  }
-  if (id === 'google') {
-    const models = Array.isArray(b.models) ? (b.models as { name?: unknown; supportedGenerationMethods?: unknown }[]) : [];
+  if (id === 'gemini') {
+    const models = Array.isArray(b.models)
+      ? (b.models as { name?: unknown; supportedGenerationMethods?: unknown }[])
+      : [];
     return models
       .filter((m) => Array.isArray(m.supportedGenerationMethods) && m.supportedGenerationMethods.includes('generateContent'))
       .map((m) => (typeof m.name === 'string' ? m.name.replace(/^models\//, '') : ''))
       .filter(Boolean);
   }
-  const models = Array.isArray(b.models) ? (b.models as { name?: unknown }[]) : [];
-  return models.map((m) => m.name).filter((x): x is string => typeof x === 'string');
+  if (id === 'ollama') {
+    const models = Array.isArray(b.models) ? (b.models as { name?: unknown }[]) : [];
+    return models.map((m) => m.name).filter((x): x is string => typeof x === 'string');
+  }
+  // OpenAI, Anthropic, DeepSeek, Mistral, Grok and Groq all reply with { data: [{ id }] }.
+  const data = Array.isArray(b.data) ? (b.data as { id?: unknown }[]) : [];
+  return data.map((m) => m.id).filter((x): x is string => typeof x === 'string');
 }
 
 export interface TestResult {

@@ -11,7 +11,16 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^4.0.107",
+    "@ai-sdk/deepseek": "^3.0.89",
+    "@ai-sdk/google": "^4.0.124",
+    "@ai-sdk/groq": "^4.0.86",
+    "@ai-sdk/mistral": "^4.0.89",
+    "@ai-sdk/openai": "^4.0.122",
+    "@ai-sdk/openai-compatible": "^3.0.94",
+    "@ai-sdk/xai": "^5.0.48",
     "@specter/core": "workspace:*",
+    "ai": "^7.0.179",
     "zod": "^3.23.8"
   },
   "devDependencies": {

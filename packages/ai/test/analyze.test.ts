@@ -3,11 +3,9 @@ import { findCandidates, locateQuote, type ExtractedDocument } from '@specter/co
 import {
   analyzeDocument,
   analysisCacheKey,
-  anthropic,
   estimateCost,
-  ollama,
-  openai,
   parseModelReply,
+  providerFor,
   PROMPT_VERSION,
   UNKNOWN_PRICE,
   type ChatProvider,
@@ -180,27 +178,39 @@ describe('locateQuote sanity', () => {
 describe('providers (Spec 4)', () => {
   it('sends the key in a header, never in the URL, and reads the reply', async () => {
     let seen: { url: string; init: RequestInit } | null = null;
-    const fetchImpl = async (url: string, init: RequestInit) => {
-      seen = { url, init };
-      return new Response(JSON.stringify({ content: [{ type: 'text', text: '{"findings":[]}' }] }), { status: 200 });
-    };
-    const reply = await anthropic(fetchImpl).complete({ model: 'claude-x', system: 's', user: 'u', apiKey: 'sk-secret' });
+    const fetchImpl = (async (url: string | URL | Request, init?: RequestInit) => {
+      seen = { url: String(url), init: init ?? {} };
+      return new Response(
+        JSON.stringify({
+          id: 'msg_1',
+          type: 'message',
+          role: 'assistant',
+          model: 'claude-x',
+          content: [{ type: 'text', text: '{"findings":[]}' }],
+          stop_reason: 'end_turn',
+          stop_sequence: null,
+          usage: { input_tokens: 1, output_tokens: 1 },
+        }),
+        { status: 200, headers: { 'content-type': 'application/json' } },
+      );
+    }) as unknown as typeof fetch;
+    const reply = await providerFor('anthropic', fetchImpl).complete({ model: 'claude-x', system: 's', user: 'u', apiKey: 'sk-secret' });
     expect(reply).toBe('{"findings":[]}');
     expect(seen!.url).not.toContain('sk-secret');
-    expect((seen!.init.headers as Record<string, string>)['x-api-key']).toBe('sk-secret');
+    expect(new Headers(seen!.init.headers).get('x-api-key')).toBe('sk-secret');
   });
 
   it('maps 401 to invalid_key and 429 to rate_limited', async () => {
-    const make = (status: number) => async () => new Response('{}', { status });
-    await expect(openai(make(401)).complete({ model: 'm', system: 's', user: 'u', apiKey: 'k' })).rejects.toMatchObject({ code: 'invalid_key' });
-    await expect(openai(make(429)).complete({ model: 'm', system: 's', user: 'u', apiKey: 'k' })).rejects.toMatchObject({ code: 'rate_limited' });
+    const make = (status: number) => (async () => new Response('{}', { status })) as unknown as typeof fetch;
+    await expect(providerFor('openai', make(401)).complete({ model: 'm', system: 's', user: 'u', apiKey: 'k' })).rejects.toMatchObject({ code: 'invalid_key' });
+    await expect(providerFor('openai', make(429)).complete({ model: 'm', system: 's', user: 'u', apiKey: 'k' })).rejects.toMatchObject({ code: 'rate_limited' });
   });
 
   it('reports a local Ollama that is not running as not_running', async () => {
-    const down = async () => {
+    const down = (async () => {
       throw new TypeError('fetch failed');
-    };
-    await expect(ollama(down).complete({ model: 'llama', system: 's', user: 'u' })).rejects.toMatchObject({ code: 'not_running' });
+    }) as unknown as typeof fetch;
+    await expect(providerFor('ollama', down).complete({ model: 'llama', system: 's', user: 'u' })).rejects.toMatchObject({ code: 'not_running' });
   });
 });
 

@@ -9,7 +9,7 @@ describe('statusFromHttp', () => {
 
   it('reports a rejected key for 401 and 403', () => {
     expect(statusFromHttp('anthropic', 401)).toBe('invalid_key');
-    expect(statusFromHttp('google', 403)).toBe('invalid_key');
+    expect(statusFromHttp('gemini', 403)).toBe('invalid_key');
   });
 
   it('never blames a key for Ollama, which has none', () => {

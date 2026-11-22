@@ -19,7 +19,7 @@ export default function App() {
             label="Provider"
             value={providerId ?? ''}
             onChange={(e) => setProviderId(e.target.value)}
-            placeholder="anthropic, openai, google, ollama, or none"
+            placeholder="openai, anthropic, gemini, deepseek, mistral, grok, groq, ollama, or none"
           />
         </SectionCard>
         <SectionCard title="Haunting level">

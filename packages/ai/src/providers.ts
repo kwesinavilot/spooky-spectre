@@ -1,9 +1,19 @@
+import { createAnthropic } from '@ai-sdk/anthropic';
+import { createDeepSeek } from '@ai-sdk/deepseek';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { createGroq } from '@ai-sdk/groq';
+import { createMistral } from '@ai-sdk/mistral';
+import { createOpenAI } from '@ai-sdk/openai';
+import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
+import { createXai } from '@ai-sdk/xai';
+import { APICallError, generateText, type LanguageModel } from 'ai';
+
 /**
- * Provider calls (Spec 4). Each provider is a single HTTP request, so the
- * caller depends only on `ChatProvider`. Keys are passed in per call and are
- * never stored or logged here. `fetchImpl` is injectable for tests.
+ * Provider calls through the Vercel AI SDK (Spec 4). Every AI call in Specter
+ * goes through this file. The caller depends only on `ChatProvider`. Keys are
+ * passed in per call and are never stored or logged here.
  */
-export type ProviderId = 'anthropic' | 'openai' | 'google' | 'ollama';
+export type ProviderId = 'openai' | 'anthropic' | 'gemini' | 'deepseek' | 'mistral' | 'grok' | 'groq' | 'ollama';
 
 export type ProviderErrorCode = 'invalid_key' | 'rate_limited' | 'network' | 'not_running' | 'bad_response';
 
@@ -30,136 +40,75 @@ export interface ChatProvider {
   complete(req: ChatRequest): Promise<string>;
 }
 
-type FetchLike = (url: string, init: RequestInit) => Promise<Response>;
+/** The fetch used for requests. Injectable so tests can stop the network. */
+export type FetchLike = typeof fetch;
 
-function statusError(status: number, id: ProviderId): ProviderError {
-  if (status === 401 || status === 403) return new ProviderError('invalid_key', `${id} rejected the key (${status}).`);
-  if (status === 429) return new ProviderError('rate_limited', `${id} is rate limiting requests.`);
-  return new ProviderError('network', `${id} returned status ${status}.`);
-}
-
-async function send(id: ProviderId, fetchImpl: FetchLike, url: string, init: RequestInit): Promise<unknown> {
-  let res: Response;
-  try {
-    res = await fetchImpl(url, { ...init, credentials: 'omit' });
-  } catch (err) {
-    if (id === 'ollama') throw new ProviderError('not_running', 'Ollama is not running on this computer.');
-    if ((err as { name?: string }).name === 'AbortError') throw err;
-    throw new ProviderError('network', `Could not reach ${id}.`);
+/** Builds the SDK language model for one provider and model id. */
+function languageModel(id: ProviderId, modelId: string, apiKey: string, fetchImpl?: FetchLike): LanguageModel {
+  switch (id) {
+    case 'openai':
+      return createOpenAI({ apiKey, fetch: fetchImpl })(modelId);
+    case 'anthropic':
+      // The header lets the browser call the API directly; the extension requests this origin.
+      return createAnthropic({
+        apiKey,
+        fetch: fetchImpl,
+        headers: { 'anthropic-dangerous-direct-browser-access': 'true' },
+      })(modelId);
+    case 'gemini':
+      return createGoogleGenerativeAI({ apiKey, fetch: fetchImpl })(modelId);
+    case 'deepseek':
+      return createDeepSeek({ apiKey, fetch: fetchImpl })(modelId);
+    case 'mistral':
+      return createMistral({ apiKey, fetch: fetchImpl })(modelId);
+    case 'grok':
+      return createXai({ apiKey, fetch: fetchImpl })(modelId);
+    case 'groq':
+      return createGroq({ apiKey, fetch: fetchImpl })(modelId);
+    case 'ollama':
+      // Ollama serves an OpenAI-compatible API on this computer. No key.
+      return createOpenAICompatible({
+        name: 'ollama',
+        baseURL: 'http://localhost:11434/v1',
+        fetch: fetchImpl,
+      })(modelId);
   }
-  if (!res.ok) throw statusError(res.status, id);
-  try {
-    return await res.json();
-  } catch {
-    throw new ProviderError('bad_response', `${id} sent a reply that is not JSON.`);
+}
+
+/** Turns an SDK failure into the ProviderError codes the UI explains. Aborts pass through. */
+export function toProviderError(id: ProviderId, err: unknown, aborted: boolean): unknown {
+  if (aborted || (err as { name?: string } | null)?.name === 'AbortError') return err;
+  // An error with an HTTP status came from the provider. One without a status never got a reply.
+  if (APICallError.isInstance(err) && err.statusCode !== undefined) {
+    const status = err.statusCode;
+    if (status === 401 || status === 403) return new ProviderError('invalid_key', `${id} rejected the key (${status}).`);
+    if (status === 429) return new ProviderError('rate_limited', `${id} is rate limiting requests.`);
+    if (status === 400) return new ProviderError('bad_response', `${id} rejected the request (400).`);
+    return new ProviderError('network', `${id} returned status ${status ?? 'unknown'}.`);
   }
-}
-
-const pick = (v: unknown, path: (o: any) => unknown): string => {
-  const out = path(v);
-  if (typeof out !== 'string') throw new ProviderError('bad_response', 'The provider reply had an unexpected shape.');
-  return out;
-};
-
-export function anthropic(fetchImpl: FetchLike = fetch): ChatProvider {
-  return {
-    id: 'anthropic',
-    async complete({ model, system, user, apiKey, signal }) {
-      const body = await send('anthropic', fetchImpl, 'https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        signal,
-        headers: {
-          'content-type': 'application/json',
-          'x-api-key': apiKey ?? '',
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true',
-        },
-        body: JSON.stringify({ model, max_tokens: 2048, system, messages: [{ role: 'user', content: user }] }),
-      });
-      return pick(body, (o) => o.content.find((b: { type: string }) => b.type === 'text')?.text);
-    },
-  };
-}
-
-export function openai(fetchImpl: FetchLike = fetch): ChatProvider {
-  return {
-    id: 'openai',
-    async complete({ model, system, user, apiKey, signal }) {
-      const body = await send('openai', fetchImpl, 'https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        signal,
-        headers: { 'content-type': 'application/json', authorization: `Bearer ${apiKey ?? ''}` },
-        body: JSON.stringify({
-          model,
-          response_format: { type: 'json_object' },
-          messages: [
-            { role: 'system', content: system },
-            { role: 'user', content: user },
-          ],
-        }),
-      });
-      return pick(body, (o) => o.choices[0].message.content);
-    },
-  };
-}
-
-export function google(fetchImpl: FetchLike = fetch): ChatProvider {
-  return {
-    id: 'google',
-    async complete({ model, system, user, apiKey, signal }) {
-      // The key goes in a header, so it never appears in a URL, history or log.
-      const body = await send(
-        'google',
-        fetchImpl,
-        `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
-        {
-          method: 'POST',
-          signal,
-          headers: { 'content-type': 'application/json', 'x-goog-api-key': apiKey ?? '' },
-          body: JSON.stringify({
-            systemInstruction: { parts: [{ text: system }] },
-            contents: [{ role: 'user', parts: [{ text: user }] }],
-            generationConfig: { responseMimeType: 'application/json' },
-          }),
-        },
-      );
-      return pick(body, (o) => o.candidates[0].content.parts[0].text);
-    },
-  };
-}
-
-export function ollama(fetchImpl: FetchLike = fetch, baseUrl = 'http://localhost:11434'): ChatProvider {
-  return {
-    id: 'ollama',
-    async complete({ model, system, user, signal }) {
-      const body = await send('ollama', fetchImpl, `${baseUrl}/api/chat`, {
-        method: 'POST',
-        signal,
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          model,
-          stream: false,
-          format: 'json',
-          messages: [
-            { role: 'system', content: system },
-            { role: 'user', content: user },
-          ],
-        }),
-      });
-      return pick(body, (o) => o.message.content);
-    },
-  };
+  // No HTTP status means the request never got a reply: the host was unreachable.
+  if (id === 'ollama') return new ProviderError('not_running', 'Ollama is not running on this computer.');
+  return new ProviderError('network', `Could not reach ${id}.`);
 }
 
 export function providerFor(id: ProviderId, fetchImpl?: FetchLike): ChatProvider {
-  switch (id) {
-    case 'anthropic':
-      return anthropic(fetchImpl);
-    case 'openai':
-      return openai(fetchImpl);
-    case 'google':
-      return google(fetchImpl);
-    case 'ollama':
-      return ollama(fetchImpl);
-  }
+  return {
+    id,
+    async complete({ model, system, user, apiKey, signal }) {
+      try {
+        const { text } = await generateText({
+          model: languageModel(id, model, apiKey ?? '', fetchImpl),
+          instructions: system,
+          messages: [{ role: 'user', content: user }],
+          abortSignal: signal,
+          // No silent retries: a rate limit or a bad key is shown to the user at once, with Retry.
+          maxRetries: 0,
+        });
+        if (!text) throw new ProviderError('bad_response', `${id} sent an empty reply.`);
+        return text;
+      } catch (err) {
+        throw toProviderError(id, err, signal?.aborted === true);
+      }
+    },
+  };
 }
