@@ -38,6 +38,9 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 - Ghosts enter from the left, the right, or the bottom of the screen.
 - Ghosts vary in size, from small to large, and in path: beeline, zigzag, or a loose wander. Each one crosses once; nothing loops.
 - Each step has its own seeded mix, so the layout is stable on re-render and different from one step to the next.
+- Speeds vary: a quarter of the ghosts are fast, half normal, a quarter slow.
+- About one in twelve ghosts is a giant: larger, slower and fainter.
+- About half the ghosts lean, and some of those sway at the hem, so the bottom looks like it is flowing. The sway plays twice and stops. Reduced motion turns it off.
 - Mode effects on step 4 are unchanged and separate from the regular waves.
 - Typecheck passes for the extension. Not run in Chrome.
 

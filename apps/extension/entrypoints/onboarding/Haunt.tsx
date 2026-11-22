@@ -23,6 +23,8 @@ const CSS = `
   88%{opacity:var(--o)}
   100%{left:var(--ex);top:var(--ey);opacity:0}
 }
+.specter-sway{animation:specter-sway 2.4s ease-in-out 2 both;transform-origin:50% 100%;}
+@keyframes specter-sway{0%{transform:skewX(0deg)}50%{transform:skewX(var(--sway,6deg))}100%{transform:skewX(0deg)}}
 .specter-rise-in{animation:specter-rise-in .6s ease-out 1 both;}
 @keyframes specter-rise-in{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
 .specter-shimmer{animation:specter-shimmer .6s ease-out 1 both;}
@@ -33,7 +35,7 @@ const CSS = `
 @keyframes specter-vignette{0%{opacity:0}40%{opacity:1}100%{opacity:0}}
 @media (prefers-reduced-motion: reduce){
   .specter-path,.specter-vignette{display:none !important;}
-  .specter-shimmer,.specter-pulse,.specter-rise-in{animation:none !important;}
+  .specter-sway,.specter-shimmer,.specter-pulse,.specter-rise-in{animation:none !important;}
 }
 `;
 
@@ -70,17 +72,24 @@ const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v
 interface GhostPlan {
   side: Side;
   pattern: Pattern;
+  giant: boolean;
   size: number;
   opacity: number;
   dur: number;
   delay: number;
+  /** Lean of the whole ghost, in degrees. Zero for upright ghosts. */
+  tilt: number;
+  /** Hem sway in degrees, or 0 for none. Gives the flowing bottom. */
+  sway: number;
   /** Start, three waypoints, and end, in percent of the viewport. */
   path: [Point, Point, Point, Point, Point];
 }
 
 /**
- * Plans one ghost: where it enters, how it moves, how big it is. Sizes skew
- * small, with the odd large ghost. Paths are beelines, zigzags or wanders.
+ * Plans one ghost: where it enters, how it moves, how fast, how big, and how
+ * it leans. Most ghosts are small or medium; about one in twelve is a giant,
+ * drifting slowly and faintly. Speeds vary: fast, normal and slow. About half
+ * the ghosts lean, and some of those sway at the hem.
  */
 function planGhost(i: number, r: () => number): GhostPlan {
   const sides: Side[] = ['left', 'right', 'bottom'];
@@ -123,15 +132,41 @@ function planGhost(i: number, r: () => number): GhostPlan {
     d = across(d, (r() - 0.5) * 16);
   }
 
-  const big = r() < 0.18;
-  const size = big ? 46 + Math.floor(r() * 20) : 14 + Math.floor(r() * r() * 34);
+  // Giants drift slowly and faintly. Everything else is small or medium, mostly small.
+  const giant = r() < 0.08;
+  const big = !giant && r() < 0.18;
+  const size = giant
+    ? 120 + Math.floor(r() * 70)
+    : big
+      ? 46 + Math.floor(r() * 20)
+      : 14 + Math.floor(r() * r() * 34);
+
+  // Speed: a quarter fast, half normal, a quarter slow. Giants are slow.
+  const tier = r();
+  const dur = giant
+    ? 11 + r() * 3
+    : tier < 0.25
+      ? 3.5 + r() * 1.5
+      : tier < 0.75
+        ? 6 + r() * 2
+        : 9 + r() * 3;
+
+  // About half lean; the rest stay upright. Giants lean a little less.
+  const leans = r() < 0.5;
+  const tilt = leans ? (r() - 0.5) * (giant ? 30 : 50) : 0;
+  // Some leaning ghosts also sway at the hem, which reads as a flowing bottom.
+  const sway = leans && r() < 0.6 ? 4 + r() * 8 : 0;
+
   return {
     side,
     pattern,
+    giant,
     size,
-    opacity: big ? 0.55 : 0.85,
-    dur: 5 + r() * 4,
+    opacity: giant ? 0.3 : big ? 0.55 : 0.85,
+    dur,
     delay: r() * 2.2,
+    tilt,
+    sway,
     path: [start, b, c, d, end],
   };
 }
@@ -142,9 +177,22 @@ function vars(values: Record<string, string>): CSSProperties {
   return values as CSSProperties;
 }
 
+/** One ghost: the glyph leans by `tilt` and its hem sways if `sway` is set. */
+function GhostFigure({ g }: { g: GhostPlan }) {
+  const glyph = (
+    <span
+      className={g.sway ? 'specter-sway block' : 'block'}
+      style={g.sway ? vars({ '--sway': `${g.sway}deg` }) : undefined}
+    >
+      <GhostGlyph size={g.size} className="text-ghost" />
+    </span>
+  );
+  return <span style={{ display: 'block', transform: `rotate(${g.tilt.toFixed(1)}deg)` }}>{glyph}</span>;
+}
+
 /**
  * Ghosts across the whole screen. Each one enters from the left, the right or
- * the bottom, in its own size and on its own path. `still` keeps them in place
+ * the bottom, at its own size, speed and lean. `still` keeps them in place
  * (Quiet, or reduced motion). Each ghost plays once. `seed` sets the layout;
  * give a new seed to change it.
  */
@@ -158,7 +206,6 @@ export function AmbientGhosts({ count, still, seed = 1 }: { count: number; still
     <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
       {Array.from({ length: count }, (_, i) => {
         const g = planGhost(i, r);
-        const glyph = <GhostGlyph size={g.size} className="text-ghost" />;
 
         if (!moving) {
           // Still: the middle of the path, inside the screen.
@@ -168,7 +215,7 @@ export function AmbientGhosts({ count, still, seed = 1 }: { count: number; still
               key={i}
               style={{ position: 'absolute', left: `${c.x}%`, top: `${c.y}%`, opacity: g.opacity * 0.5 }}
             >
-              {glyph}
+              <GhostFigure g={g} />
             </div>
           );
         }
@@ -191,7 +238,7 @@ export function AmbientGhosts({ count, still, seed = 1 }: { count: number; still
         });
         return (
           <div key={i} className="specter-path" style={style}>
-            {glyph}
+            <GhostFigure g={g} />
           </div>
         );
       })}
