@@ -3,8 +3,8 @@
 > Ordered tasks for `requirements.md` and `design.md` in this folder. Each task names the
 > requirements it satisfies. Status legend: `[x]` done · `[~]` partly done · `[ ]` not done.
 
-> **Progress (v0.7.0, 2026-11-21):** all phases built and green. Open: manual checks in Chrome
-> (3.4 confirmation, 6.4) and the DevTools network check (8.3).
+> **Progress (v0.7.0, 2026-11-21):** all phases built, green, and confirmed by hand in Chrome
+> (tasks 3.4, 6.4 and the DevTools network check in 8.3).
 
 ## Overview
 
@@ -33,7 +33,7 @@ regression corpus.
 - [x] 3.1 Shared walker in `src/dom/walk.ts`: open shadow roots, same-origin iframes, sensitive and form-control skipping, closed-shadow and cross-origin-frame recording. _FR-DET-09, FR-PRV-02_
 - [x] 3.2 `detect/controls.ts` (label regex tables, `Detected`/`Uncertain` certainty) and `detect/banner.ts` (two-signal rule, control roles, `noRejectControlFound`). _FR-DET-02, 03, 04_
 - [x] 3.3 `detect/pageKind.ts`, `detect/forms.ts` (consent checkbox and subscription terms) and `detect/links.ts`. _FR-DET-05, 06, 07, 08_
-- [~] 3.4 Resolved by design: the toolbar now opens a popup (design steering 6B), and opening an extension popup grants `activeTab` for that tab, so the side panel it opens can use `executeScript` on it. The per-origin permission request stays as the fallback. Still to confirm by hand in Chrome during 6.4. _FR-ACC-08_
+- [x] 3.4 Resolved by design: the toolbar now opens a popup (design steering 6B), and opening an extension popup grants `activeTab` for that tab, so the side panel it opens can use `executeScript` on it. The per-origin permission request stays as the fallback. Confirmed by hand in Chrome. _FR-ACC-08_
 - [x] 3.5 `detectPage(doc, url, opts)` in `detect/index.ts` combining the rules, stripping query and hash, honoring `shouldAnalyze`, and validating with `DetectionResult`. _FR-DET-01, FR-PRV-05_
 - [x] 3.6 Tests TEST-DET-01, TEST-DET-02, TEST-DET-03, TEST-PRV-01, TEST-PRV-02 in `test/detect/detect.test.ts`, plus a test that `cookies/late.html` has no banner at parse time and that the Streamly submit button is recorded (FR-DET-14). Green. _§6_
 - [x] 3.7 TEST-NOINT-01 runs detection and extraction on every demo page and compares the HTML before and after. Green. _FR-DET-12_
@@ -66,7 +66,7 @@ regression corpus.
 - [x] 6.1 Page-tab state lives in `entrypoints/sidepanel/PageTab.tsx` as one typed view (checking, blocked, no access, detected, reading, extracted, failed), held in memory only; tab bodies stay mounted so each keeps its state. Pure rules are unit tested: document choice and default selection (`src/choices.ts`), coverage wording (`src/labels.ts`), navigation and drill-ins (`test/sidepanel.test.ts`). Navigation clears results and in-flight work; late detection updates never wipe an analysis. A component-level test of the transitions is left for Spec 13 (Playwright). _FR-PRV-04_
 - [x] 6.2 Build the side panel states: excluded, no access, idle, detected (cookie controls as `Detected`/`Uncertain`, "Specter never clicks them", linked-policy buttons), PDF, reading with Cancel, extracted ("Coverage: complete" or "Partial coverage" with percent, reasons, section headings, Try again below 80%). Use design-system tokens and components, 44 px targets, `aria-live="polite"` for progress and `role="alert"` for errors. _FR-UI-01 to 05, FR-CMP-04, FR-DET-03, 04_
 - [x] 6.3 Build the Options "Site access" section (`entrypoints/options/SiteAccess.tsx`, plus the linked-policy consent switch, also in the side panel Settings): background detection switch with the Chrome warning explainer shown before the prompt (declining as easy as accepting), the per-site list with Remove, and the current state read from `chrome.permissions.contains`. _FR-ACC-03, 06, 09_
-- [ ] 6.4 Manual check in Chrome on the demo pages (served by `pnpm examples`): badge on, badge off on the benign page, all side panel states reachable, revoking access in Chrome turns background detection off. _§7 criteria 2 to 4_
+- [x] 6.4 Manual check in Chrome on the demo pages (served by `pnpm examples`): badge on, badge off on the benign page, all side panel states reachable, revoking access in Chrome turns background detection off. _§7 criteria 2 to 4_
 - [x] 6.5 Toolbar popup (design steering §6B): host, status (Review available, Quiet, Not checked, Paused, Excluded, Unsupported page) from the shared tab state, "Open Specter", and "Specter on this site" (pauses the site when background detection is on, otherwise turns per-site access on or off). _FR-DET-11, FR-PRV-01, FR-UI-05_
 
 ## Phase 7 — Corpus
@@ -80,16 +80,16 @@ regression corpus.
 
 - [x] 8.1 Green on 2026-11-21: typecheck in every workspace, repo-wide ESLint, 77 core tests, 28 extension tests, the corpus report (7 of 10) and the extension build. _§7 criterion 5_
 - [x] 8.2 Content script bundle 25.19 KB minified (limit 60 KB). It was 81 KB until Zod validation moved from the page to the receivers (background worker, side panel). _NFR-03_
-- [~] 8.3 Static check done: the built content script contains no `fetch`, XHR, beacon, WebSocket or remote URL, and the only `fetch` in the extension is the linked-policy reader in the side panel. Still to do by hand: DevTools network panel on the demo pages (`pnpm examples`). _NFR-04, §7 criterion 6_
+- [x] 8.3 Static check done: the built content script contains no `fetch`, XHR, beacon, WebSocket or remote URL, and the only `fetch` in the extension is the linked-policy reader in the side panel. DevTools network panel on the demo pages (`pnpm examples`) confirmed by hand. _NFR-04, §7 criterion 6_
 - [x] 8.4 CHANGELOG released as 0.7.0 with the Spec 2 status row, versions bumped, committed and pushed.
 
-**Spec 2 status at v0.7.0:** code complete and green. Open: the manual Chrome checks in 6.4 and the
-DevTools network check in 8.3 (and the `activeTab` confirmation in 3.4, done during 6.4). These need
-a person at the browser.
+**Spec 2 status:** complete. Code, green checks, and the manual Chrome checks (3.4, 6.4) and the
+DevTools network check (8.3) are all confirmed. The three corpus pages that fail on script-injected
+banners stay as known limits; the 6.4 run covers them in Chrome.
 
 ## Notes
 
-- Task 3.4 comes first among the open tasks: it decides the per-site access path.
+- Task 3.4 decided the per-site access path; it is confirmed.
 - Before the Phase 6 screens, the UI moves to the design steering file: tokens and fonts first
   (done, see `docs/ui.md`), then the component set (Chip, Toggle, Segmented, SourceQuote and the
   others in design §3), then the popup and the four-tab side panel shell.

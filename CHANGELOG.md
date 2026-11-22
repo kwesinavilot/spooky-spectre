@@ -14,7 +14,7 @@ Spec roadmap:
 | Spec | Title | Scope | Status |
 | --- | --- | --- | --- |
 | 1 | Foundation | MVP | Done (v0.6.0) |
-| 2 | Detection and extraction (incl. opt-in background detection, cookie banners) | MVP | Code complete (v0.7.0); manual Chrome checks open |
+| 2 | Detection and extraction (incl. opt-in background detection, cookie banners) | MVP | Done (v0.7.0); manual Chrome checks confirmed |
 | 3 | Candidate finding and segmentation | MVP | Not started |
 | 4 | AI provider layer and BYOK | MVP | Not started |
 | 5 | Clause analysis and validation | MVP | Not started |
@@ -33,6 +33,10 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 ---
 
 ## [Unreleased]
+
+### Changed (Spec 2 closed)
+- Spec 2 tasks 3.4 (`activeTab` through the popup), 6.4 (Chrome run on the demo pages) and 8.3 (DevTools network check) confirmed by hand in Chrome and ticked in `tasks.md`. No code changed.
+- The three corpus pages that fail on script-injected banners remain known limits. The 6.4 Chrome run covers them.
 
 ### Added (Ask Specter)
 - Ask tab: ask a question about the agreement that was analyzed. Specter picks the sections that match the words of the question (up to eight sections and 12,000 characters), and sends only those when a model is connected.
