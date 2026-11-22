@@ -68,10 +68,12 @@ never shows it again after it is saved.
 
 ### R6 Consent before sending
 
-- R6.1 With "Preview before sending" on (default), an analysis waits for the user to press Send after
-  the preview.
+- R6.1 Analyze agreement runs at once when a model is connected. Before the click, the Page tab names
+  the provider that will receive the clause sections. With "Preview before sending" on (off by default),
+  an analysis waits for the user to press Send after the preview.
 - R6.2 Ask Specter shows the number of sections and characters before each question is sent.
-- R6.3 Nothing is sent to a provider until the user presses Test connection, Send, or Ask.
+- R6.3 Nothing is sent to a provider until the user presses Test connection, Analyze agreement, Send
+  (when the preview is on), or Ask.
 
 ### R7 Session cache
 

@@ -34,6 +34,12 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 
 ## [Unreleased]
 
+### Changed (analysis runs on Analyze)
+- With a model connected, Analyze agreement now runs the analysis at once. Before the click, the Page tab says which provider receives the clause sections. The "Preview before sending" setting is off by default and remains available; turning it on adds a Send step.
+- A one-time reset applies the new default to saved profiles, since onboarding had saved the preview as on.
+- Onboarding privacy copy: "Analyze only when I press Analyze" replaces the old "Ask before analyzing a page" line.
+- Note for spec owners: `design steering` §6C still says the preview is on by default. That line is not changed here.
+
 ### Changed (Spec 3 closed)
 - The candidate cap keeps the 40 strongest clauses (by keyword hits) rather than the first 40 in document order, so late sections of long agreements can reach the model. Returned in document order.
 - Keyword coverage widened from the corpus: liability ("liable"), disputes (governed by, choice of law, jurisdiction, court), account control (delete, automatic change/update), cancellation (withdraw, waive), privacy (disclose, consent, personalize, profile).

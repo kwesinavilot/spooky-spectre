@@ -15,8 +15,10 @@ export interface SpecterPrefs {
   readLinkedPolicies: boolean;
   /** Effect level, readable by the overlay (design steering section 5). */
   effectLevel: 'immersive' | 'subtle' | 'quiet';
-  /** Show what will be sent before any AI call (design steering 6C). */
+  /** Wait for a Send press after a preview, before each analysis. Off by default: Analyze is the action. */
   previewBeforeSending: boolean;
+  /** Version of the preview default. Bumped when the default changes, so the change reaches saved profiles once. */
+  previewVersion: number;
   /** List cookie banner choices on-device. */
   detectCookieBanners: boolean;
   /** Offer to log consent choices that Specter clearly observes. */
@@ -46,7 +48,8 @@ export const DEFAULT_PREFS: SpecterPrefs = {
   pausedDomains: [],
   readLinkedPolicies: false,
   effectLevel: 'subtle',
-  previewBeforeSending: true,
+  previewBeforeSending: false,
+  previewVersion: 2,
   detectCookieBanners: true,
   offerConsentLog: false,
   onboardingComplete: false,
@@ -63,6 +66,12 @@ const KEY = 'specterPrefs';
 export async function getPrefs(): Promise<SpecterPrefs> {
   const stored = (await chrome.storage.local.get(KEY))[KEY] as Partial<SpecterPrefs> | undefined;
   const merged = { ...DEFAULT_PREFS, ...stored };
+  // One-time reset: earlier onboarding saved the preview on, which made every analysis wait for a Send.
+  if (stored && stored.previewVersion !== DEFAULT_PREFS.previewVersion) {
+    merged.previewBeforeSending = DEFAULT_PREFS.previewBeforeSending;
+    merged.previewVersion = DEFAULT_PREFS.previewVersion;
+    await chrome.storage.local.set({ [KEY]: merged });
+  }
   const budget = Math.min(TOKEN_BUDGET_MAX, Math.max(TOKEN_BUDGET_MIN, Math.round(merged.tokenBudget)));
   return { ...merged, tokenBudget: Number.isFinite(budget) ? budget : TOKEN_BUDGET_DEFAULT };
 }

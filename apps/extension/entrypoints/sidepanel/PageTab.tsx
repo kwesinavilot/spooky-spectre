@@ -223,6 +223,7 @@ export function PageTab() {
         view={view}
         tab={tab}
         choice={choice}
+        providerLabel={PROVIDERS.find((p) => p.id === providerId)?.label ?? null}
         autoLinked={autoLinked}
         reduceMotion={reduceMotion}
         onChoice={setChoice}
@@ -262,6 +263,8 @@ function Body(props: {
   view: View;
   tab: ActiveTab | null;
   choice: string | null;
+  /** Name of the connected AI provider, or null when none is connected. */
+  providerLabel: string | null;
   autoLinked: boolean;
   reduceMotion: boolean;
   onChoice: (id: string) => void;
@@ -454,6 +457,12 @@ function Body(props: {
         >
           {!found ? 'Analyze this page anyway' : linkNeedsClick ? 'Read the linked policy' : 'Analyze agreement'}
         </Button>
+        {props.providerLabel && !linkNeedsClick ? (
+          <p className="mt-2 text-caption text-muted">
+            Analyze agreement sends the sections that may hold clauses to {props.providerLabel}. Nothing else from
+            the page is sent.
+          </p>
+        ) : null}
         {linkNeedsClick ? (
           <p className="mt-2 text-caption text-muted">
             Specter will open this one page without your cookies. You can let it do this automatically in Settings.

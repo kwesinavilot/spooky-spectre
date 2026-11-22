@@ -5,8 +5,9 @@ panel: Analyze agreement runs it, the Findings tab shows the result, and Show on
 quote on the live page. The side panel wiring is typechecked only and has not been run in Chrome.
 The AI provider calls have not been tested against a live API.
 
-**Before the AI call:** when a model is connected and "preview before sending" is on (default), the
-side panel shows how many clause sections will be sent and waits for Send. Only the candidate
+**Before the AI call:** when a model is connected, Analyze agreement runs the analysis at once. The
+Page tab says, before the click, which provider receives the clause sections. With "preview before
+sending" on (off by default), the side panel shows how many sections will be sent and waits for Send. Only the candidate
 sections go to the provider, never the rest of the page. Findings are kept in memory only.
 
 **Ask Specter:** the Ask tab retrieves the matching sections with `retrieveSections` (core, pure),

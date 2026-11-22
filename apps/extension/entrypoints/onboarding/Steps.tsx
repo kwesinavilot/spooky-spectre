@@ -330,8 +330,8 @@ export function Step4({ prefs, onChange }: { prefs: SpecterPrefs; onChange: (p: 
         <div className="divide-y divide-line">
           <div className="py-4">
             <Toggle
-              label="Ask before analyzing a page"
-              description="Specter never analyzes in the background. The preview of what gets sent is coming in a later version."
+              label="Analyze only when I press Analyze"
+              description="Specter never analyzes in the background. Analysis starts only when you press Analyze agreement or ask a question."
               checked
               disabled
               onChange={() => {}}

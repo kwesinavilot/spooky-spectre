@@ -213,8 +213,8 @@ export function AiConnectivity() {
         <h3 className="mb-2 text-h4 font-semibold">Sending</h3>
         <Toggle
           label="Preview before sending"
-          description="Show how many sections will leave the device before each analysis."
-          checked={prefs?.previewBeforeSending ?? true}
+          description="Off by default: Analyze agreement runs at once. Turn on to see the sections and token count first, and press Send."
+          checked={prefs?.previewBeforeSending ?? false}
           onChange={async (next) => {
             await setPrefs({ previewBeforeSending: next });
             setLocal(await getPrefs());
