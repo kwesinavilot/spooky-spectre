@@ -34,6 +34,13 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 
 ## [Unreleased]
 
+### Changed (onboarding ghosts)
+- Ghosts enter from the left, the right, or the bottom of the screen.
+- Ghosts vary in size, from small to large, and in path: beeline, zigzag, or a loose wander. Each one crosses once; nothing loops.
+- Each step has its own seeded mix, so the layout is stable on re-render and different from one step to the next.
+- Mode effects on step 4 are unchanged and separate from the regular waves.
+- Typecheck passes for the extension. Not run in Chrome.
+
 ## [0.9.0] - 2026-10-31
 
 Spec 4 (AI provider layer and BYOK) complete, with the onboarding, Ask, analysis and side panel work
