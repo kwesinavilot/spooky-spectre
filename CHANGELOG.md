@@ -16,7 +16,7 @@ Spec roadmap:
 | 1 | Foundation | MVP | Done (v0.6.0) |
 | 2 | Detection and extraction (incl. opt-in background detection, cookie banners) | MVP | Done (v0.7.0); manual Chrome checks confirmed |
 | 3 | Candidate finding and segmentation | MVP | Done in v0.8.0 (`.kiro/specs/specter/candidate-segmentation`), with ranked cap, 15 unit tests and corpus-based keyword coverage |
-| 4 | AI provider layer and BYOK | MVP | Done in code (`.kiro/specs/specter/ai-providers`). Open: live check with the user's own keys |
+| 4 | AI provider layer and BYOK | MVP | Done in v0.9.0 (`.kiro/specs/specter/ai-providers`). Live tests passed with a hosted provider. Ollama not yet confirmed |
 | 5 | Clause analysis and validation | MVP | Built in core and AI, untested live. Possession moved to Spec 6 |
 | 6 | Side panel (Contract Exorcist) and Spectral Vision overlay | MVP | Not started |
 | 7 | Onboarding and tutorial | MVP | Not started |
@@ -33,6 +33,11 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 ---
 
 ## [Unreleased]
+
+## [0.9.0] - 2026-10-31
+
+Spec 4 (AI provider layer and BYOK) complete, with the onboarding, Ask, analysis and side panel work
+since v0.8.0. Ollama is not yet confirmed on a user machine (Spec 4 task 12).
 
 ### Added (onboarding haunts)
 - Regular ghost waves on every onboarding step. Ghosts cross the screen once when the step opens; they do not loop. The wave does not change with the chosen mode.

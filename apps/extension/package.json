@@ -2,7 +2,7 @@
   "name": "@specter/extension",
   "description": "Specter: the things you agree to online shouldn't come back to haunt you.",
   "private": true,
-  "version": "0.8.0",
+  "version": "0.9.0",
   "type": "module",
   "scripts": {
     "dev": "wxt",

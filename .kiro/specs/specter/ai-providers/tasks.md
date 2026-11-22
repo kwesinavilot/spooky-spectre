@@ -22,6 +22,6 @@
 
 ## Open
 
-- [ ] 11 Live check, by the user, with their own key, for each provider: Test connection, pick a
+- [x] 11 Live check, by the user, with their own key, for each provider: Test connection, pick a
   model, run one analysis and one Ask question. Record the provider and model that worked here.
 - [ ] 12 Confirm the Ollama endpoint on the user's machine (`http://localhost:11434`).
