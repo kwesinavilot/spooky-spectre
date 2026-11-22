@@ -33,8 +33,15 @@ const CSS = `
 @keyframes specter-pulse{from{box-shadow:0 0 0 0 rgba(220,70,103,.6)}to{box-shadow:0 0 0 10px rgba(220,70,103,0)}}
 .specter-vignette{position:fixed;inset:0;pointer-events:none;z-index:0;animation:specter-vignette 2.4s ease-in-out 1 both;background:radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,.55) 100%);}
 @keyframes specter-vignette{0%{opacity:0}40%{opacity:1}100%{opacity:0}}
+.specter-peek{position:absolute;animation:specter-peek-fly var(--fly-dur,6.5s) cubic-bezier(.45,.05,.55,.95) var(--fly-delay,3s) 1 both;}
+@keyframes specter-peek-fly{from{left:var(--px0);top:var(--py0)}to{left:var(--px1);top:var(--py1)}}
+.specter-peek-body{position:absolute;inset:0;animation:specter-pop 1.2s ease-out var(--pop-delay,0s) 1 both;}
+@keyframes specter-pop{from{transform:translate(0,0)}to{transform:translate(var(--popx),var(--popy))}}
+.specter-eye{transform-box:fill-box;transform-origin:center;animation:specter-blink .5s ease-in-out var(--blink-delay,1s) 2 both;}
+@keyframes specter-blink{0%,85%,100%{transform:scaleY(1)}92%{transform:scaleY(.1)}}
 @media (prefers-reduced-motion: reduce){
-  .specter-path,.specter-vignette{display:none !important;}
+  .specter-path,.specter-vignette,.specter-peek{display:none !important;}
+  .specter-eye{animation:none !important;}
   .specter-sway,.specter-shimmer,.specter-pulse,.specter-rise-in{animation:none !important;}
 }
 `;
@@ -153,7 +160,8 @@ function planGhost(i: number, r: () => number): GhostPlan {
 
   // About half lean; the rest stay upright. Giants lean a little less.
   const leans = r() < 0.5;
-  const tilt = leans ? (r() - 0.5) * (giant ? 30 : 50) : 0;
+  // Positive is clockwise, so the ghost leans to the right.
+  const tilt = leans ? 6 + r() * (giant ? 12 : 24) : 0;
   // Some leaning ghosts also sway at the hem, which reads as a flowing bottom.
   const sway = leans && r() < 0.6 ? 4 + r() * 8 : 0;
 
@@ -295,4 +303,107 @@ export function cardEffect(level: Level, reduce: boolean): { className: string; 
     className: 'rounded-[16px]',
     style: { outline: '2px solid #DC4667', outlineOffset: 2, borderRadius: 16 },
   };
+}
+
+/* ---------- the peeking giants ---------- */
+
+interface PeekPlan {
+  /** Seconds after the step opens before the ghost pops its head out. */
+  at: number;
+  size: number;
+  /** The edge or corner it pops out from. */
+  origin: 'left' | 'right' | 'bottomRight';
+  /** Height along the edge, in percent (left and right only). */
+  oy?: number;
+  /** Where it ends up, in percent of the viewport. */
+  target: Point;
+  /** Lean to the right, in degrees. */
+  tilt: number;
+}
+
+/**
+ * The haunt for a user who lingers on a step. Each ghost is bigger than the
+ * last: it pops its head out, blinks twice, then flies slowly across the screen.
+ * Timings are CSS delays from when the step opens, so leaving the step resets them.
+ */
+const PEEKS: PeekPlan[] = [
+  { at: 12, size: 170, origin: 'left', oy: 30, target: { x: 84, y: 6 }, tilt: 9 },
+  { at: 34, size: 230, origin: 'bottomRight', target: { x: 45, y: 4 }, tilt: 7 },
+  { at: 60, size: 300, origin: 'right', oy: 55, target: { x: 8, y: 22 }, tilt: 12 },
+];
+
+/** A ghost with eyes that can blink. Its stroke stays thin at any size. */
+function PeekGhost({ size, blinkDelay }: { size: number; blinkDelay: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      vectorEffect="non-scaling-stroke"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className="text-ghost"
+      style={vars({ '--blink-delay': blinkDelay })}
+    >
+      <path d="M5 21V11a7 7 0 0 1 14 0v10l-2.33-1.6L14.33 21 12 19.4 9.67 21 7.33 19.4Z" />
+      <ellipse className="specter-eye" cx="9.5" cy="11" rx="0.9" ry="1.1" fill="currentColor" stroke="none" />
+      <ellipse className="specter-eye" cx="14.5" cy="11" rx="0.9" ry="1.1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+/**
+ * One peeking ghost. It starts fully off screen at its origin. The body pops
+ * inward so the head and eyes show, the eyes blink, and then the whole ghost
+ * flies to its target. Pop and fly are separate animations on separate elements.
+ */
+function Peeker({ p }: { p: PeekPlan }) {
+  const s = p.size;
+  const from =
+    p.origin === 'left'
+      ? { x0: `-${s}px`, y0: `${p.oy ?? 30}%`, popX: '60%', popY: '0%' }
+      : p.origin === 'right'
+        ? { x0: '100%', y0: `${p.oy ?? 50}%`, popX: '-60%', popY: '0%' }
+        : { x0: `calc(100% - ${Math.round(s * 0.4)}px)`, y0: '100%', popX: '0%', popY: '-60%' };
+
+  const outer = vars({
+    '--px0': from.x0,
+    '--py0': from.y0,
+    '--px1': `${p.target.x}%`,
+    '--py1': `${p.target.y}%`,
+    '--fly-delay': `${(p.at + 2.8).toFixed(1)}s`,
+    '--fly-dur': '6.5s',
+  });
+  const body = vars({
+    '--popx': from.popX,
+    '--popy': from.popY,
+    '--pop-delay': `${p.at.toFixed(1)}s`,
+  });
+
+  return (
+    <div className="specter-peek" style={{ ...outer, width: s, height: s }}>
+      <div className="specter-peek-body" style={body}>
+        <div style={{ width: s, height: s, transform: `rotate(${p.tilt}deg)` }}>
+          <PeekGhost size={s} blinkDelay={`${(p.at + 1.2).toFixed(1)}s`} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** The peeking ghosts for one step. Nothing moves under reduced motion. */
+export function Haunter() {
+  const reduce = usePrefersReducedMotion();
+  if (reduce) return null;
+  return (
+    <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+      {PEEKS.map((p, i) => (
+        <Peeker key={i} p={p} />
+      ))}
+    </div>
+  );
 }

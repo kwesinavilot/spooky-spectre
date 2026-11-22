@@ -6,7 +6,7 @@ import { hasSavedKey, PROVIDERS, type ConnectionStatus, type ProviderId } from '
 import { useSettings } from '../../src/store/settings';
 import { DEMO_URL } from '../../src/demo';
 import { Step1, Step2, Step3, Step4, Step5, Step6 } from './Steps';
-import { AmbientGhosts, HauntStyles, LevelFx } from './Haunt';
+import { AmbientGhosts, Haunter, HauntStyles, LevelFx } from './Haunt';
 
 /**
  * The regular ghost wave for each step: how many ghosts cross when the step
@@ -125,6 +125,7 @@ export default function App() {
     <div className="flex min-h-screen flex-col bg-bg bg-[radial-gradient(ellipse_at_top_right,rgba(139,107,195,0.14),transparent_55%)] text-fg">
       <HauntStyles />
       <AmbientGhosts key={step} count={WAVE[step] ?? 0} still={false} seed={step} />
+      <Haunter key={step} />
       {step === 4 && pick ? <LevelFx key={`${pick.level}-${pick.n}`} level={pick.level} /> : null}
       <header className="relative z-10 mx-auto flex w-full max-w-[1200px] items-center justify-between gap-6 px-8 py-6">
         <Logo size={32} />

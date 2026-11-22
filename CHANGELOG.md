@@ -41,6 +41,8 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 - Speeds vary: a quarter of the ghosts are fast, half normal, a quarter slow.
 - About one in twelve ghosts is a giant: larger, slower and fainter.
 - About half the ghosts lean, and some of those sway at the hem, so the bottom looks like it is flowing. The sway plays twice and stops. Reduced motion turns it off.
+- Leaning ghosts lean to the right.
+- Lingering on a step brings peeking ghosts: bigger each time. A ghost pops its head out and blinks twice, then flies slowly across the screen. The first comes from the left toward the top right, the second from the bottom right toward the top middle, and the third from the right. Timings restart on each step. Reduced motion turns them off.
 - Mode effects on step 4 are unchanged and separate from the regular waves.
 - Typecheck passes for the extension. Not run in Chrome.
 
