@@ -3,11 +3,9 @@ import { findCandidates, locateQuote, type ExtractedDocument } from '@specter/co
 import {
   analyzeDocument,
   analysisCacheKey,
-  estimateCost,
   parseModelReply,
   providerFor,
   PROMPT_VERSION,
-  UNKNOWN_PRICE,
   type ChatProvider,
 } from '../src';
 
@@ -214,19 +212,7 @@ describe('providers (Spec 4)', () => {
   });
 });
 
-describe('cost and cache', () => {
-  it('says the price is not set rather than inventing one', () => {
-    const e = estimateCost('x'.repeat(4000), UNKNOWN_PRICE);
-    expect(e.cost).toBeNull();
-    expect(e.label).toMatch(/Price not set/);
-    expect(e.inputTokens).toBe(1000);
-  });
-
-  it('computes cost from configured prices', () => {
-    const e = estimateCost('x'.repeat(4000), { inputPerMillion: 3, outputPerMillion: 15 }, 0);
-    expect(e.cost).toBeCloseTo(0.003, 6);
-  });
-
+describe('cache', () => {
   it('keys the cache by document, model and prompt version', () => {
     expect(analysisCacheKey('h', 'm', PROMPT_VERSION)).not.toBe(analysisCacheKey('h', 'm', 'analysis-v2'));
     expect(analysisCacheKey('h', 'a', PROMPT_VERSION)).not.toBe(analysisCacheKey('h', 'b', PROMPT_VERSION));

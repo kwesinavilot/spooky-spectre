@@ -14,7 +14,7 @@ packages/ai
         src/prompts.ts         budgetChars(), buildUserPrompt(maxChars)
         src/analyze.ts         analyzeDocument (uses ChatProvider)
         src/ask.ts             askDocument (uses ChatProvider)
-        src/cost.ts            estimateTokens, estimateCost
+        src/cost.ts            estimateTokens
         src/cache.ts           analysisCacheKey
 ```
 
@@ -55,8 +55,7 @@ same prompt, so the number shown is what is sent.
 
 - Providers call the SDK from the side panel. No background worker holds keys.
 - `maxRetries: 0`: the user sees a 429 at once and presses Retry.
-- The cost estimate uses about four characters per token. The SDK does not report usage before a
-  call, so the figure is an estimate. No price table is shipped; prices are not set, so no dollar
-  amount is shown.
+- The token count uses about four characters per token. The SDK does not report usage before a call,
+  so the figure is an estimate. There is no price table and no dollar cost.
 - The session cache is in memory only. It is not a substitute for a stored history (Spec 8).
 - Live provider behaviour is not covered by tests. Tests use injected `fetch` stubs.

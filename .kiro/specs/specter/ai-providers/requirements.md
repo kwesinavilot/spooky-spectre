@@ -63,8 +63,8 @@ never shows it again after it is saved.
   clamped to that range when read.
 - R5.2 The budget limits the agreement text in one analysis or one question. Sections beyond the
   limit are not sent.
-- R5.3 Before an analysis, the preview shows the approximate token count of the exact prompt. No
-  price is assumed, so the preview says "Price not set for this model" until a price is configured.
+- R5.3 Before an analysis, the preview shows the approximate token count of the exact prompt. Specter
+  shows no dollar cost.
 
 ### R6 Consent before sending
 

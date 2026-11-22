@@ -72,9 +72,9 @@ quote checks, since privacy policies often print contact emails.
 
 ## Cost and cache
 
-- `estimateCost` gives about one token per four characters, over the exact prompt that would be
-  sent. The preview shows the count and "Price not set for this model." No price is assumed, so no
-  dollar figure is shown.
+- `estimateTokens` gives about one token per four characters, over the exact prompt that would be
+  sent. The preview shows the token count. Specter shows no dollar cost: prices are not part of the
+  app.
 - Reuse results this session (off by default) keeps results in memory, keyed by agreement hash,
   model and prompt version. Nothing is written to storage, and the cache is empty after the side
   panel closes.

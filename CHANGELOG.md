@@ -34,6 +34,9 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 
 ## [Unreleased]
 
+### Removed
+- Cost estimate and its "Price not set" placeholder. The Page preview shows the token count only. The price type file and its tests are gone.
+
 ### Changed (AI providers on the Vercel AI SDK, Spec 4)
 - Model calls use the Vercel AI SDK. Providers: OpenAI, Anthropic, Google Gemini (id `gemini`, replacing `google`), DeepSeek, Mistral, Grok (xAI), Groq, and Ollama on this computer.
 - SDK retries are off, so a rate limit or a rejected key is shown at once with a Retry button.

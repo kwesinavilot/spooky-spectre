@@ -14,7 +14,7 @@
   "Preview before sending", "Reuse results this session", token budget slider. _R3, R5, R6, R7_
 - [x] 6 Token budget: `prefs.tokenBudget` clamped to 1,000–8,000; `budgetChars`; applied in analysis,
   Ask retrieval, Page preview and Ask preview. _R5_
-- [x] 7 Cost estimate over the exact prompt, labelled "Price not set" until a price exists. _R5.3_
+- [x] 7 Token count over the exact prompt, shown in the Page preview. No dollar cost. _R5.3_
 - [x] 8 Session-only cache keyed by hash, model and prompt version. _R7_
 - [x] 9 AI package tests: Anthropic request keeps the key out of the URL, 401 and 429 mapping, and an
   unreachable Ollama reported as `not_running`. _Acceptance_
@@ -25,4 +25,3 @@
 - [ ] 11 Live check, by the user, with their own key, for each provider: Test connection, pick a
   model, run one analysis and one Ask question. Record the provider and model that worked here.
 - [ ] 12 Confirm the Ollama endpoint on the user's machine (`http://localhost:11434`).
-- [ ] 13 Price table for the cost estimate. Left unset until the user supplies prices.
