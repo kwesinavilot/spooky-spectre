@@ -19,6 +19,8 @@ export interface AnalyzeInput {
   apiKey?: string;
   doc: ExtractedDocument;
   candidates: Candidate[];
+  /** Characters of agreement text allowed in the prompt (from the user's token budget). */
+  maxChars?: number;
   signal?: AbortSignal;
 }
 
@@ -109,8 +111,12 @@ export async function analyzeDocument(input: AnalyzeInput): Promise<AnalyzeOutco
   const base = { promptVersion: PROMPT_VERSION, findings: [] as Finding[], rejected: 0, corrected: 0, reasons: [] as string[] };
   if (input.candidates.length === 0) return { ...base, status: 'no_candidates' };
 
-  const first = parseModelReply(await ask(input, buildUserPrompt(input.doc, input.candidates)))
-    ?? parseModelReply(await ask(input, 'Your last reply was not valid JSON for the schema. Reply with JSON only.' + '\n\n' + buildUserPrompt(input.doc, input.candidates)));
+  const userPrompt = buildUserPrompt(input.doc, input.candidates, input.maxChars);
+  const first =
+    parseModelReply(await ask(input, userPrompt)) ??
+    parseModelReply(
+      await ask(input, 'Your last reply was not valid JSON for the schema. Reply with JSON only.\n\n' + userPrompt),
+    );
   if (!first) return { ...base, status: 'invalid_output' };
 
   const accepted: Finding[] = [];

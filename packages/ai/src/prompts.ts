@@ -6,6 +6,14 @@ export const PROMPT_VERSION = 'analysis-v1';
 /** Upper bound on the agreement text sent in one call (characters). */
 export const MAX_CONTEXT_CHARS = 12000;
 
+/** Rough conversion used for the user's token budget (about four characters per token). */
+export const CHARS_PER_TOKEN = 4;
+
+/** Characters allowed for the agreement text, from the user's token budget. */
+export function budgetChars(tokens: number): number {
+  return Math.round(tokens * CHARS_PER_TOKEN);
+}
+
 export const SYSTEM_PROMPT = `You explain clauses in an online agreement for a private person.
 
 Rules you must follow:
@@ -25,7 +33,11 @@ export function describeKind(kind: AgreementKind): string {
 }
 
 /** The sections that contain candidates, plus their neighbours, capped in size. */
-export function contextSections(doc: Pick<ExtractedDocument, 'sections'>, candidateSectionIds: string[]): Section[] {
+export function contextSections(
+  doc: Pick<ExtractedDocument, 'sections'>,
+  candidateSectionIds: string[],
+  maxChars = MAX_CONTEXT_CHARS,
+): Section[] {
   const wanted = new Set(candidateSectionIds);
   const idx = doc.sections.map((s, i) => (wanted.has(s.id) ? i : -1)).filter((i) => i >= 0);
   const pick = new Set<number>();
@@ -39,7 +51,7 @@ export function contextSections(doc: Pick<ExtractedDocument, 'sections'>, candid
   for (const i of [...pick].sort((a, b) => a - b)) {
     const s = doc.sections[i]!;
     size += s.endOffset - s.startOffset;
-    if (size > MAX_CONTEXT_CHARS) break;
+    if (size > maxChars) break;
     out.push(s);
   }
   return out;
@@ -48,8 +60,13 @@ export function contextSections(doc: Pick<ExtractedDocument, 'sections'>, candid
 export function buildUserPrompt(
   doc: Pick<ExtractedDocument, 'title' | 'kind' | 'text' | 'sections'>,
   candidates: Candidate[],
+  maxChars = MAX_CONTEXT_CHARS,
 ): string {
-  const sections = contextSections(doc, candidates.map((c) => c.sectionId));
+  const sections = contextSections(
+    doc,
+    candidates.map((c) => c.sectionId),
+    maxChars,
+  );
   const agreement = sections
     .map((s) => `### [${s.id}] ${s.heading || 'Introduction'}\n${doc.text.slice(s.startOffset, s.endOffset)}`)
     .join('\n\n');

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { buildUserPrompt, estimateCost, SYSTEM_PROMPT, UNKNOWN_PRICE } from '@specter/ai';
+import { budgetChars, buildUserPrompt, estimateCost, SYSTEM_PROMPT, UNKNOWN_PRICE } from '@specter/ai';
 import { findCandidates, type DetectionResult, type ExtractedDocument } from '@specter/core';
 import { Button, Card, Chip, InsetCard, OptionCard, ProgressStepper } from '@specter/ui';
 import { runAnalysis } from '../../src/analysisRunner';
@@ -172,7 +172,7 @@ export function PageTab() {
     if (provider && prefs.aiModel && prefs.previewBeforeSending) {
       const candidates = findCandidates(doc);
       // The estimate counts the exact prompt the model would receive.
-      const prompt = SYSTEM_PROMPT + buildUserPrompt(doc, candidates);
+      const prompt = SYSTEM_PROMPT + buildUserPrompt(doc, candidates, budgetChars(prefs.tokenBudget));
       const costLabel = estimateCost(prompt, UNKNOWN_PRICE).label;
       setView({
         kind: 'preview',

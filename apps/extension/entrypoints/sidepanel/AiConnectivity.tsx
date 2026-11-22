@@ -9,7 +9,14 @@ import {
   type ConnectionStatus,
   type ProviderId,
 } from '../../src/aiConnect';
-import { getPrefs, setPrefs, type SpecterPrefs } from '../../src/prefs';
+import {
+  getPrefs,
+  setPrefs,
+  TOKEN_BUDGET_DEFAULT,
+  TOKEN_BUDGET_MAX,
+  TOKEN_BUDGET_MIN,
+  type SpecterPrefs,
+} from '../../src/prefs';
 import { useSettings } from '../../src/store/settings';
 
 const STATUS_VARIANT: Record<ConnectionStatus, 'ok' | 'high' | 'medium' | 'neutral'> = {
@@ -213,6 +220,28 @@ export function AiConnectivity() {
             setLocal(await getPrefs());
           }}
         />
+        <div className="mt-3">
+          <label htmlFor="ai-budget" className="text-small font-semibold text-fg">
+            Token budget per request: about {(prefs?.tokenBudget ?? TOKEN_BUDGET_DEFAULT).toLocaleString('en-US')} tokens
+          </label>
+          <input
+            id="ai-budget"
+            type="range"
+            min={TOKEN_BUDGET_MIN}
+            max={TOKEN_BUDGET_MAX}
+            step={500}
+            value={prefs?.tokenBudget ?? TOKEN_BUDGET_DEFAULT}
+            onChange={async (e) => {
+              await setPrefs({ tokenBudget: Number(e.target.value) });
+              setLocal(await getPrefs());
+            }}
+            className="mt-2 w-full"
+          />
+          <p className="mt-1 text-caption text-muted">
+            Caps how much agreement text leaves the device for one analysis or question. Longer agreements are cut
+            to this size, and the preview shows what is sent.
+          </p>
+        </div>
         <div className="mt-3">
           <Toggle
             label="Reuse results this session"

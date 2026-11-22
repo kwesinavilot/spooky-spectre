@@ -1,6 +1,7 @@
 import {
   analysisCacheKey,
   analyzeDocument,
+  budgetChars,
   PROMPT_VERSION,
   ProviderError,
   providerFor,
@@ -92,6 +93,7 @@ export async function runAnalysis(
       apiKey: conn.apiKey,
       doc,
       candidates,
+      maxChars: budgetChars(prefs.tokenBudget),
       signal,
     });
     if (outcome.status === 'invalid_output') return limited('invalid_output');

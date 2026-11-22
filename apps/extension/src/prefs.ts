@@ -32,7 +32,14 @@ export interface SpecterPrefs {
   aiLastTestAt: string | null;
   /** Reuse results for the same agreement and model during this browser session. Off by default. */
   cacheAnalysis: boolean;
+  /** Tokens of agreement text allowed per analysis or question. See TOKEN_BUDGET_* below. */
+  tokenBudget: number;
 }
+
+/** Token budget bounds for the AI settings slider (about 4 characters per token). */
+export const TOKEN_BUDGET_MIN = 1000;
+export const TOKEN_BUDGET_MAX = 8000;
+export const TOKEN_BUDGET_DEFAULT = 3000;
 
 export const DEFAULT_PREFS: SpecterPrefs = {
   excludedDomains: [...DEFAULT_EXCLUDED_DOMAINS],
@@ -48,13 +55,16 @@ export const DEFAULT_PREFS: SpecterPrefs = {
   aiModelProvider: '',
   aiLastTestAt: null,
   cacheAnalysis: false,
+  tokenBudget: TOKEN_BUDGET_DEFAULT,
 };
 
 const KEY = 'specterPrefs';
 
 export async function getPrefs(): Promise<SpecterPrefs> {
   const stored = (await chrome.storage.local.get(KEY))[KEY] as Partial<SpecterPrefs> | undefined;
-  return { ...DEFAULT_PREFS, ...stored };
+  const merged = { ...DEFAULT_PREFS, ...stored };
+  const budget = Math.min(TOKEN_BUDGET_MAX, Math.max(TOKEN_BUDGET_MIN, Math.round(merged.tokenBudget)));
+  return { ...merged, tokenBudget: Number.isFinite(budget) ? budget : TOKEN_BUDGET_DEFAULT };
 }
 
 export async function setPrefs(patch: Partial<SpecterPrefs>): Promise<SpecterPrefs> {

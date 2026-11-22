@@ -2,8 +2,10 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { askDocument, ProviderError } from '@specter/ai';
 import { retrieveSections, type RetrievedSection } from '@specter/core';
 import { Button, Card, Chip, InsetCard } from '@specter/ui';
+import { budgetChars } from '@specter/ai';
 import { connectionFor } from '../../src/analysisRunner';
 import { PROVIDERS } from '../../src/aiConnect';
+import { getPrefs, TOKEN_BUDGET_DEFAULT } from '../../src/prefs';
 import { useFindings } from '../../src/findingsStore';
 import { ASK_MESSAGE, type AnalysisFailure } from '../../src/labels';
 import { useSettings } from '../../src/store/settings';
@@ -43,14 +45,22 @@ export function AskTab() {
   const [draft, setDraft] = useState('');
   const [busy, setBusy] = useState(false);
   const [openSource, setOpenSource] = useState<string | null>(null);
+  const [maxChars, setMaxChars] = useState(budgetChars(TOKEN_BUDGET_DEFAULT));
 
   useEffect(() => {
     setTurns([]);
     setOpenSource(null);
   }, [docKey]);
 
+  useEffect(() => {
+    void getPrefs().then((p) => setMaxChars(budgetChars(p.tokenBudget)));
+  }, []);
+
   // What would be sent for the question being typed. Computed on this device only.
-  const plan = useMemo(() => (doc && draft.trim() ? retrieveSections(doc, draft) : []), [doc, draft]);
+  const plan = useMemo(
+    () => (doc && draft.trim() ? retrieveSections(doc, draft, maxChars) : []),
+    [doc, draft, maxChars],
+  );
   const planChars = plan.reduce((n, s) => n + s.text.length, 0);
 
   const setTurn = (id: number, patch: Partial<Turn>) =>
@@ -59,7 +69,7 @@ export function AskTab() {
   const ask = async (question: string) => {
     const q = question.trim();
     if (!doc || !q || busy) return;
-    const sections = retrieveSections(doc, q);
+    const sections = retrieveSections(doc, q, maxChars);
     if (sections.length === 0) return;
 
     const id = nextId++;
