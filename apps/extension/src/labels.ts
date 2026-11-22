@@ -14,6 +14,7 @@ export const CATEGORY_LABEL: Record<Category, string> = {
 /** Why an analysis ran in limited mode, or failed part way (design steering section 6C). */
 export type AnalysisFailure =
   | 'no_provider'
+  | 'no_model'
   | 'no_key'
   | 'invalid_key'
   | 'rate_limited'
@@ -26,6 +27,7 @@ export type AnalysisFailure =
 
 export const ANALYSIS_MESSAGE: Record<AnalysisFailure, string> = {
   no_provider: 'No AI model is connected, so this is an on-device scan only.',
+  no_model: 'No model is chosen. Pick one in AI connectivity. Showing on-device results.',
   no_key: 'The saved AI key is missing. Showing on-device results.',
   invalid_key: 'AI unavailable. The provider did not accept the key. Showing on-device results.',
   rate_limited: 'AI unavailable. The provider is rate limiting requests. Showing on-device results.',
@@ -83,6 +85,7 @@ export function reasonLines(reasons: CompletenessReason[]): string[] {
 /** Why an answer could not be given. Each one has a Retry button in Ask Specter. */
 export const ASK_MESSAGE: Record<AnalysisFailure, string> = {
   no_provider: 'Connect an AI model to ask questions.',
+  no_model: 'Choose a model in AI connectivity first.',
   no_key: 'The saved AI key is missing. Connect the model again.',
   invalid_key: 'The provider did not accept the key.',
   rate_limited: 'The provider is rate limiting requests. Try again in a moment.',

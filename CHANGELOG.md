@@ -15,8 +15,8 @@ Spec roadmap:
 | --- | --- | --- | --- |
 | 1 | Foundation | MVP | Done (v0.6.0) |
 | 2 | Detection and extraction (incl. opt-in background detection, cookie banners) | MVP | Done (v0.7.0); manual Chrome checks confirmed |
-| 3 | Candidate finding and segmentation | MVP | Not started |
-| 4 | AI provider layer and BYOK | MVP | Not started |
+| 3 | Candidate finding and segmentation | MVP | Built; spec written after the code (`.kiro/specs/specter/candidate-segmentation`). Open: ranked cap, unit tests |
+| 4 | AI provider layer and BYOK | MVP | Built; AI connectivity screen and model list done. Open: Vercel AI SDK decision, live provider test |
 | 5 | Clause analysis and validation | MVP | Not started |
 | 6 | Side panel (Contract Exorcist) and Spectral Vision overlay | MVP | Not started |
 | 7 | Onboarding and tutorial | MVP | Not started |
@@ -33,6 +33,16 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 ---
 
 ## [Unreleased]
+
+### Added (AI connectivity, Spec 4)
+- AI connectivity screen replaces the placeholder: provider, API key (shown as saved, never its value; Replace and Remove), Test connection, access grant for the provider's origin, model picker, "Preview before sending" and "Reuse results this session".
+- Test connection now reads the provider's own model list. No model name is hardcoded: the earlier defaults are removed. Analysis and Ask stop with "Choose a model" until one is picked.
+- The Page tab preview shows an estimate of the exact prompt size in tokens.
+- "Reuse results this session" (off by default) keeps analysis results in memory for the same agreement, model and prompt version. Nothing is stored.
+- Spec 3 (candidate finding and segmentation) written as `.kiro/specs/specter/candidate-segmentation`, describing the existing code with open tasks.
+- Tested: typecheck only. Not tested against live providers. Model list parsing has no unit tests yet.
+- Open: the Vercel AI SDK decision (the code still uses `fetch`); token budget and redaction toggles; a cost figure needs a price set by the user.
+- Known limit found while writing Spec 3: candidates are capped in document order, so later sections of long agreements are never sent to the model. Open task 7 in the spec.
 
 ### Changed (Spec 2 closed)
 - Spec 2 tasks 3.4 (`activeTab` through the popup), 6.4 (Chrome run on the demo pages) and 8.3 (DevTools network check) confirmed by hand in Chrome and ticked in `tasks.md`. No code changed.

@@ -23,8 +23,15 @@ export interface SpecterPrefs {
   offerConsentLog: boolean;
   /** Set when onboarding finishes or is skipped. */
   onboardingComplete: boolean;
-  /** Model name for the chosen provider. Empty means the provider default (aiConnect DEFAULT_MODELS). */
+  /** Model the user chose for the connected provider. Empty means none chosen; AI does not run. */
   aiModel: string;
+  /** Model ids the provider listed at the last successful test, and which provider they came from. */
+  aiModelList: string[];
+  aiModelProvider: string;
+  /** When the last successful connection test ran (ISO time), or null. */
+  aiLastTestAt: string | null;
+  /** Reuse results for the same agreement and model during this browser session. Off by default. */
+  cacheAnalysis: boolean;
 }
 
 export const DEFAULT_PREFS: SpecterPrefs = {
@@ -37,6 +44,10 @@ export const DEFAULT_PREFS: SpecterPrefs = {
   offerConsentLog: false,
   onboardingComplete: false,
   aiModel: '',
+  aiModelList: [],
+  aiModelProvider: '',
+  aiLastTestAt: null,
+  cacheAnalysis: false,
 };
 
 const KEY = 'specterPrefs';

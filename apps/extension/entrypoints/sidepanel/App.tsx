@@ -5,7 +5,6 @@ import {
   Chip,
   Icon,
   IconButton,
-  InsetCard,
   PanelHeader,
   PanelNav,
   Toggle,
@@ -17,6 +16,7 @@ import { getPrefs, setPrefs } from '../../src/prefs';
 import { PageTab } from './PageTab';
 import { FindingsTab } from './FindingsTab';
 import { AskTab } from './AskTab';
+import { AiConnectivity } from './AiConnectivity';
 
 type NavId = SidePanelTab | 'history';
 
@@ -48,7 +48,7 @@ export default function App() {
     <div className="flex h-screen flex-col bg-bg text-fg">
       {drill ? (
         <DrillIn title={drill === 'settings' ? 'Settings' : 'AI connectivity'} onBack={back}>
-          {drill === 'settings' ? <SettingsBody /> : <AiBody />}
+          {drill === 'settings' ? <SettingsBody /> : <AiConnectivity />}
         </DrillIn>
       ) : (
         <PanelHeader
@@ -133,21 +133,3 @@ function SettingsBody() {
   );
 }
 
-function AiBody() {
-  return (
-    <div className="space-y-3">
-      <Card>
-        <div className="flex items-center justify-between">
-          <p className="text-fg">AI model</p>
-          <Chip>Not connected</Chip>
-        </div>
-        <p className="mt-2 text-small text-muted">Provider setup arrives in Spec 4.</p>
-      </Card>
-      <InsetCard>
-        <p className="text-caption text-muted">
-          No model or offline? Specter falls back to on-device scanning and labels results as limited.
-        </p>
-      </InsetCard>
-    </div>
-  );
-}

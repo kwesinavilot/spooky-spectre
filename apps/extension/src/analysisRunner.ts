@@ -1,6 +1,13 @@
-import { analyzeDocument, ProviderError, providerFor, type ChatProvider } from '@specter/ai';
+import {
+  analysisCacheKey,
+  analyzeDocument,
+  PROMPT_VERSION,
+  ProviderError,
+  providerFor,
+  type ChatProvider,
+} from '@specter/ai';
 import { findCandidates, type ExtractedDocument } from '@specter/core';
-import { DEFAULT_MODELS, keyName, PROVIDERS, type ProviderId } from './aiConnect';
+import { keyName, PROVIDERS, type ProviderId } from './aiConnect';
 import type { FindingsSnapshot } from './findingsStore';
 import type { AnalysisFailure } from './labels';
 import { getPrefs } from './prefs';
@@ -26,10 +33,11 @@ export async function connectionFor(providerId: ProviderId | null): Promise<Conn
     apiKey = saved;
   }
   const prefs = await getPrefs();
+  if (!prefs.aiModel) return { ok: false, failure: 'no_model' };
   return {
     ok: true,
     provider: providerFor(providerId),
-    model: prefs.aiModel || DEFAULT_MODELS[providerId],
+    model: prefs.aiModel,
     apiKey,
     label: info.label,
   };
@@ -47,6 +55,13 @@ export interface AnalysisRun {
  * call fails, returns limited on-device results with the reason. The key is
  * read from chrome.storage.local for each call and never kept in memory.
  */
+/**
+ * Results of analyses run in this browser session, keyed by agreement hash,
+ * model and prompt version. Only used when the "cache" setting is on. Held in
+ * memory: it is cleared when the side panel closes and is never written to storage.
+ */
+const sessionCache = new Map<string, FindingsSnapshot>();
+
 export async function runAnalysis(
   doc: ExtractedDocument,
   providerId: ProviderId | null,
@@ -63,6 +78,13 @@ export async function runAnalysis(
   const conn = await connectionFor(providerId);
   if (!conn.ok) return limited(conn.failure);
 
+  const prefs = await getPrefs();
+  const key = analysisCacheKey(doc.documentHash, conn.model, PROMPT_VERSION);
+  if (prefs.cacheAnalysis) {
+    const hit = sessionCache.get(key);
+    if (hit) return { snapshot: { ...hit, tabId } };
+  }
+
   try {
     const outcome = await analyzeDocument({
       provider: conn.provider,
@@ -73,18 +95,18 @@ export async function runAnalysis(
       signal,
     });
     if (outcome.status === 'invalid_output') return limited('invalid_output');
-    return {
-      snapshot: {
-        doc,
-        tabId,
-        mode: 'ai',
-        failure: null,
-        findings: outcome.findings,
-        rejected: outcome.rejected,
-        corrected: outcome.corrected,
-        candidateCount,
-      },
+    const snapshot: FindingsSnapshot = {
+      doc,
+      tabId,
+      mode: 'ai',
+      failure: null,
+      findings: outcome.findings,
+      rejected: outcome.rejected,
+      corrected: outcome.corrected,
+      candidateCount,
     };
+    if (prefs.cacheAnalysis) sessionCache.set(key, snapshot);
+    return { snapshot };
   } catch (err) {
     if (signal.aborted) return limited('cancelled');
     if (err instanceof ProviderError) return limited(err.code);

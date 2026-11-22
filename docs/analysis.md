@@ -43,13 +43,30 @@ Anthropic, OpenAI, Google and Ollama, each one `fetch` call (`providers.ts`). Th
 header, never in a URL. Errors are typed: `invalid_key`, `rate_limited`, `network`, `not_running`
 and `bad_response`. Ollama is treated as not running when the connection fails.
 
-Model names in the Settings are defaults to be checked against each provider's current list.
+**No model name is hardcoded.** Test connection asks the provider for its model list (Anthropic
+and OpenAI `/v1/models`, Google `/v1beta/models` keeping only models that support `generateContent`,
+Ollama `/api/tags`). The user picks one. Until a model is chosen, analysis and Ask stop with
+"Choose a model" and nothing is sent. The list and the choice are stored in `chrome.storage.local`
+as names only; the key is never shown again.
+
+**Decision pending: Vercel AI SDK.** The master prompt names the Vercel AI SDK. It is not used: the
+four providers are single `fetch` calls, which keeps the extension free of SDK dependencies and makes
+each request visible in code. Switching means adding the SDK and its provider packages. This needs
+your decision.
+
+**AI connectivity screen** (side panel → key icon): provider, key (never shown; Replace and Remove),
+Test connection, model picker, access to the provider's origin (Grant access), "Preview before
+sending" and "Reuse results this session". Not built: a token budget slider and a field-redaction
+toggle. Nothing in the screen sends agreement text.
 
 ## Cost and cache
 
-- `estimateCost` gives about one token per four characters. It shows "Price not set" until a price
-  is configured for the model. No price is assumed.
-- Cache key: document hash, model and prompt version. Changing the prompt invalidates old results.
+- `estimateCost` gives about one token per four characters, over the exact prompt that would be
+  sent. The preview shows the count and "Price not set for this model." No price is assumed, so no
+  dollar figure is shown.
+- Reuse results this session (off by default) keeps results in memory, keyed by agreement hash,
+  model and prompt version. Nothing is written to storage, and the cache is empty after the side
+  panel closes.
 
 ## Limits
 

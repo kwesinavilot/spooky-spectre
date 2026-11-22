@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { buildUserPrompt, estimateCost, SYSTEM_PROMPT, UNKNOWN_PRICE } from '@specter/ai';
 import { findCandidates, type DetectionResult, type ExtractedDocument } from '@specter/core';
 import { Button, Card, Chip, InsetCard, OptionCard, ProgressStepper } from '@specter/ui';
 import { runAnalysis } from '../../src/analysisRunner';
@@ -28,7 +29,14 @@ type View =
   | { kind: 'detected'; result: DetectionResult }
   | { kind: 'reading'; result: DetectionResult; requestId: string }
   /** AI is connected and previewing is on: the user sees what will leave the device first. */
-  | { kind: 'preview'; result: DetectionResult; doc: ExtractedDocument; providerLabel: string; sections: number }
+  | {
+      kind: 'preview';
+      result: DetectionResult;
+      doc: ExtractedDocument;
+      providerLabel: string;
+      sections: number;
+      costLabel: string;
+    }
   | { kind: 'interpreting'; result: DetectionResult; doc: ExtractedDocument; aiOn: boolean }
   | { kind: 'extracted'; result: DetectionResult; doc: ExtractedDocument }
   | { kind: 'failed'; result?: DetectionResult; reason: ReadFailure };
@@ -161,9 +169,19 @@ export function PageTab() {
   const afterExtract = async (result: DetectionResult, doc: ExtractedDocument) => {
     const prefs = await getPrefs();
     const provider = PROVIDERS.find((p) => p.id === providerId);
-    if (provider && prefs.previewBeforeSending) {
-      const sections = findCandidates(doc).length;
-      setView({ kind: 'preview', result, doc, providerLabel: provider.label, sections });
+    if (provider && prefs.aiModel && prefs.previewBeforeSending) {
+      const candidates = findCandidates(doc);
+      // The estimate counts the exact prompt the model would receive.
+      const prompt = SYSTEM_PROMPT + buildUserPrompt(doc, candidates);
+      const costLabel = estimateCost(prompt, UNKNOWN_PRICE).label;
+      setView({
+        kind: 'preview',
+        result,
+        doc,
+        providerLabel: provider.label,
+        sections: candidates.length,
+        costLabel,
+      });
       return;
     }
     void interpret(result, doc);
@@ -346,7 +364,8 @@ function Body(props: {
             It does not send the rest of the page.
           </p>
         </InsetCard>
-        <p className="mt-2 text-caption text-muted">Nothing is sent until you press Send.</p>
+        <p className="mt-2 text-caption text-muted">{view.costLabel}</p>
+        <p className="mt-1 text-caption text-muted">Nothing is sent until you press Send.</p>
         <Button className="mt-3" block onClick={() => props.onSend(view.result, view.doc)}>
           Send to {view.providerLabel}
         </Button>
