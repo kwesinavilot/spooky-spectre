@@ -42,6 +42,8 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 - About one in twelve ghosts is a giant: larger, slower and fainter.
 - About half the ghosts lean, and some of those sway at the hem, so the bottom looks like it is flowing. The sway plays twice and stops. Reduced motion turns it off.
 - Leaning ghosts lean to the right.
+- Every regular ghost blinks while it crosses, at its own moment, and the blink is off under Quiet and reduced motion.
+- Six giants now, not three. Each enters and leaves a different way: pop out of an edge, grow out of the page, dive from the top, peek from the right and vanish, or rise from the bottom. Each exits off screen or fades where its route ends. The gaps between them grow over the step.
 - Lingering on a step brings peeking ghosts: bigger each time. A ghost pops its head out and blinks twice, then flies slowly across the screen. The first comes from the left toward the top right, the second from the bottom right toward the top middle, and the third from the right. Timings restart on each step. Reduced motion turns them off.
 - Mode effects on step 4 are unchanged and separate from the regular waves.
 - Typecheck passes for the extension. Not run in Chrome.
