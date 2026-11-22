@@ -6,3 +6,6 @@ export { normalizeInline, visibleText } from './dom/text';
 export { cssPath, textQuote } from './dom/anchors';
 export * from './detect';
 export * from './extract';
+export * from './classify';
+export * from './validate';
+export * from './effects';

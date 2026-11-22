@@ -1,38 +1,11 @@
-import type { Category, ClauseFinding } from '@specter/core';
-
 /**
- * Provider abstraction. No network code lives here yet (Spec 4 implements real
- * providers). Callers depend on this interface, so switching providers needs no
- * change in calling code (Spec 4 acceptance).
+ * Price per million tokens for one model. `null` means not configured, and the
+ * UI must say so instead of showing a number. Prices change, so they are
+ * entered by the user or set in the provider table, never assumed here.
  */
-export interface Provider {
-  id: string;
-  label: string;
-  supportsStructuredOutput: boolean;
+export interface ModelPrice {
+  inputPerMillion: number | null;
+  outputPerMillion: number | null;
 }
 
-/** A candidate clause plus neighbouring sections, never the full browsing history. */
-export interface AnalysisRequest {
-  category: Category;
-  context: string;
-}
-
-export interface AnalysisResult {
-  finding: ClauseFinding;
-}
-
-export type ConnectionStatus =
-  | 'idle'
-  | 'testing'
-  | 'success'
-  | 'invalid_key'
-  | 'network_error'
-  | 'ollama_not_running';
-
-export interface ConnectionTest {
-  status: ConnectionStatus;
-  message?: string;
-}
-
-export const PROVIDER_IDS = ['anthropic', 'openai', 'google', 'ollama', 'none'] as const;
-export type ProviderId = (typeof PROVIDER_IDS)[number];
+export const UNKNOWN_PRICE: ModelPrice = { inputPerMillion: null, outputPerMillion: null };

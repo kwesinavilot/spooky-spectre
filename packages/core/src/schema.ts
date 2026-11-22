@@ -210,3 +210,32 @@ export const ExtractedDocument = z.object({
   extractedAt: z.string().datetime(),
 });
 export type ExtractedDocument = z.infer<typeof ExtractedDocument>;
+
+/* ------------------------------------------------------------------ */
+/* Spec 5: what the model is asked to return (validated on receipt)    */
+/* ------------------------------------------------------------------ */
+
+/**
+ * One finding as the model proposes it. The model gives the quote; code finds
+ * its offsets (the model never supplies offsets, so it cannot invent them).
+ */
+export const ModelFindingDraft = z.object({
+  category: Category,
+  summary: z.string().min(1).max(400),
+  implication: z.string().min(1).max(400),
+  evidence: z.object({
+    sectionId: z.string().min(1),
+    exactQuote: z.string().min(1).max(1200),
+  }),
+  concern: Concern,
+  confidence: z.number().min(0).max(1),
+  conditions: z.array(z.string().max(300)).max(8).default([]),
+  notStated: z.array(z.string().max(300)).max(8).default([]),
+  suggestedQuestions: z.array(z.string().max(200)).max(4).default([]),
+});
+export type ModelFindingDraft = z.infer<typeof ModelFindingDraft>;
+
+export const ModelResponse = z.object({
+  findings: z.array(ModelFindingDraft).max(20),
+});
+export type ModelResponse = z.infer<typeof ModelResponse>;

@@ -34,6 +34,15 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 
 ## [Unreleased]
 
+### Added (analysis engine, not yet in the UI)
+- Candidate clauses in seven categories, with negations flagged for the model rather than dropped (`@specter/core` classify).
+- Deterministic verification: quotes located in their section, offsets checked, amounts and dates in the summary checked against the quote. Failed drafts get one retry, then are dropped and counted (`@specter/core` validate).
+- Effect rules: whisper, hand, haunting and possession (`@specter/core` effects).
+- Model reply schema, `ModelResponse`, validated on receipt.
+- `@specter/ai`: providers for Anthropic, OpenAI, Google and Ollama, the analysis loop with one retry, prompt builder, cost estimate that says "price not set" when unconfigured, and cache key.
+- Tests: 92 core tests (including 15 analysis tests) and 16 AI tests, all passing. Typecheck passes for core and AI. Not tested against live AI providers, and not run in Chrome.
+- Documented in `docs/analysis.md`.
+
 ### Added (onboarding)
 - Six-step onboarding built from the reference screens in `docs/design/`: Welcome, Privacy promise, Permissions, Effects and privacy defaults, Connect AI (optional), Ready. Skip setup jumps to the last step with defaults; each step saves its choices on Continue; focus moves to each step's heading.
 - Permissions step includes the optional background-detection opt-in, with Chrome's warning explained before the prompt and "Not now" beside "Continue to Chrome".

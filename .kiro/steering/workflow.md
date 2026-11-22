@@ -31,6 +31,14 @@ Do not batch several units into one commit, and do not leave documentation for t
 - Docs are for people working on or evaluating Specter. User-facing help articles live in
   `packages/help`.
 
+## Checks
+
+- Most changes: skip the test suites. Run a typecheck when code changes, and say so in the commit.
+- Run the tests only when the user asks, or for a change to detection, extraction, verification or
+  privacy rules, where a regression would matter.
+- Run node and pnpm commands in bash, not PowerShell. The PowerShell shell in this workspace drops
+  output and blocks `pnpm.ps1`.
+
 ## When verification is blocked
 
 If tests or builds cannot be run, commit the work anyway with "untested" in the changelog entry and
