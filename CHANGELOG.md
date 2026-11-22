@@ -16,8 +16,8 @@ Spec roadmap:
 | 1 | Foundation | MVP | Done (v0.6.0) |
 | 2 | Detection and extraction (incl. opt-in background detection, cookie banners) | MVP | Done (v0.7.0); manual Chrome checks confirmed |
 | 3 | Candidate finding and segmentation | MVP | Built; spec written after the code (`.kiro/specs/specter/candidate-segmentation`). Open: ranked cap, unit tests |
-| 4 | AI provider layer and BYOK | MVP | Built; AI connectivity screen and model list done. Open: Vercel AI SDK decision, live provider test |
-| 5 | Clause analysis and validation | MVP | Not started |
+| 4 | AI provider layer and BYOK | MVP | Done in code (`.kiro/specs/specter/ai-providers`). Open: live check with the user's own keys |
+| 5 | Clause analysis and validation | MVP | Built in core and AI, untested live. Possession moved to Spec 6 |
 | 6 | Side panel (Contract Exorcist) and Spectral Vision overlay | MVP | Not started |
 | 7 | Onboarding and tutorial | MVP | Not started |
 | 8 | Graveyard, saving and consent search | MVP | Not started |
@@ -33,6 +33,20 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 ---
 
 ## [Unreleased]
+
+### Changed (AI providers on the Vercel AI SDK, Spec 4)
+- Model calls use the Vercel AI SDK. Providers: OpenAI, Anthropic, Google Gemini (id `gemini`, replacing `google`), DeepSeek, Mistral, Grok (xAI), Groq, and Ollama on this computer.
+- SDK retries are off, so a rate limit or a rejected key is shown at once with a Retry button.
+- Typecheck passes for the AI package and the extension. The AI package tests passed on the SDK migration (16 of 16). Not tested against live providers.
+- Google Gemini keys saved under the old `google` id must be reconnected.
+
+### Added (token budget, Spec 4)
+- Token budget slider on the AI connectivity screen: 1,000 to 8,000 tokens, default 3,000. It caps the agreement text sent for one analysis or one question. The Page and Ask previews count the same budgeted text.
+- Redaction was not built. Decision recorded in `.kiro/specs/specter/ai-providers/requirements.md`.
+- Spec 4 written as `.kiro/specs/specter/ai-providers` after the code.
+
+### Changed (Spec 5 scope)
+- Possession (the moment-of-agreement effect, its callout and daily caps) is out of Spec 5 and belongs to Spec 6, the on-page overlay.
 
 ### Added (AI connectivity, Spec 4)
 - AI connectivity screen replaces the placeholder: provider, API key (shown as saved, never its value; Replace and Remove), Test connection, access grant for the provider's origin, model picker, "Preview before sending" and "Reuse results this session".

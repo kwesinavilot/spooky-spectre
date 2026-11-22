@@ -39,9 +39,13 @@ Save snapshot.
 
 ## Providers
 
-Anthropic, OpenAI, Google and Ollama, each one `fetch` call (`providers.ts`). The key is sent in a
-header, never in a URL. Errors are typed: `invalid_key`, `rate_limited`, `network`, `not_running`
-and `bad_response`. Ollama is treated as not running when the connection fails.
+Model calls go through the Vercel AI SDK (`packages/ai/src/providers.ts`). Eight providers: OpenAI,
+Anthropic, Google Gemini, DeepSeek, Mistral, Grok (xAI), Groq, and Ollama on this computer. Each
+call uses one `generateText` with a single user message and no SDK retries. Keys are passed per
+call and never stored in the AI package. Errors are typed: `invalid_key` (401 or 403),
+`rate_limited` (429), `bad_response` (400 or an empty reply), `network`, and `not_running` (Ollama
+unreachable). The Google provider id is `gemini`, so a Google key saved under the old id must be
+reconnected.
 
 **No model name is hardcoded.** Test connection asks the provider for its model list (Anthropic
 and OpenAI `/v1/models`, Google `/v1beta/models` keeping only models that support `generateContent`,
@@ -49,15 +53,22 @@ Ollama `/api/tags`). The user picks one. Until a model is chosen, analysis and A
 "Choose a model" and nothing is sent. The list and the choice are stored in `chrome.storage.local`
 as names only; the key is never shown again.
 
-**Decision pending: Vercel AI SDK.** The master prompt names the Vercel AI SDK. It is not used: the
-four providers are single `fetch` calls, which keeps the extension free of SDK dependencies and makes
-each request visible in code. Switching means adding the SDK and its provider packages. This needs
-your decision.
+**Vercel AI SDK:** adopted, as the master prompt asks. The AI package depends on `ai` and the
+`@ai-sdk/*` provider packages. Ollama uses `@ai-sdk/openai-compatible` against its local
+OpenAI-compatible endpoint.
 
 **AI connectivity screen** (side panel → key icon): provider, key (never shown; Replace and Remove),
 Test connection, model picker, access to the provider's origin (Grant access), "Preview before
-sending" and "Reuse results this session". Not built: a token budget slider and a field-redaction
-toggle. Nothing in the screen sends agreement text.
+sending", "Reuse results this session" and a token budget slider. Nothing in the screen sends agreement
+text.
+
+**Token budget:** a slider (1,000 to 8,000 tokens, default 3,000; about four characters per token)
+caps the agreement text sent for one analysis or one question. The Page tab preview and the Ask
+preview count the same budgeted text, and no section is sent past the limit.
+
+**Redaction:** not built, by decision. Specter never reads password or payment fields, so there are
+no personal form values to redact. Redacting addresses in agreement text would also break verbatim
+quote checks, since privacy policies often print contact emails.
 
 ## Cost and cache
 
