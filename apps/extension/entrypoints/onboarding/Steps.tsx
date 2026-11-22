@@ -15,6 +15,7 @@ import {
 } from '@specter/ui';
 import type { SpecterPrefs } from '../../src/prefs';
 import { disableBackground, enableBackground } from '../../src/access';
+import { cardEffect, LevelGhost, usePrefersReducedMotion } from './Haunt';
 import {
   hasSavedKey,
   PROVIDERS,
@@ -298,30 +299,62 @@ const EFFECTS: { value: SpecterPrefs['effectLevel']; title: string; description:
   },
 ];
 
-export function Step4({ prefs, onChange }: { prefs: SpecterPrefs; onChange: (p: Partial<SpecterPrefs>) => void }) {
+export function Step4({
+  prefs,
+  onChange,
+  pick,
+}: {
+  prefs: SpecterPrefs;
+  onChange: (p: Partial<SpecterPrefs>) => void;
+  /**
+   * The user's most recent choice on this step, with a counter so a repeat
+   * choice replays. Null until the user picks a mode, so arriving on the step
+   * plays only the regular onboarding animations.
+   */
+  pick: { level: SpecterPrefs['effectLevel']; n: number } | null;
+}) {
+  const reduce = usePrefersReducedMotion();
   return (
     <>
       <div className="space-y-6">
         <Eyebrow>Make it yours</Eyebrow>
-        <Headline>How haunted should it feel?</Headline>
+        <div className="flex items-center gap-4">
+          <Headline>How haunted should it feel?</Headline>
+          {pick ? <LevelGhost key={`${pick.level}-${pick.n}`} level={pick.level} /> : null}
+        </div>
         <fieldset className="space-y-3">
           <legend className="sr-only">Effect level</legend>
-          {EFFECTS.map((e) => (
-            <OptionCard
-              key={e.value}
-              name="effect"
-              value={e.value}
-              checked={prefs.effectLevel === e.value}
-              onChange={(v) => onChange({ effectLevel: v as SpecterPrefs['effectLevel'] })}
-              title={
-                <span className="flex items-center gap-2">
-                  {e.title}
-                  {e.value === 'subtle' ? <Chip variant="ghost">Recommended</Chip> : null}
-                </span>
-              }
-              description={e.description}
-            />
-          ))}
+          {EFFECTS.map((e) => {
+            const selected = prefs.effectLevel === e.value;
+            const fx = cardEffect(e.value, reduce);
+            return (
+              <div key={e.value} className="relative">
+                <OptionCard
+                  name="effect"
+                  value={e.value}
+                  checked={selected}
+                  onChange={(v) => onChange({ effectLevel: v as SpecterPrefs['effectLevel'] })}
+                  title={
+                    <span className="flex items-center gap-2">
+                      {e.title}
+                      {e.value === 'subtle' ? <Chip variant="ghost">Recommended</Chip> : null}
+                    </span>
+                  }
+                  description={e.description}
+                />
+                {selected && pick ? (
+                  // Overlay keyed by the pick counter, so the effect replays on each choice without
+                  // remounting the radio button (keyboard focus stays put).
+                  <div
+                    key={pick.n}
+                    aria-hidden="true"
+                    className={`pointer-events-none absolute inset-0 ${fx.className}`}
+                    style={fx.style}
+                  />
+                ) : null}
+              </div>
+            );
+          })}
         </fieldset>
       </div>
 

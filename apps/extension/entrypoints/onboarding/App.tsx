@@ -6,6 +6,20 @@ import { hasSavedKey, PROVIDERS, type ConnectionStatus, type ProviderId } from '
 import { useSettings } from '../../src/store/settings';
 import { DEMO_URL } from '../../src/demo';
 import { Step1, Step2, Step3, Step4, Step5, Step6 } from './Steps';
+import { AmbientGhosts, HauntStyles, LevelFx, type WaveKind } from './Haunt';
+
+/**
+ * The regular ghost wave for each step. It plays when the step opens and does
+ * not change with the chosen mode. Mode effects on step 4 are separate (LevelFx).
+ */
+const WAVE: Record<number, { count: number; kind: WaveKind }> = {
+  1: { count: 4, kind: 'fly' },
+  2: { count: 2, kind: 'fly' },
+  3: { count: 2, kind: 'fly' },
+  4: { count: 3, kind: 'fly' },
+  5: { count: 3, kind: 'rise' },
+  6: { count: 6, kind: 'rise' },
+};
 
 export interface OnboardingState {
   prefs: SpecterPrefs;
@@ -89,18 +103,36 @@ export default function App() {
       if (tab?.id !== undefined) void chrome.tabs.remove(tab.id);
     });
 
+  // Each mode pick on step 4 plays its live effect once. The counter replays a repeat pick.
+  const [pick, setPick] = useState<{ level: SpecterPrefs['effectLevel']; n: number } | null>(null);
+
   const screens = {
     1: <Step1 onStart={() => void next()} onDemo={openDemo} />,
     2: <Step2 />,
     3: <Step3 background={state.background} onBackground={(background) => update({ background })} />,
-    4: <Step4 prefs={state.prefs} onChange={updatePrefs} />,
+    4: (
+      <Step4
+        prefs={state.prefs}
+        pick={pick}
+        onChange={(p) => {
+          updatePrefs(p);
+          if (p.effectLevel) {
+            const level = p.effectLevel;
+            setPick((prev) => ({ level, n: (prev?.n ?? 0) + 1 }));
+          }
+        }}
+      />
+    ),
     5: <Step5 state={state} onChange={update} onSkip={() => setStep(TOTAL)} />,
     6: <Step6 state={state} onDemo={openDemo} onFinish={finish} />,
   } as const;
 
   return (
     <div className="flex min-h-screen flex-col bg-bg bg-[radial-gradient(ellipse_at_top_right,rgba(139,107,195,0.14),transparent_55%)] text-fg">
-      <header className="mx-auto flex w-full max-w-[1200px] items-center justify-between gap-6 px-8 py-6">
+      <HauntStyles />
+      <AmbientGhosts key={step} count={WAVE[step]?.count ?? 0} kind={WAVE[step]?.kind ?? 'fly'} still={false} />
+      {step === 4 && pick ? <LevelFx key={`${pick.level}-${pick.n}`} level={pick.level} /> : null}
+      <header className="relative z-10 mx-auto flex w-full max-w-[1200px] items-center justify-between gap-6 px-8 py-6">
         <Logo size={32} />
         <div className="flex items-center gap-6">
           <span className="text-body text-muted">
@@ -123,11 +155,11 @@ export default function App() {
         </div>
       </header>
 
-      <main ref={heading} className="mx-auto grid w-full max-w-[1200px] flex-1 items-center gap-12 px-8 py-8 lg:grid-cols-2">
+      <main ref={heading} className="relative z-10 mx-auto grid w-full max-w-[1200px] flex-1 items-center gap-12 px-8 py-8 lg:grid-cols-2">
         {screens[step as keyof typeof screens]}
       </main>
 
-      <footer className="border-t border-line">
+      <footer className="relative z-10 border-t border-line">
         <div className="mx-auto flex w-full max-w-[1200px] items-center justify-between gap-4 px-8 py-5">
           {step === 1 ? (
             <p className="text-body text-muted">Informational assistance, not legal advice.</p>

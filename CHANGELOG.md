@@ -34,6 +34,13 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 
 ## [Unreleased]
 
+### Added (onboarding haunts)
+- Regular ghost waves on every onboarding step. Ghosts cross the screen once when the step opens; they do not loop. The wave does not change with the chosen mode.
+- Step 4 live effects, played on the onboarding screen itself after a mode is picked, and replayed on each new pick. Quiet: still ghosts and a static outline on the chosen card. Subtle: a shimmer on the chosen card, a ghost that rises beside the headline once. Immersive: a pulse on the chosen card, an edge vignette, and three ghosts drifting across. No sample page.
+- Reduced motion shows the Quiet look for the step 4 effects and holds the regular waves still.
+- Shared `GhostGlyph` in `@specter/ui`.
+- Typecheck passes for the UI package and the extension. Not run in Chrome.
+
 ### Changed (analysis runs on Analyze)
 - With a model connected, Analyze agreement now runs the analysis at once. Before the click, the Page tab says which provider receives the clause sections. The "Preview before sending" setting is off by default and remains available; turning it on adds a Send step.
 - A one-time reset applies the new default to saved profiles, since onboarding had saved the preview as on.
