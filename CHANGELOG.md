@@ -34,6 +34,15 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 
 ## [Unreleased]
 
+### Added (Ask Specter)
+- Ask tab: ask a question about the agreement that was analyzed. Specter picks the sections that match the words of the question (up to eight sections and 12,000 characters), and sends only those when a model is connected.
+- Before each question, the panel says how many sections and characters will be sent, and to which provider. A question with no matching words sends nothing.
+- Answers cite the sections they rely on. Citations are checked against the sections sent; an answer with no valid citation is shown as "The terms do not say." Each answer marks "Not stated" when the text does not say.
+- Errors show a plain reason and a Retry button. The conversation resets when another agreement is analyzed.
+- Shared provider setup (`connectionFor`) now serves both analysis and Ask.
+- Tested: typecheck only for core, ai and the extension. Not tested against live AI providers, and not run in Chrome. The section retrieval and citation check have no unit tests yet.
+- Not built: the "AI connectivity" screen is still a placeholder, so a model can only be connected through onboarding. Citation chips show the section text in the panel; they do not scroll the page.
+
 ### Added (findings in the side panel)
 - Findings tab: verified findings sorted by impact, filter by impact, source quote, section, "Source verified" chip, "Not stated" lines, Show on page and Dismiss. An empty result says only that nothing was found in what Specter could read.
 - Analyze agreement runs the analysis when an AI model is connected and sends it the candidate clause sections. With previewing on (default), a preview lists how many sections will be sent, and nothing leaves the device until Send. Cancel aborts the request.

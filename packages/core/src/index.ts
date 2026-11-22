@@ -9,3 +9,4 @@ export * from './extract';
 export * from './classify';
 export * from './validate';
 export * from './effects';
+export * from './ask/retrieve';

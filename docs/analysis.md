@@ -9,7 +9,12 @@ The AI provider calls have not been tested against a live API.
 side panel shows how many clause sections will be sent and waits for Send. Only the candidate
 sections go to the provider, never the rest of the page. Findings are kept in memory only.
 
-**Not built yet:** Explain (Ask Specter), the moment-of-agreement Possession trigger and its
+**Ask Specter:** the Ask tab retrieves the matching sections with `retrieveSections` (core, pure),
+sends them with `askDocument` (ai), and keeps only citations that point to a section that was sent.
+An answer without such a citation is not shown as an answer. Citation chips show the section text in
+the panel; they do not scroll the page.
+
+**Not built yet:** Explain on a finding (it can now open Ask with a question), the moment-of-agreement Possession trigger and its
 frequency caps, the Quiet and Immersive levels for highlights, the ghost marker and popover, and
 Save snapshot.
 

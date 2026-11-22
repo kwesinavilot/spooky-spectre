@@ -239,3 +239,15 @@ export const ModelResponse = z.object({
   findings: z.array(ModelFindingDraft).max(20),
 });
 export type ModelResponse = z.infer<typeof ModelResponse>;
+
+/* ------------------------------------------------------------------ */
+/* Ask Specter                                                         */
+/* ------------------------------------------------------------------ */
+
+/** The model's reply to one question. Citations are checked against the sections sent. */
+export const AskReply = z.object({
+  answer: z.string().min(1).max(1200),
+  citations: z.array(z.string()).max(8),
+  notStated: z.boolean(),
+});
+export type AskReply = z.infer<typeof AskReply>;

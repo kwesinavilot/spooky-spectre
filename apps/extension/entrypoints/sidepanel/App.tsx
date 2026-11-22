@@ -16,6 +16,7 @@ import { openTab } from '../../src/nav';
 import { getPrefs, setPrefs } from '../../src/prefs';
 import { PageTab } from './PageTab';
 import { FindingsTab } from './FindingsTab';
+import { AskTab } from './AskTab';
 
 type NavId = SidePanelTab | 'history';
 
@@ -94,25 +95,6 @@ function DrillIn({ title, onBack, children }: { title: string; onBack: () => voi
       </div>
       <div className="flex-1 overflow-y-auto p-4">{children}</div>
     </>
-  );
-}
-
-function AskTab() {
-  return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h2 className="text-h3 font-semibold">Ask Specter</h2>
-        <Chip>Not connected</Chip>
-      </div>
-      <Card>
-        <p className="text-fg">Connect an AI model to ask questions</p>
-        <p className="mt-1 text-small text-muted">Answers use only the excerpts of this agreement.</p>
-        <Button className="mt-3" variant="secondary" onClick={() => useSidePanel.getState().openDrill('ai')}>
-          AI connectivity
-        </Button>
-      </Card>
-      <p className="text-caption text-muted">Informational assistance, not legal advice.</p>
-    </div>
   );
 }
 

@@ -79,3 +79,17 @@ export function coverageLabel(completeness: number): { text: string; complete: b
 export function reasonLines(reasons: CompletenessReason[]): string[] {
   return reasons.map((r) => r.message);
 }
+
+/** Why an answer could not be given. Each one has a Retry button in Ask Specter. */
+export const ASK_MESSAGE: Record<AnalysisFailure, string> = {
+  no_provider: 'Connect an AI model to ask questions.',
+  no_key: 'The saved AI key is missing. Connect the model again.',
+  invalid_key: 'The provider did not accept the key.',
+  rate_limited: 'The provider is rate limiting requests. Try again in a moment.',
+  not_running: 'Ollama is not running on this computer.',
+  network: 'Could not reach the provider.',
+  bad_response: 'The provider sent a reply Specter could not read.',
+  invalid_output: 'The reply could not be read as an answer.',
+  cancelled: 'The question was cancelled.',
+  error: 'Something went wrong while asking.',
+};
