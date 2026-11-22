@@ -5,6 +5,7 @@ import { chooseRoot, extractDocument } from '@specter/core/extract';
 import { shouldAnalyze } from '@specter/core/privacy';
 import type { AgreementKind, DetectionResult } from '@specter/core/schema';
 import type { SpecterMessage } from '../src/messaging';
+import { clearHighlight, showHighlight } from '../src/pageHighlight';
 import { blockedDomains, getPrefs } from '../src/prefs';
 
 type SpecterGlobal = typeof globalThis & { __specterLoaded?: boolean; __specterOnDemand?: boolean };
@@ -128,6 +129,15 @@ function listen(current: () => Current): void {
           ? { type: 'detection', excluded: true }
           : { type: 'detection', result: c.outcome.result };
       sendResponse(reply);
+      return false;
+    }
+    if (message.type === 'highlight') {
+      const found = showHighlight(message.quote, message.effect);
+      sendResponse({ type: 'highlighted', found } satisfies SpecterMessage);
+      return false;
+    }
+    if (message.type === 'clear-highlight') {
+      clearHighlight();
       return false;
     }
     if (message.type === 'extract') {

@@ -1,5 +1,41 @@
-import type { AgreementKind, CompletenessReason, ControlRole } from '@specter/core';
+import type { AgreementKind, Category, CompletenessReason, ControlRole } from '@specter/core';
 import type { ExtractFailure } from './messaging';
+
+export const CATEGORY_LABEL: Record<Category, string> = {
+  billing: 'Billing',
+  cancellation: 'Cancellation',
+  privacy: 'Privacy and data',
+  content_rights: 'Content and rights',
+  disputes: 'Disputes',
+  account_control: 'Account control',
+  liability: 'Liability',
+};
+
+/** Why an analysis ran in limited mode, or failed part way (design steering section 6C). */
+export type AnalysisFailure =
+  | 'no_provider'
+  | 'no_key'
+  | 'invalid_key'
+  | 'rate_limited'
+  | 'not_running'
+  | 'network'
+  | 'bad_response'
+  | 'invalid_output'
+  | 'cancelled'
+  | 'error';
+
+export const ANALYSIS_MESSAGE: Record<AnalysisFailure, string> = {
+  no_provider: 'No AI model is connected, so this is an on-device scan only.',
+  no_key: 'The saved AI key is missing. Showing on-device results.',
+  invalid_key: 'AI unavailable. The provider did not accept the key. Showing on-device results.',
+  rate_limited: 'AI unavailable. The provider is rate limiting requests. Showing on-device results.',
+  not_running: 'AI unavailable. Ollama is not running on this computer. Showing on-device results.',
+  network: 'AI unavailable. Could not reach the provider. Showing on-device results.',
+  bad_response: 'AI unavailable. The provider sent an unexpected reply. Showing on-device results.',
+  invalid_output: 'The AI reply could not be checked against the agreement. Showing on-device results.',
+  cancelled: 'Analysis cancelled. Nothing was kept.',
+  error: 'Something went wrong during AI analysis. Showing on-device results.',
+};
 
 /** Plain words for each agreement kind (Spec 2 design section 7). */
 export const KIND_LABEL: Record<AgreementKind, string> = {

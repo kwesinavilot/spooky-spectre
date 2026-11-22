@@ -1,8 +1,17 @@
 # Analysis: clauses, verification and AI
 
-**Status:** the logic is built and tested (92 core tests, 16 AI tests). It is not yet wired into the
-side panel, so it does not run in Chrome. The AI provider calls have not been tested against a live
-API.
+**Status:** the logic is built and tested (92 core tests, 16 AI tests). It is wired into the side
+panel: Analyze agreement runs it, the Findings tab shows the result, and Show on page highlights a
+quote on the live page. The side panel wiring is typechecked only and has not been run in Chrome.
+The AI provider calls have not been tested against a live API.
+
+**Before the AI call:** when a model is connected and "preview before sending" is on (default), the
+side panel shows how many clause sections will be sent and waits for Send. Only the candidate
+sections go to the provider, never the rest of the page. Findings are kept in memory only.
+
+**Not built yet:** Explain (Ask Specter), the moment-of-agreement Possession trigger and its
+frequency caps, the Quiet and Immersive levels for highlights, the ghost marker and popover, and
+Save snapshot.
 
 ## Pipeline
 

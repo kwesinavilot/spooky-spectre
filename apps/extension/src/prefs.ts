@@ -23,6 +23,8 @@ export interface SpecterPrefs {
   offerConsentLog: boolean;
   /** Set when onboarding finishes or is skipped. */
   onboardingComplete: boolean;
+  /** Model name for the chosen provider. Empty means the provider default (aiConnect DEFAULT_MODELS). */
+  aiModel: string;
 }
 
 export const DEFAULT_PREFS: SpecterPrefs = {
@@ -34,6 +36,7 @@ export const DEFAULT_PREFS: SpecterPrefs = {
   detectCookieBanners: true,
   offerConsentLog: false,
   onboardingComplete: false,
+  aiModel: '',
 };
 
 const KEY = 'specterPrefs';

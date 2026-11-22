@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import type { DetectionResult, ExtractedDocument } from '@specter/core';
+import { findCandidates, type DetectionResult, type ExtractedDocument } from '@specter/core';
 import { Button, Card, Chip, InsetCard, OptionCard, ProgressStepper } from '@specter/ui';
+import { runAnalysis } from '../../src/analysisRunner';
+import { useFindings } from '../../src/findingsStore';
+import { PROVIDERS } from '../../src/aiConnect';
 import { describePage, type PageInfo } from '../../src/pageInfo';
 import { allowSite, checkPage, extractFromTab } from '../../src/analyze';
 import { readLinkedPolicy } from '../../src/linkedPolicy';
@@ -16,6 +19,7 @@ import {
 } from '../../src/labels';
 import { openTab } from '../../src/nav';
 import { useSettings } from '../../src/store/settings';
+import { useSidePanel } from '../../src/store/sidepanel';
 
 type View =
   | { kind: 'loading' }
@@ -23,6 +27,9 @@ type View =
   | { kind: 'no_access' }
   | { kind: 'detected'; result: DetectionResult }
   | { kind: 'reading'; result: DetectionResult; requestId: string }
+  /** AI is connected and previewing is on: the user sees what will leave the device first. */
+  | { kind: 'preview'; result: DetectionResult; doc: ExtractedDocument; providerLabel: string; sections: number }
+  | { kind: 'interpreting'; result: DetectionResult; doc: ExtractedDocument; aiOn: boolean }
   | { kind: 'extracted'; result: DetectionResult; doc: ExtractedDocument }
   | { kind: 'failed'; result?: DetectionResult; reason: ReadFailure };
 
@@ -45,7 +52,10 @@ export function PageTab() {
   const [choice, setChoice] = useState<string | null>(null);
   const [autoLinked, setAutoLinked] = useState(false);
   const current = useRef<string | null>(null);
+  const abort = useRef<AbortController | null>(null);
   const reduceMotion = useSettings((s) => s.reduceMotion);
+  const storedProvider = useSettings((s) => s.providerId);
+  const providerId = PROVIDERS.find((p) => p.id === storedProvider)?.id ?? null;
 
   const load = useCallback(async () => {
     const [t] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -95,7 +105,11 @@ export function PageTab() {
   useEffect(() => {
     const onUpdated = (tabId: number, change: { url?: string }) => {
       if (change.url && tabId === tab?.id) {
+        // Stale results and anchors for the old page are dropped (design steering section 8).
+        abort.current?.abort();
+        abort.current = null;
         current.current = null;
+        useFindings.getState().clear();
         setNotice('The page changed. Run analysis again.');
         void load();
       }
@@ -126,14 +140,54 @@ export function PageTab() {
     };
     if (picked?.kind === 'link') {
       const r = await readLinkedPolicy(picked.link);
-      finish(r.ok ? { kind: 'extracted', result, doc: r.doc } : { kind: 'failed', result, reason: r.reason });
+      if (!r.ok) {
+        finish({ kind: 'failed', result, reason: r.reason });
+        return;
+      }
+      if (current.current !== requestId) return;
+      afterExtract(result, r.doc);
       return;
     }
     const r = await extractFromTab(tab.id, picked?.kind === 'banner' ? 'banner' : 'page', requestId);
-    finish(r.status === 'ok' ? { kind: 'extracted', result, doc: r.doc } : { kind: 'failed', result, reason: r.reason });
+    if (r.status !== 'ok') {
+      finish({ kind: 'failed', result, reason: r.reason });
+      return;
+    }
+    if (current.current !== requestId) return;
+    afterExtract(result, r.doc);
+  };
+
+  /** Asks for a preview first when AI is connected and previewing is on (design steering 6C). */
+  const afterExtract = async (result: DetectionResult, doc: ExtractedDocument) => {
+    const prefs = await getPrefs();
+    const provider = PROVIDERS.find((p) => p.id === providerId);
+    if (provider && prefs.previewBeforeSending) {
+      const sections = findCandidates(doc).length;
+      setView({ kind: 'preview', result, doc, providerLabel: provider.label, sections });
+      return;
+    }
+    void interpret(result, doc);
+  };
+
+  /** Runs the analysis and moves to Findings. Cancel aborts it. */
+  const interpret = async (result: DetectionResult, doc: ExtractedDocument) => {
+    const requestId = newRequestId();
+    current.current = requestId;
+    const ctrl = new AbortController();
+    abort.current = ctrl;
+    setView({ kind: 'interpreting', result, doc, aiOn: providerId !== null });
+    const run = await runAnalysis(doc, providerId, ctrl.signal, tab?.id ?? null);
+    if (current.current !== requestId) return; // cancelled or the page changed
+    abort.current = null;
+    current.current = null;
+    useFindings.getState().publish(run.snapshot);
+    setView({ kind: 'extracted', result, doc });
+    useSidePanel.getState().setTab('findings');
   };
 
   const cancel = (result: DetectionResult) => {
+    abort.current?.abort();
+    abort.current = null;
     current.current = null;
     setView({ kind: 'detected', result });
   };
@@ -155,6 +209,7 @@ export function PageTab() {
         reduceMotion={reduceMotion}
         onChoice={setChoice}
         onAnalyze={analyze}
+        onSend={(result, doc) => void interpret(result, doc)}
         onCancel={cancel}
         onRetry={() => void load()}
         onAllow={async () => {
@@ -193,6 +248,7 @@ function Body(props: {
   reduceMotion: boolean;
   onChoice: (id: string) => void;
   onAnalyze: (result: DetectionResult, picked: DocumentChoice | undefined) => void;
+  onSend: (result: DetectionResult, doc: ExtractedDocument) => void;
   onCancel: (result: DetectionResult) => void;
   onRetry: () => void;
   onAllow: () => void;
@@ -272,7 +328,51 @@ function Body(props: {
             { label: 'Check every quote against the source', state: 'waiting' },
           ]}
         />
-        <p className="mt-2 text-caption text-muted">Clause screening, AI and quote checks arrive in later versions.</p>
+        <Button className="mt-3" variant="quiet" onClick={() => props.onCancel(view.result)}>
+          Cancel analysis
+        </Button>
+      </Card>
+    );
+  }
+
+  if (view.kind === 'preview') {
+    return (
+      <Card>
+        <Host url={url} chip={<Chip variant="ghost">Before sending</Chip>} />
+        <h3 className="text-h3 font-semibold">Send this agreement to {view.providerLabel}?</h3>
+        <InsetCard>
+          <p className="text-small text-fg">
+            Specter will send the {view.sections} {view.sections === 1 ? 'section' : 'sections'} that may hold clauses.
+            It does not send the rest of the page.
+          </p>
+        </InsetCard>
+        <p className="mt-2 text-caption text-muted">Nothing is sent until you press Send.</p>
+        <Button className="mt-3" block onClick={() => props.onSend(view.result, view.doc)}>
+          Send to {view.providerLabel}
+        </Button>
+        <Button className="mt-2" block variant="quiet" onClick={() => props.onCancel(view.result)}>
+          Cancel
+        </Button>
+      </Card>
+    );
+  }
+
+  if (view.kind === 'interpreting') {
+    const steps = view.aiOn
+      ? [
+          { label: 'Extract text', state: 'done' as const },
+          { label: 'Screen likely clauses', state: 'done' as const },
+          { label: 'Interpret with AI', state: 'running' as const },
+          { label: 'Check every quote against the source', state: 'waiting' as const },
+        ]
+      : [
+          { label: 'Extract text', state: 'done' as const },
+          { label: 'Screen likely clauses', state: 'running' as const },
+        ];
+    return (
+      <Card>
+        <Host url={url} chip={<Chip variant="ghost">Analyzing</Chip>} />
+        <ProgressStepper reduceMotion={props.reduceMotion} steps={steps} />
         <Button className="mt-3" variant="quiet" onClick={() => props.onCancel(view.result)}>
           Cancel analysis
         </Button>
@@ -390,7 +490,6 @@ function Extracted({ doc, onRetry }: { doc: ExtractedDocument; onRetry: () => vo
       <Card variant={coverage.complete ? 'default' : 'medium'}>
         <div className="mb-2 flex flex-wrap items-center gap-2">
           <Chip variant={coverage.complete ? 'ok' : 'medium'}>{coverage.text}</Chip>
-          <Chip>Limited · on-device only</Chip>
         </div>
         <h3 className="text-h3 font-semibold">{doc.title || 'Untitled agreement'}</h3>
         <p className="mt-1 text-small text-muted">
@@ -422,7 +521,7 @@ function Extracted({ doc, onRetry }: { doc: ExtractedDocument; onRetry: () => vo
         </Card>
       ) : null}
       <p className="text-caption text-muted">
-        Clause findings arrive with AI analysis. Informational assistance, not legal advice.
+        Results are in the Findings tab. Informational assistance, not legal advice.
       </p>
     </>
   );

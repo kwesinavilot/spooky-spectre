@@ -34,7 +34,16 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 
 ## [Unreleased]
 
-### Added (analysis engine, not yet in the UI)
+### Added (findings in the side panel)
+- Findings tab: verified findings sorted by impact, filter by impact, source quote, section, "Source verified" chip, "Not stated" lines, Show on page and Dismiss. An empty result says only that nothing was found in what Specter could read.
+- Analyze agreement runs the analysis when an AI model is connected and sends it the candidate clause sections. With previewing on (default), a preview lists how many sections will be sent, and nothing leaves the device until Send. Cancel aborts the request.
+- Without a model, or when a call fails, the Findings tab shows the on-device screening count and the reason, labelled "Limited · on-device only".
+- Show on page highlights the quote on the live page inside the overlay's shadow root. It never clicks or changes page content, and Esc clears it. If the page no longer has the passage, the card keeps its saved quote.
+- Navigating to another page clears the findings from the old page.
+- Findings are held in memory only and are not saved.
+- Tested: typecheck only (`pnpm --filter @specter/extension typecheck`). Not run in Chrome. Not tested against live AI providers. Explain (Ask Specter), the moment-of-agreement effect, Save snapshot and the full Possession rules are not built yet.
+
+### Added (analysis engine)
 - Candidate clauses in seven categories, with negations flagged for the model rather than dropped (`@specter/core` classify).
 - Deterministic verification: quotes located in their section, offsets checked, amounts and dates in the summary checked against the quote. Failed drafts get one retry, then are dropped and counted (`@specter/core` validate).
 - Effect rules: whisper, hand, haunting and possession (`@specter/core` effects).

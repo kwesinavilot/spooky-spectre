@@ -29,6 +29,9 @@ export type SpecterMessage =
   // background -> extension pages
   | { type: 'tab-state-changed'; tabId: number }
   // side panel -> content script
+  | { type: 'highlight'; quote: string; effect: string }
+  | { type: 'highlighted'; found: boolean }
+  | { type: 'clear-highlight' }
   | { type: 'get-detection' }
   | { type: 'detection'; result?: DetectionResult; excluded?: boolean }
   | { type: 'extract'; requestId: string; target: ExtractTarget }

@@ -23,6 +23,14 @@ export const PROVIDERS: ProviderInfo[] = [
   { id: 'ollama', label: 'Ollama (local model)', origin: 'http://localhost/*', needsKey: false },
 ];
 
+/** Model names used when the user has not chosen one. Check them against the provider's current list. */
+export const DEFAULT_MODELS: Record<ProviderId, string> = {
+  anthropic: 'claude-3-5-haiku-latest',
+  openai: 'gpt-4o-mini',
+  google: 'gemini-1.5-flash',
+  ollama: 'llama3.1',
+};
+
 export type ConnectionStatus =
   | 'idle'
   | 'testing'

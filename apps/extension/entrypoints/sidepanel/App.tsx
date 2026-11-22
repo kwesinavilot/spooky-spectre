@@ -15,6 +15,7 @@ import { useSidePanel, type SidePanelTab } from '../../src/store/sidepanel';
 import { openTab } from '../../src/nav';
 import { getPrefs, setPrefs } from '../../src/prefs';
 import { PageTab } from './PageTab';
+import { FindingsTab } from './FindingsTab';
 
 type NavId = SidePanelTab | 'history';
 
@@ -93,19 +94,6 @@ function DrillIn({ title, onBack, children }: { title: string; onBack: () => voi
       </div>
       <div className="flex-1 overflow-y-auto p-4">{children}</div>
     </>
-  );
-}
-
-function FindingsTab() {
-  return (
-    <div className="space-y-3">
-      <h2 className="text-h3 font-semibold">Findings</h2>
-      <Card>
-        <p className="text-muted">
-          No findings yet. Clause findings arrive with AI analysis; for now the Page tab shows what Specter read.
-        </p>
-      </Card>
-    </div>
   );
 }
 
