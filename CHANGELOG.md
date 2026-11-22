@@ -17,9 +17,9 @@ Spec roadmap:
 | 2 | Detection and extraction (incl. opt-in background detection, cookie banners) | MVP | Done (v0.7.0); manual Chrome checks confirmed |
 | 3 | Candidate finding and segmentation | MVP | Done in v0.8.0 (`.kiro/specs/specter/candidate-segmentation`), with ranked cap, 15 unit tests and corpus-based keyword coverage |
 | 4 | AI provider layer and BYOK | MVP | Done in v0.9.0 (`.kiro/specs/specter/ai-providers`). Live tests passed with a hosted provider. Ollama not yet confirmed |
-| 5 | Clause analysis and validation | MVP | Built in core and AI, untested live. Possession moved to Spec 6 |
-| 6 | Side panel (Contract Exorcist) and Spectral Vision overlay | MVP | Not started |
-| 7 | Onboarding and tutorial | MVP | Not started |
+| 5 | Clause analysis and validation | MVP | Done (`.kiro/specs/specter/clause-analysis`). Live analysis checked. Possession moved to Spec 6 |
+| 6 | Side panel (Contract Exorcist) and Spectral Vision overlay | MVP | Partly built (`.kiro/specs/specter/side-panel-overlay`). Open: margin marker, popover, Possession and its caps, spectral pointer, Settings and Analyzing polish |
+| 7 | Onboarding and tutorial | MVP | Done. Ghost waves and step 4 effects tested by the user |
 | 8 | Graveyard, saving and consent search | MVP | Not started |
 | 9 | Version comparison (Haunting Timeline) | MVP | Not started |
 | 10 | Ask Specter | MVP | Not started |
@@ -33,6 +33,11 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 ---
 
 ## [Unreleased]
+
+### Added (spec folders)
+- `.kiro/specs/specter/clause-analysis` for Spec 5, written after the code. Spec 5 is closed. The version bump is part of the next release commit.
+- `.kiro/specs/specter/side-panel-overlay` for Spec 6, with 19 tasks. Spec 6 is open.
+- Roadmap: Spec 7 marked done, with the ghost waves and step 4 effects tested by the user.
 
 ### Changed (onboarding ghosts)
 - Ghosts enter from the left, the right, or the bottom of the screen.
