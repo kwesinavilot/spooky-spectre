@@ -13,7 +13,8 @@ splitClauses(sectionText)   → clauses with offsets relative to the section
         ▼  for each clause, for each category
 CATEGORY_KEYWORDS[category].test(clause)  → match → Candidate
         │
-        ▼  stop at MAX_CANDIDATES (40)
+        ▼  collect all matches, keep the MAX_CANDIDATES (40) strongest by keyword hits,
+           return them in document order
 Candidate[]  → analysis (Spec 5) builds the prompt from these
 ```
 
@@ -32,19 +33,22 @@ Candidate[]  → analysis (Spec 5) builds the prompt from these
   "we do not automatically renew" would hide the clause the reader most needs.
 - **Stems, not exact words.** Patterns end in `\w*` so that inflections match. This can over-match;
   the cap and the model keep the cost of that bounded.
-- **Cap for cost and data.** Only 40 clauses reach the model per analysis. The cap is the limit on
-  how much agreement text leaves the device, so it is a privacy control too.
+- **Cap for cost and data, ranked.** Only 40 clauses reach the model per analysis. The cap is the
+  limit on how much agreement text leaves the device, so it is a privacy control too. Which 40 are kept
+  is decided by keyword strength, not by position in the document.
 - **Sentence split by punctuation.** Simple and fast, and offsets stay exact. It mis-splits
   abbreviations such as `e.g.` or `U.S.`.
 
 ## 4. Known limits
 
-1. **Document-order cap.** The first 40 matches in document order win. On long agreements, clauses
-   from later sections are never nominated. Fix planned in task 7: rank by keyword strength, then
-   keep document order among equal ranks.
-2. **Abbreviations.** `e.g.`, `i.e.` and `U.S.` end a clause early. Harmless for matching, but it can
-   split one clause into two candidates.
+1. **Cap ranking (resolved).** The cap used to keep the first 40 matches in document order, which
+   skipped later sections of long agreements. It now keeps the strongest 40 and returns them in
+   document order (task 7).
+2. **Abbreviations (accepted).** `e.g.`, `i.e.` and `U.S.` end a clause early. This only adds a
+   candidate; it does not drop or misplace one. Pinned by a test.
 3. **Lists without punctuation.** Items in a bulleted list that have no final punctuation are merged
-   into the clause before them.
-4. **Keyword coverage.** A clause that says "you may lose access" with no keyword from the table is
-   never nominated. The categories are a starting list, not a full taxonomy.
+   into the clause before them. Not addressed; the line break already splits most list items.
+4. **Keyword coverage (partly resolved).** The corpus scan added the gaps listed in task 10. A clause
+   that says "you may lose access" with no keyword from the table is still not nominated. The
+   categories are a starting list, not a full taxonomy, and new words should be added only when the
+   corpus shows a real gap.

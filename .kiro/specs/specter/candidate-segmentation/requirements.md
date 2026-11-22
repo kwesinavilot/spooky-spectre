@@ -57,8 +57,9 @@ is risky, and a negated clause is still nominated (see R3).
 ### R4 Cap and order
 
 - R4.1 At most `MAX_CANDIDATES` (40) candidates are returned for one document.
-- R4.2 Candidates come back in document order. **Known gap:** the cap is applied in document
-  order, so on a long agreement the later sections are never nominated. See task 7.
+- R4.2 The cap keeps the strongest candidates, where strength is the number of keyword hits in the
+  clause. Ties keep document order. The kept candidates are returned in document order. (Built in
+  task 7.)
 
 ### R5 Candidate record
 
@@ -76,4 +77,4 @@ is risky, and a negated clause is still nominated (see R3).
 - The analysis uses `findCandidates` on the extracted document, and nothing else chooses what the
   model reads.
 - Changing a keyword pattern changes the candidates on the regression corpus (`corpus:report`).
-- Unit tests cover R1 to R6 (open, see task 8).
+- Unit tests cover R1 to R6 (`packages/core/test/classify/classify.test.ts`, task 8).

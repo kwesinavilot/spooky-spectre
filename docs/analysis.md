@@ -22,7 +22,8 @@ Save snapshot.
 
 1. **Nominate candidates** (`packages/core/src/classify`). Keyword rules pick out clauses in seven
    categories: billing, cancellation, privacy, content rights, disputes, account control and
-   liability. Keywords only nominate. A negated clause ("we do not automatically renew") is still
+   liability. Keywords only nominate. The cap keeps the 40 strongest candidates (most keyword hits), in document
+   order. A negated clause ("we do not automatically renew") is still
    nominated, and marked as negated so the model reads it correctly. At most 40 candidates.
 2. **Ask the model** (`packages/ai`). The prompt includes only the sections that hold candidates,
    plus their neighbours, capped at 12,000 characters. The model must return JSON with a quote for
