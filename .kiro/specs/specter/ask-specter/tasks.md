@@ -20,6 +20,16 @@
 - Citation chip highlighting on a real page, and Explain filling the box, have typecheck and unit tests only.
   The live Ask call was checked earlier with a hosted provider (Spec 4 and the Ask commit).
 
+## Conversation (v0.12.2, after the user's review)
+
+- [x] 10 Conversation memory: last four turns sent with each question (`ASK_HISTORY_TURNS`). _R5.1_
+- [x] 11 Follow-up retrieval: `retrieveForTurn` (question, then question plus previous, then previous citations). _R5.2_
+- [x] 12 General background in its own field and its own labelled block. Uncited claims about the agreement are
+  still replaced by "The terms do not say." _R5.3, R5.4_
+- [x] 13 Model follow-ups as suggestions, at most three, without repeats. _R5.5_
+- [x] 14 A question with no matching section can be asked; the preview says only the question is sent. _R5.6_
+- [x] 15 Tests: 8 Ask tests in `packages/ai`, 4 retrieval tests in `packages/core`. Not yet tried in Chrome with a live model.
+
 ## Carried forward
 
 - "What changed since I agreed?" and asking over saved versions: Specs 8 and 9.

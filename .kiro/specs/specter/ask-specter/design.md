@@ -24,6 +24,11 @@ Written after most of the code, to match what exists.
   opening 160 characters usually are unique. When they do not match, the saved passage in the panel is the
   fallback and says so.
 - **Explain does not send.** It fills the box. The preview of what would be sent updates as for any question.
+- **Conversation, grounded.** The reply has `answer` (about the agreement, cited) and `general` (background,
+  labelled, never checked against the page). The split keeps the citation check meaningful while letting
+  Specter explain. An uncited `answer` becomes "The terms do not say."; `general` survives it. History is the
+  last four turns with each answer cut to 600 characters, inside the user's token budget for sections.
+  Prompt version `ask-v2`.
 - **No saved threads.** Memory only, until Spec 8 decides what the Graveyard stores.
 
 ## Not in this spec

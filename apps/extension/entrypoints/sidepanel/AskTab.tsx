@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
-import { askDocument, ProviderError } from '@specter/ai';
-import { retrieveSections, type RetrievedSection } from '@specter/core';
+import { ASK_HISTORY_TURNS, askDocument, ProviderError, type AskTurn } from '@specter/ai';
+import { retrieveForTurn, type PriorTurn, type RetrievedSection } from '@specter/core';
 import { Button, Card, Chip, InsetCard } from '@specter/ui';
 import { budgetChars } from '@specter/ai';
 import { connectionFor } from '../../src/analysisRunner';
@@ -23,8 +23,11 @@ interface Turn {
   question: string;
   status: 'pending' | 'answered' | 'failed';
   answer?: string;
+  /** Background that is not from the agreement, shown with its own label. */
+  general?: string | null;
   notStated?: boolean;
   sources?: RetrievedSection[];
+  followUps?: string[];
   failure?: AnalysisFailure;
 }
 
@@ -80,10 +83,32 @@ export function AskTab() {
     if (result !== 'found') setSourceNotice("Live highlighting isn't available. Showing the saved passage.");
   };
 
+  // Answered turns, as retrieval and the model see them.
+  const answered = turns.filter((t) => t.status === 'answered');
+  const prior: PriorTurn[] = useMemo(
+    () =>
+      turns
+        .filter((t) => t.status === 'answered')
+        .map((t) => ({ question: t.question, citations: (t.sources ?? []).map((s) => s.id) })),
+    [turns],
+  );
+  const history: AskTurn[] = answered.map((t) => ({
+    question: t.question,
+    answer: [t.answer, t.general].filter(Boolean).join('\n'),
+  }));
+  const historySent = Math.min(history.length, ASK_HISTORY_TURNS);
+
+  // Follow-ups from the latest answer, else the starters. Never a question already asked.
+  const asked = new Set(turns.map((t) => t.question.toLowerCase()));
+  const latest = answered[answered.length - 1];
+  const suggestions = (latest?.followUps?.length ? latest.followUps : SUGGESTIONS).filter(
+    (s) => !asked.has(s.toLowerCase()),
+  );
+
   // What would be sent for the question being typed. Computed on this device only.
   const plan = useMemo(
-    () => (doc && draft.trim() ? retrieveSections(doc, draft, maxChars) : []),
-    [doc, draft, maxChars],
+    () => (doc && draft.trim() ? retrieveForTurn(doc, draft, prior, maxChars) : []),
+    [doc, draft, maxChars, prior],
   );
   const planChars = plan.reduce((n, s) => n + s.text.length, 0);
 
@@ -93,8 +118,9 @@ export function AskTab() {
   const ask = async (question: string) => {
     const q = question.trim();
     if (!doc || !q || busy) return;
-    const sections = retrieveSections(doc, q, maxChars);
-    if (sections.length === 0) return;
+    // No matching section is allowed: the answer can then only be "The terms do not say." plus background.
+    const sections = retrieveForTurn(doc, q, prior, maxChars);
+    const sentHistory = history;
 
     const id = nextId++;
     setTurns((list) => [...list, { id, question: q, status: 'pending' }]);
@@ -112,6 +138,7 @@ export function AskTab() {
         apiKey: conn.apiKey,
         question: q,
         sections,
+        history: sentHistory,
       });
       if (out.status === 'invalid_output') {
         setTurn(id, { status: 'failed', failure: 'invalid_output' });
@@ -119,8 +146,10 @@ export function AskTab() {
         setTurn(id, {
           status: 'answered',
           answer: out.answer,
+          general: out.general,
           notStated: out.notStated,
           sources: sections.filter((s) => out.citations.includes(s.id)),
+          followUps: out.followUps,
         });
       }
     } catch (err) {
@@ -179,7 +208,7 @@ export function AskTab() {
           <Card>
             {turn.status === 'pending' ? (
               <p className="text-muted" aria-live="polite">
-                Reading the matching sections.
+                Reading the agreement.
               </p>
             ) : null}
 
@@ -196,10 +225,16 @@ export function AskTab() {
 
             {turn.status === 'answered' ? (
               <>
-                <p className="text-body text-fg">{turn.answer}</p>
+                <p className="whitespace-pre-line text-body text-fg">{turn.answer}</p>
                 {turn.notStated ? (
                   <div className="mt-2">
-                    <Chip>Not stated</Chip>
+                    <Chip variant="medium">Not stated</Chip>
+                  </div>
+                ) : null}
+                {turn.general ? (
+                  <div className="mt-3 rounded-[12px] border border-dashed border-lavender p-3">
+                    <p className="text-caption font-semibold text-muted">General background · not from this agreement</p>
+                    <p className="mt-1 whitespace-pre-line text-small text-fg">{turn.general}</p>
                   </div>
                 ) : null}
                 {turn.sources && turn.sources.length > 0 ? (
@@ -240,10 +275,10 @@ export function AskTab() {
         </div>
       ))}
 
-      {/* Suggestions show on an empty thread and again after an answer (design steering 6C). */}
-      {!busy && turns.every((t) => t.status !== 'pending') ? (
+      {/* Suggestions: the model's follow-ups after an answer, the starters on an empty thread (design steering 6C). */}
+      {!busy && suggestions.length > 0 ? (
         <div className="flex flex-col gap-2">
-          {SUGGESTIONS.filter((s) => !turns.some((t) => t.question === s)).map((s) => (
+          {suggestions.map((s) => (
             <Button key={s} variant="quiet" block onClick={() => void ask(s)}>
               {s}
             </Button>
@@ -273,19 +308,20 @@ export function AskTab() {
           <InsetCard>
             <p className="text-caption text-fg" aria-live="polite">
               {plan.length === 0
-                ? 'No section of this agreement mentions these words. Try different words. Nothing is sent.'
-                : `Sends ${plan.length} ${plan.length === 1 ? 'section' : 'sections'}, about ${planChars.toLocaleString()} characters, to ${provider.label}. Nothing else from the page.`}
+                ? `No section of this agreement matches. Sends only your question${historySent > 0 ? ' and the recent conversation' : ''} to ${provider.label}, so the answer can only be general background.`
+                : `Sends ${plan.length} ${plan.length === 1 ? 'section' : 'sections'}, about ${planChars.toLocaleString()} characters${historySent > 0 ? `, and the last ${historySent} ${historySent === 1 ? 'turn' : 'turns'} of this conversation` : ''}, to ${provider.label}. Nothing else from the page.`}
             </p>
           </InsetCard>
         ) : null}
 
-        <Button type="submit" block disabled={busy || plan.length === 0}>
+        <Button type="submit" block disabled={busy || !draft.trim()}>
           Ask
         </Button>
       </form>
 
       <p className="text-caption text-muted">
-        Answers use only the excerpts of this agreement. Informational assistance, not legal advice.
+        Facts about this agreement come only from its text and are cited. General background is labelled. Informational
+        assistance, not legal advice.
       </p>
     </div>
   );

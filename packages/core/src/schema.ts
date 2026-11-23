@@ -247,8 +247,13 @@ export type ModelResponse = z.infer<typeof ModelResponse>;
 
 /** The model's reply to one question. Citations are checked against the sections sent. */
 export const AskReply = z.object({
-  answer: z.string().min(1).max(1200),
+  /** What this agreement says, in plain words. Must be backed by `citations`. */
+  answer: z.string().min(1).max(2000),
+  /** General background, such as what a legal term usually means. Never shown as what the agreement says. */
+  general: z.string().max(1200).nullable().default(null),
   citations: z.array(z.string()).max(8),
   notStated: z.boolean(),
+  /** Questions the person might ask next. */
+  followUps: z.array(z.string().max(160)).max(5).default([]),
 });
 export type AskReply = z.infer<typeof AskReply>;

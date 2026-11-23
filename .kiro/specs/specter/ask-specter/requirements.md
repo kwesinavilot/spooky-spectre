@@ -39,6 +39,20 @@ sections it came from. Rules: `.kiro/steering/design.md` §6C (Ask) and Flow 4, 
 - R4.4 The footer says "Answers use only the excerpts of this agreement. Informational assistance, not legal
   advice."
 
+## R5 Conversation (added after review)
+
+Ask is a conversation grounded in the agreement, not a lookup.
+
+- R5.1 Each question is sent with the last four turns of the conversation, so follow-ups make sense.
+- R5.2 A follow-up with few words of its own uses the previous question to pick sections, and then the sections
+  the previous answer cited.
+- R5.3 Answers explain in plain words. They quote at most a short phrase, when exact wording matters.
+- R5.4 General background (what a term or practice usually means) is allowed, in its own block labelled "General
+  background · not from this agreement". Statements about this agreement still need a citation; R1.5 applies.
+- R5.5 After an answer, the suggestions are follow-ups the model proposes, at most three, never one already asked.
+- R5.6 A question that matches no section can be asked. The preview says only the question (and the recent
+  conversation) will be sent, and the answer can only be background. This replaces the "nothing is sent" block.
+
 ## Acceptance
 
 Ask a question that the agreement answers: the answer cites the section, and the chip opens the passage.

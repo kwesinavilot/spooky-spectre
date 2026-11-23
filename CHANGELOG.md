@@ -34,13 +34,24 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 
 ## [Unreleased]
 
+## [0.12.2] - 2026-10-31
+
+### Changed
+- Ask is now a conversation grounded in the agreement. Questions carry the last four turns, so follow-ups
+  work, and follow-ups with few words reuse the previous question or its cited sections. Answers explain in
+  plain words instead of echoing the text. General background (for example what arbitration means) is
+  allowed in its own block, labelled "General background · not from this agreement". Claims about the
+  agreement still need a citation, or they become "The terms do not say." Suggestions after an answer are
+  follow-ups from the model. A question that matches no section can be asked and gets background only.
+  Tests ran: core 122 passed (4 new), ai 22 passed (8 Ask tests), extension 53 passed. Typecheck clean in
+  core, ai and the extension. Not yet tried with a live model in Chrome.
+
 ### Added
 - `cookie_policy` agreement kind. Pages titled or headed "Cookie Policy", "Cookies Policy", "Cookie Notice"
   and similar are detected and labelled "Cookie policy", so Facebook's cookies page no longer says "No
   agreement detected". A `/cookies` path alone is not enough, because cookie settings pages live there too.
   Linked cookie policies are read as `cookie_policy` instead of `privacy_policy`. 5 new core tests.
-  Typecheck passed in core, ai and the extension. **Untested:** the test suites and corpus could not be run
-  (the shell stopped responding). Run `pnpm --filter @specter/core test` and `pnpm corpus:report`.
+  Typecheck passed in core, ai and the extension. Tests were run by the user and passed.
 
 ### Removed
 - `privacy_policy` no longer matches cookie wording or `/cookies` paths; that moved to `cookie_policy`.

@@ -10,8 +10,15 @@ Page tab says, before the click, which provider receives the clause sections. Wi
 sending" on (off by default), the side panel shows how many sections will be sent and waits for Send. Only the candidate
 sections go to the provider, never the rest of the page. Findings are kept in memory only.
 
-**Ask Specter:** the Ask tab retrieves the matching sections with `retrieveSections` (core, pure),
-sends them with `askDocument` (ai), and keeps only citations that point to a section that was sent.
+**Ask Specter** is a conversation grounded in the agreement. Each question goes with the last four turns,
+so follow-ups such as "and if I cancel early?" make sense. Sections are picked with `retrieveForTurn`
+(core, pure): the question's own words first, then the question plus the previous one, then the sections
+the previous answer cited. The model replies in two fields. `answer` says what this agreement says, in
+plain words with at most a short quote, and must cite sections. `general` is optional background, such as
+what binding arbitration usually means, shown under "General background · not from this agreement". The
+model also proposes up to three follow-up questions, shown as suggestions. A question that matches no
+section can still be asked; it is sent with no agreement text and can only get background. `askDocument`
+(ai) keeps only citations that point to a section that was sent.
 An answer without such a citation is not shown as an answer: it becomes "The terms do not say." with a
 "Not stated" chip. Citation chips open the saved passage in the panel and also try to show the section
 on the live page, by its opening words. When the page no longer matches, the panel says so and keeps the

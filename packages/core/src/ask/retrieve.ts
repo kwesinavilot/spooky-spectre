@@ -40,6 +40,50 @@ function score(text: string, terms: string[]): number {
   return hits;
 }
 
+/** An earlier turn of the conversation, as retrieval needs it. */
+export interface PriorTurn {
+  question: string;
+  /** Section ids the answer cited. */
+  citations: string[];
+}
+
+/**
+ * Sections for one turn of a conversation. A follow-up such as "why?" or "and if I cancel early?"
+ * has few words of its own, so:
+ * 1. the question alone, when its words match the agreement;
+ * 2. otherwise the question plus the previous question;
+ * 3. otherwise the sections the previous answer cited.
+ * Returns none when nothing matches; the question can then only get a general answer.
+ */
+export function retrieveForTurn(
+  doc: Pick<ExtractedDocument, 'text' | 'sections'>,
+  question: string,
+  prior: PriorTurn[],
+  maxChars = ASK_MAX_CHARS,
+  maxSections = ASK_MAX_SECTIONS,
+): RetrievedSection[] {
+  const direct = retrieveSections(doc, question, maxChars, maxSections);
+  if (direct.length > 0) return direct;
+  const last = prior[prior.length - 1];
+  if (!last) return [];
+  const joined = retrieveSections(doc, `${question} ${last.question}`, maxChars, maxSections);
+  if (joined.length > 0) return joined;
+
+  const wanted = new Set(last.citations);
+  const out: RetrievedSection[] = [];
+  let size = 0;
+  for (const s of doc.sections) {
+    if (!wanted.has(s.id) || out.length >= maxSections) continue;
+    const remaining = maxChars - size;
+    if (remaining <= 0) break;
+    const full = doc.text.slice(s.startOffset, s.endOffset);
+    const text = full.length > remaining ? full.slice(0, remaining) : full;
+    size += text.length;
+    out.push({ id: s.id, heading: s.heading, text });
+  }
+  return out;
+}
+
 /**
  * Picks the sections of an agreement that are most likely to answer a question.
  * Pure and deterministic. Returns sections in document order. Returns none
