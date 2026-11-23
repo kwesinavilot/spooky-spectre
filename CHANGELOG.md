@@ -43,7 +43,13 @@ phishing investigation, multi-browser support, cloud sync and accounts.
   finding per load, once per site per day, three per day overall (counters in `chrome.storage.local`).
   Callout includes "Why am I seeing this?" and Dismiss. Specter never blocks or delays a click.
 - Immersive vignette and drifting ghosts for Possession, and a spectral pointer for off-screen clauses.
-- `respectReducedMotion` preference (default on). Settings UI for it is not built yet.
+- `respectReducedMotion` preference (default on), set from the side panel's Settings.
+- Side panel Settings (Spec 6 task 16): effect level (Immersive, Subtle, Quiet), a reduced-motion switch,
+  "Specter on this site" for the active tab, and an excluded-sites editor. Built-in exclusions (banks, health,
+  email) cannot be removed. Sites you add are excluded from detection and reading. Checked by typecheck
+  only; not yet checked in Chrome.
+- Analyzing and preview screens list the excerpts sent to the AI provider, as text, with the same section
+  choice and token budget as the prompt. Cancel stays visible. Verified by code reading and typecheck only.
 - Effect levels on the page (Spec 6 task 9). "Show on page" now reads the saved level, not only the markers.
   Immersive pulses the box twice; Subtle pulses once and the marker rises once; Quiet keeps a static outline
   and no movement. Reduced motion forces Quiet while "Respect system reduced motion" is on. Verified by code

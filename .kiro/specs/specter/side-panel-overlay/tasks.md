@@ -32,9 +32,11 @@ Status: **open**. Spec 6 is not complete. `[x]` is built and checked by the user
 - [x] 13 Immersive vignette and drifting ghosts, once each, never over a protected control. Built; placement
   against protected controls is not yet verified in Chrome. _R4.6_
 - [x] 14 Spectral pointer for off-screen targets. Built in `pageHighlight.ts` (`focusMark`); not yet checked in Chrome. _R5.1_
-- [ ] 15 Analyzing screen: show the excerpts being sent (not only the count) and keep Cancel visible. _R6.1_
-- [ ] 16 Settings: haunting level Segmented, respect reduced motion switch, excluded domains editor, "This site".
-  _R6.2_
+- [x] 15 Analyzing screen: show the excerpts being sent (not only the count) and keep Cancel visible. Built in
+  `PageTab.tsx` (`ExcerptList`); not yet checked in Chrome. _R6.1_
+- [x] 16 Settings: haunting level Segmented, respect reduced motion switch, excluded domains editor, "This site".
+  Built in `App.tsx` (`SettingsBody`) on the chrome.storage preferences the page reads. Options still shows
+  only the built-in list. Not yet checked in Chrome. _R6.2_
 - [ ] 17 Data section: size used, Export JSON, Delete all with confirm. **Blocked by Spec 8.** _R6.3_
 - [ ] 18 Resurrection. **Blocked by Spec 8 and Spec 9.** _R7_
 - [ ] 19 Chrome check on the Streamly demo for each effect level, reduced motion on and off. Recorded here by the

@@ -2,7 +2,8 @@
 
 **Status: partly built, not verified in Chrome.** Margin markers appear automatically after an analysis.
 Haunting, the spectral pointer, the Possession trigger, the callout, the vignette and drifting ghosts are
-built and typecheck. Effect levels on the page (task 9) and the Chrome check (task 19) are open. The
+built. The effect level (Immersive, Subtle, Quiet) and reduced motion are read on each request. The
+level is set in the side panel's Settings. The Chrome check (task 19) is still open. The
 authoritative rules are in `.kiro/steering/design.md` §5; this page summarizes them. The overlay is Spec 6.
 
 ## The idea
