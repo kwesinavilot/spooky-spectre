@@ -34,6 +34,11 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-10-31
+
+Spec 7 (onboarding and tutorial) closed. Ghost waves and step 4 effects checked by the user. Spec 6 work
+starts in this release cycle; see `.kiro/specs/specter/side-panel-overlay`.
+
 ### Added (spec folders)
 - `.kiro/specs/specter/clause-analysis` for Spec 5, written after the code. Spec 5 is closed. The version bump is part of the next release commit.
 - `.kiro/specs/specter/side-panel-overlay` for Spec 6, with 19 tasks. Spec 6 is open.
@@ -52,6 +57,11 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 - Lingering on a step brings peeking ghosts: bigger each time. A ghost pops its head out and blinks twice, then flies slowly across the screen. The first comes from the left toward the top right, the second from the bottom right toward the top middle, and the third from the right. Timings restart on each step. Reduced motion turns them off.
 - Mode effects on step 4 are unchanged and separate from the regular waves.
 - Typecheck passes for the extension. Not run in Chrome.
+
+## [0.10.0] - 2026-10-31
+
+Spec 5 (clause analysis and validation) closed. Specification: `.kiro/specs/specter/clause-analysis`.
+Possession moved to Spec 6.
 
 ## [0.9.0] - 2026-10-31
 
