@@ -31,6 +31,8 @@ const CSS = `
 .marker .glyph{width:26px;height:26px;border-radius:13px;background:#191C2B;border:1px solid #8B6BC3;
   display:flex;align-items:center;justify-content:center;}
 .marker.haunt .glyph{animation:sv-pulse 1.2s ease-out 2;}
+.marker.rise{animation:sv-rise .6s ease-out 1 both;}
+@keyframes sv-rise{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
 .marker:focus-visible{outline:2px solid #C7A7FF;outline-offset:2px;border-radius:12px;}
 .pop,.callout{position:fixed;width:${POPOVER_WIDTH}px;max-width:calc(100vw - 16px);box-sizing:border-box;padding:16px;
   background:#191C2B;color:#F4EAFF;border:1px solid #2E3252;border-radius:16px;
@@ -68,7 +70,8 @@ interface Mark {
   marker: HTMLButtonElement;
   boxes: HTMLDivElement[];
   popover: HTMLDivElement | null;
-  played: boolean;
+  /** True after "Show on page": the box pulses at the current level (design steering 5.2, Haunting). */
+  haunt: boolean;
 }
 
 const marks = new Map<string, Mark>();
@@ -172,15 +175,19 @@ export function findQuoteRange(quote: string): Range | null {
   return range;
 }
 
-/** The class set for a finding's box, from its effect and the current level (design steering 5.2). */
-function boxClass(effect: string): string {
+/**
+ * The class set for a finding's box, from its effect, whether it was shown on request, and the current
+ * level (design steering 5.2). Immersive pulses twice (about 2.4 s); Subtle pulses once. Quiet and reduced
+ * motion keep the static outline.
+ */
+function boxClass(effect: string, haunt: boolean): string {
   const high = effect === 'possession';
   const base = high ? 'hl high' : 'hl';
   if (!animationsOn()) return base;
-  if (effect === 'whisper') return `${base} soft shimmer`;
-  if (effect === 'possession') return `${base} pulse-twice`;
-  if (effect === 'hand' || effect === 'haunting') return `${base} pulse-once`;
-  return base;
+  if (effect === 'whisper' && !haunt) return `${base} soft shimmer`;
+  const pulses = haunt || effect === 'possession' || effect === 'hand' || effect === 'haunting';
+  if (!pulses) return base;
+  return `${base} ${level === 'immersive' ? 'pulse-twice' : 'pulse-once'}`;
 }
 
 function impactClass(impact: string): string {
@@ -280,7 +287,7 @@ function place(m: Mark): void {
     });
   }
   // The class is the same on every placement, so a CSS animation is not restarted by scrolling.
-  const cls = boxClass(m.item.effect);
+  const cls = boxClass(m.item.effect, m.haunt);
   rects.forEach((r, i) => {
     const box = m.boxes[i]!;
     box.className = cls;
@@ -349,7 +356,9 @@ function addMark(item: MarkItem): Mark | null {
   const marker = buildMarker(item.id, item.card.title);
   container.append(marker);
   lay.append(container);
-  const m: Mark = { item, range, container, marker, boxes: [], popover: null, played: false };
+  // Subtle: the marker rises beside the clause once, as the design's rising ghost (5.2).
+  if (level === 'subtle' && animationsOn()) marker.classList.add('rise');
+  const m: Mark = { item, range, container, marker, boxes: [], popover: null, haunt: false };
   marks.set(item.id, m);
   place(m);
   return m;
@@ -377,10 +386,9 @@ export function focusMark(item: MarkItem): boolean {
   anchor?.scrollIntoView({ block: 'center', behavior: reducedNow ? 'auto' : 'smooth' });
   listen();
   if (offscreen) spectralPointer(m, reducedNow);
-  // Flash the clause once: a brief extra outline, so the eye finds it.
-  if (!reducedNow) {
-    m.boxes.forEach((b) => b.classList.add('pulse-once'));
-  }
+  // Haunting on request: the box pulses at the current level. Quiet keeps the static outline.
+  m.haunt = !reducedNow;
+  place(m);
   return true;
 }
 

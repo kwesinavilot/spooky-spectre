@@ -6,7 +6,7 @@ import { shouldAnalyze } from '@specter/core/privacy';
 import type { AgreementKind, DetectionResult } from '@specter/core/schema';
 import type { SpecterMessage } from '../src/messaging';
 import { clearAll, focusMark, markerRect, setEffectLevel, showMarks } from '../src/pageHighlight';
-import { configure, dispose, momentForFinding } from '../src/possessionOverlay';
+import { configure, dispose, momentForFinding, setPossessionLevel } from '../src/possessionOverlay';
 import { blockedDomains, getPrefs } from '../src/prefs';
 
 type SpecterGlobal = typeof globalThis & { __specterLoaded?: boolean; __specterOnDemand?: boolean };
@@ -135,9 +135,7 @@ function listen(current: () => Current): void {
     if (message.type === 'show-marks') {
       // A marker for every verified finding, drawn at once. The side panel sends this after an analysis.
       void (async () => {
-        const prefs = await getPrefs();
-        const reduce = prefs.respectReducedMotion && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        setEffectLevel(prefs.effectLevel, reduce);
+        const { prefs, reduce } = await applyPrefs();
         const count = showMarks(message.items);
         const c = current();
         const controls = 'excluded' in c || !c.outcome || c.outcome.excluded ? [] : c.outcome.result.actionControls;
@@ -149,10 +147,13 @@ function listen(current: () => Current): void {
     if (message.type === 'highlight') {
       // "Show on page" for one finding: scroll to it, and count it as a moment of agreement.
       const item = message.item;
-      const found = item ? focusMark(item) : false;
-      if (item && found) momentForFinding(item.id, () => markerRect(item.id));
-      sendResponse({ type: 'highlighted', found } satisfies SpecterMessage);
-      return false;
+      void (async () => {
+        await applyPrefs();
+        const found = item ? focusMark(item) : false;
+        if (item && found) momentForFinding(item.id, () => markerRect(item.id));
+        sendResponse({ type: 'highlighted', found } satisfies SpecterMessage);
+      })();
+      return true;
     }
     if (message.type === 'clear-highlight') {
       clearAll();
@@ -170,6 +171,18 @@ function listen(current: () => Current): void {
     }
     return false;
   });
+}
+
+/**
+ * Reads the saved effect level and the reduced-motion setting, and applies them to the page. The
+ * setting forces Quiet only while "Respect system reduced motion" is on (design steering 5.1).
+ */
+async function applyPrefs(): Promise<{ prefs: Awaited<ReturnType<typeof getPrefs>>; reduce: boolean }> {
+  const prefs = await getPrefs();
+  const reduce = prefs.respectReducedMotion && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  setEffectLevel(prefs.effectLevel, reduce);
+  setPossessionLevel(prefs.effectLevel, reduce);
+  return { prefs, reduce };
 }
 
 function fingerprint(root: Element): string {

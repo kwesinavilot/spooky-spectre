@@ -20,8 +20,9 @@ Status: **open**. Spec 6 is not complete. `[x]` is built and checked by the user
 - [x] 8 Popover (Shadow DOM, 320px): impact and evidence chips, title, sentence, "Open in Specter", "Dismiss". Built.
   Placement beside the marker, flipped to the left when there is no room; it does not yet check for accept
   controls. _R2.2, R2.3, R2.4_
-- [ ] 9 Effect levels honoured on the page: Immersive, Subtle, Quiet from settings, read through the service
-  worker with a nonce; reduced motion forces Quiet. _R3.1–R3.3_
+- [x] 9 Effect levels honoured on the page: Immersive, Subtle, Quiet from settings, read on each marker or
+  "Show on page" request (not through a nonce; the content script reads `chrome.storage` directly). Reduced
+  motion forces Quiet. Built and typechecked; not yet checked in Chrome. _R3.1–R3.3_
 - [x] 10 Possession rules: `apps/extension/src/possession.ts` (`meetsTrigger`, `decideEffect`), 18 unit tests passing.
   Not yet connected to the page: no moment of agreement is detected. _R4.1_
 - [x] 11 Caps: once per finding per load, once per site per day, three per day, daily reset (`countersForDay`).

@@ -49,6 +49,11 @@ let pointer: { x: number; y: number } | null = null;
 let bound = false;
 let frame = 0;
 
+/** Updates the effect level without changing the findings, for when the user changes the setting. */
+export function setPossessionLevel(level: Level, reduce: boolean): void {
+  state = { ...state, level, reduce };
+}
+
 /** Sets what the page knows about this analysis. Call after the markers are drawn. */
 export function configure(next: State): void {
   state = next;

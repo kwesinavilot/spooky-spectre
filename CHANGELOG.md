@@ -44,6 +44,10 @@ phishing investigation, multi-browser support, cloud sync and accounts.
   Callout includes "Why am I seeing this?" and Dismiss. Specter never blocks or delays a click.
 - Immersive vignette and drifting ghosts for Possession, and a spectral pointer for off-screen clauses.
 - `respectReducedMotion` preference (default on). Settings UI for it is not built yet.
+- Effect levels on the page (Spec 6 task 9). "Show on page" now reads the saved level, not only the markers.
+  Immersive pulses the box twice; Subtle pulses once and the marker rises once; Quiet keeps a static outline
+  and no movement. Reduced motion forces Quiet while "Respect system reduced motion" is on. Verified by code
+  reading and typecheck only; not yet checked in Chrome.
 
 ### Changed
 - Analysis runs automatically after Analyze agreement. Preview before sending is opt-in (default off).
