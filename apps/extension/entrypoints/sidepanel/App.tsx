@@ -39,6 +39,17 @@ export default function App() {
   const openDrill = useSidePanel((s) => s.openDrill);
   const back = useSidePanel((s) => s.back);
 
+  // "Open in Specter" on the page asks the panel to show the Findings tab.
+  useEffect(() => {
+    const listener = (raw: unknown) => {
+      const m = raw as { type?: string };
+      if (m.type === 'focus-finding') useSidePanel.getState().setTab('findings');
+      return false;
+    };
+    chrome.runtime.onMessage.addListener(listener);
+    return () => chrome.runtime.onMessage.removeListener(listener);
+  }, []);
+
   const onNav = (id: NavId) => {
     if (id === 'history') openTab('graveyard');
     else setTab(id);

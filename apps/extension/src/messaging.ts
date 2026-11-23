@@ -8,6 +8,16 @@ export interface TabState {
   result?: DetectionResult;
 }
 
+/** What the popover on the page shows for a highlighted finding. Plain text only. */
+export interface HighlightCard {
+  id: string;
+  title: string;
+  /** "High impact", "Medium impact" or "Low impact". */
+  impact: string;
+  /** One sentence on what the clause could mean for the reader. */
+  sentence: string;
+}
+
 export type ExtractTarget = 'page' | 'banner';
 export type ExtractFailure = 'excluded' | 'pdf' | 'no_access' | 'nothing_found' | 'error';
 
@@ -29,8 +39,10 @@ export type SpecterMessage =
   // background -> extension pages
   | { type: 'tab-state-changed'; tabId: number }
   // side panel -> content script
-  | { type: 'highlight'; quote: string; effect: string }
+  | { type: 'highlight'; quote: string; effect: string; card?: HighlightCard }
   | { type: 'highlighted'; found: boolean }
+  // page popover -> side panel: open the finding in the Findings tab
+  | { type: 'focus-finding'; id: string }
   | { type: 'clear-highlight' }
   | { type: 'get-detection' }
   | { type: 'detection'; result?: DetectionResult; excluded?: boolean }

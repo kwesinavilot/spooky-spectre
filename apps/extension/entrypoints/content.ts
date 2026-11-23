@@ -132,7 +132,7 @@ function listen(current: () => Current): void {
       return false;
     }
     if (message.type === 'highlight') {
-      const found = showHighlight(message.quote, message.effect);
+      const found = showHighlight(message.quote, message.effect, message.card);
       sendResponse({ type: 'highlighted', found } satisfies SpecterMessage);
       return false;
     }
