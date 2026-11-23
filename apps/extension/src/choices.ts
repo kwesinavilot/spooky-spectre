@@ -8,6 +8,16 @@ export type DocumentChoice =
 
 const PAGE_DOCS = ['terms_of_service', 'privacy_policy', 'eula'] as const;
 
+/** An address without its query and fragment, so the same page with a different tracking query matches. */
+function withoutQuery(url: string): string {
+  try {
+    const u = new URL(url);
+    return `${u.origin}${u.pathname.replace(/\/+$/, '')}`;
+  } catch {
+    return url.split(/[?#]/)[0] ?? url;
+  }
+}
+
 /**
  * The documents the user can analyze on this page (design steering 6C): the
  * page itself when it is a terms, privacy or license page, the cookie banner,
@@ -18,10 +28,11 @@ export function documentChoices(result: DetectionResult): DocumentChoice[] {
   const pageKind = PAGE_DOCS.find((k) => result.kinds.includes(k));
   if (pageKind) out.push({ id: 'page', kind: 'page', label: `This page (${KIND_LABEL[pageKind]})` });
   if (result.kinds.includes('cookie_banner')) out.push({ id: 'banner', kind: 'banner', label: 'The cookie banner' });
+  const here = withoutQuery(result.url);
   for (const link of result.links) {
     if (link.kind === 'other') continue;
-    // A terms page often links to itself; skip links back to the current page.
-    if (pageKind && link.url.split('#')[0] === result.url) continue;
+    // A policy page links to itself, often with a tracking query; skip links back to the current page.
+    if (pageKind && withoutQuery(link.url) === here) continue;
     out.push({ id: `link:${link.url}`, kind: 'link', label: link.text || link.url, link });
   }
   return out;

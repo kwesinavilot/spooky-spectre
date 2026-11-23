@@ -52,6 +52,15 @@ Also recorded: cookie controls with role and certainty (`detected` or `uncertain
 control found", the form's submit button (for the moment-of-agreement trigger in Spec 6), policy
 links, and consent containers Specter cannot read. The URL is origin and path only.
 
+**Which links count as documents** (`src/detect/links.ts`). A link is offered as a document only when its
+own text names one: short (up to six words), not a sentence, not navigation ("Privacy Center home",
+"Common privacy settings", "View printable version", "See previous versions"), not a footnote marker such
+as `partners[2]`, and not a bare address. The URL path is a fallback only for generic text such as
+"Learn more" or "here", and only its last segment counts, so a link under `/privacy/` is not a privacy
+policy because of the folder. The same address, or the same kind with the same text, is listed once. Each
+kind keeps its first two links and a page keeps at most eight. In the side panel, links back to the
+current page (ignoring the query string) are left out.
+
 ## Extraction: `extractDocument(doc, opts)`
 
 1. **Root:** `<main>` (widened to include the page's `<h1>` when the title sits outside it), a

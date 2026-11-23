@@ -34,6 +34,22 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 
 ## [Unreleased]
 
+## [0.12.1] - 2026-10-31
+
+### Fixed
+- The document list no longer fills with every link on a policy page. Facebook's privacy page offered about
+  twenty "documents" such as "AI at Meta", "partners[2]" and "View printable version", because any link
+  whose URL path contained "privacy" counted. Now the link text has to name a document (short, not
+  navigation, not a footnote), the path is used only for generic text such as "Learn more" and only by its
+  last segment, duplicates are merged, each kind keeps two links and a page eight. Links back to the
+  current page are skipped even when their query string differs. 6 new core tests built from the Facebook
+  samples. Core tests ran (113 passed), extension tests ran (53 passed) and the corpus still passes 7 of 10
+  (same three pages as before). Not yet tried on Facebook in Chrome.
+
+### Known gap
+- A cookie policy page ("Cookies Policy") is not recognized as an agreement: there is no cookie policy
+  kind, so the panel says "No agreement detected" there.
+
 ## [0.12.0] - 2026-10-31
 
 Spec 6 (side panel and Spectral Vision overlay) and Spec 10 (Ask Specter) closed. Spec 6 is closed with
