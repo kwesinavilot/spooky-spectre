@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { budgetChars, buildUserPrompt, estimateTokens, SYSTEM_PROMPT } from '@specter/ai';
+import {
+  budgetChars,
+  buildUserPrompt,
+  contextSections,
+  estimateTokens,
+  SYSTEM_PROMPT,
+} from '@specter/ai';
 import { findCandidates, type DetectionResult, type ExtractedDocument } from '@specter/core';
 import { Button, Card, Chip, InsetCard, OptionCard, ProgressStepper } from '@specter/ui';
 import { runAnalysis } from '../../src/analysisRunner';
@@ -35,16 +41,64 @@ type View =
       result: DetectionResult;
       doc: ExtractedDocument;
       providerLabel: string;
-      sections: number;
+      excerpts: Excerpt[];
       tokenCount: number;
     }
-  | { kind: 'interpreting'; result: DetectionResult; doc: ExtractedDocument; aiOn: boolean }
+  | {
+      kind: 'interpreting';
+      result: DetectionResult;
+      doc: ExtractedDocument;
+      aiOn: boolean;
+      /** The exact sections that will leave the device. Empty when no AI is used. */
+      excerpts: Excerpt[];
+    }
   | { kind: 'extracted'; result: DetectionResult; doc: ExtractedDocument }
   | { kind: 'failed'; result?: DetectionResult; reason: ReadFailure };
 
 interface ActiveTab {
   id: number;
   url: string;
+}
+
+/** One section of the agreement as the model will receive it (same selection as the analysis prompt). */
+interface Excerpt {
+  id: string;
+  heading: string;
+  text: string;
+}
+
+/** The sections the analysis will send, chosen with the same rules and budget as the prompt. */
+function excerptsFor(doc: ExtractedDocument, tokenBudget: number): Excerpt[] {
+  const candidates = findCandidates(doc);
+  return contextSections(
+    doc,
+    candidates.map((c) => c.sectionId),
+    budgetChars(tokenBudget),
+  ).map((s) => ({
+    id: s.id,
+    heading: s.heading || 'Introduction',
+    text: doc.text.slice(s.startOffset, s.endOffset),
+  }));
+}
+
+/** Lists the excerpts as plain text, in a scrollable box, so the user can see what leaves the device. */
+function ExcerptList({ excerpts, providerLabel }: { excerpts: Excerpt[]; providerLabel: string }) {
+  return (
+    <InsetCard>
+      <p className="text-small text-fg">
+        {excerpts.length} {excerpts.length === 1 ? 'section' : 'sections'} going to {providerLabel}. Nothing else from
+        this page is sent.
+      </p>
+      <ul className="mt-2 max-h-56 space-y-3 overflow-y-auto pr-1" aria-label="Excerpts being sent">
+        {excerpts.map((e) => (
+          <li key={e.id}>
+            <p className="text-caption font-semibold text-fg">{e.heading}</p>
+            <p className="mt-1 whitespace-pre-wrap font-mono text-caption text-muted">{e.text}</p>
+          </li>
+        ))}
+      </ul>
+    </InsetCard>
+  );
 }
 
 const newRequestId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -180,7 +234,7 @@ export function PageTab() {
         result,
         doc,
         providerLabel: provider.label,
-        sections: candidates.length,
+        excerpts: excerptsFor(doc, prefs.tokenBudget),
         tokenCount,
       });
       return;
@@ -194,7 +248,9 @@ export function PageTab() {
     current.current = requestId;
     const ctrl = new AbortController();
     abort.current = ctrl;
-    setView({ kind: 'interpreting', result, doc, aiOn: providerId !== null });
+    const prefs = await getPrefs();
+    const excerpts = providerId !== null ? excerptsFor(doc, prefs.tokenBudget) : [];
+    setView({ kind: 'interpreting', result, doc, aiOn: providerId !== null, excerpts });
     const run = await runAnalysis(doc, providerId, ctrl.signal, tab?.id ?? null);
     if (current.current !== requestId) return; // cancelled or the page changed
     abort.current = null;
@@ -366,12 +422,9 @@ function Body(props: {
       <Card>
         <Host url={url} chip={<Chip variant="ghost">Before sending</Chip>} />
         <h3 className="text-h3 font-semibold">Send this agreement to {view.providerLabel}?</h3>
-        <InsetCard>
-          <p className="text-small text-fg">
-            Specter will send the {view.sections} {view.sections === 1 ? 'section' : 'sections'} that may hold clauses.
-            It does not send the rest of the page.
-          </p>
-        </InsetCard>
+        <div className="mt-2">
+          <ExcerptList excerpts={view.excerpts} providerLabel={view.providerLabel} />
+        </div>
         <p className="mt-2 text-caption text-muted">About {view.tokenCount.toLocaleString('en-US')} tokens.</p>
         <p className="mt-1 text-caption text-muted">Nothing is sent until you press Send.</p>
         <Button className="mt-3" block onClick={() => props.onSend(view.result, view.doc)}>
@@ -400,6 +453,11 @@ function Body(props: {
       <Card>
         <Host url={url} chip={<Chip variant="ghost">Analyzing</Chip>} />
         <ProgressStepper reduceMotion={props.reduceMotion} steps={steps} />
+        {view.aiOn && view.excerpts.length > 0 ? (
+          <div className="mt-3">
+            <ExcerptList excerpts={view.excerpts} providerLabel={props.providerLabel ?? 'your provider'} />
+          </div>
+        ) : null}
         <Button className="mt-3" variant="quiet" onClick={() => props.onCancel(view.result)}>
           Cancel analysis
         </Button>
