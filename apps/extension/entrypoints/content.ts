@@ -16,6 +16,7 @@ const DEBOUNCE_MS = 500;
 const PAGE_KINDS: AgreementKind[] = [
   'terms_of_service',
   'privacy_policy',
+  'cookie_policy',
   'eula',
   'subscription_terms',
   'consent_checkbox',

@@ -8,7 +8,7 @@ export type LinkedPolicyResult =
 const KIND_FOR_LINK: Record<PolicyLink['kind'], AgreementKind> = {
   terms: 'terms_of_service',
   privacy: 'privacy_policy',
-  cookies: 'privacy_policy',
+  cookies: 'cookie_policy',
   subscription: 'subscription_terms',
   other: 'terms_of_service',
 };

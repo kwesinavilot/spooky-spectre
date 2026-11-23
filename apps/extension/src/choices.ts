@@ -6,7 +6,7 @@ export type DocumentChoice =
   | { id: string; kind: 'banner'; label: string }
   | { id: string; kind: 'link'; label: string; link: PolicyLink };
 
-const PAGE_DOCS = ['terms_of_service', 'privacy_policy', 'eula'] as const;
+const PAGE_DOCS = ['terms_of_service', 'privacy_policy', 'cookie_policy', 'eula'] as const;
 
 /** An address without its query and fragment, so the same page with a different tracking query matches. */
 function withoutQuery(url: string): string {

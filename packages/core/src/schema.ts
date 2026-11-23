@@ -90,6 +90,7 @@ export const AgreementKind = z.enum([
   'cookie_banner',
   'terms_of_service',
   'privacy_policy',
+  'cookie_policy',
   'subscription_terms',
   'eula',
   'consent_checkbox',

@@ -28,7 +28,7 @@ happy-dom (NFR-01). The service worker never parses HTML; it has no DOM.
 
 ```ts
 export const AgreementKind = z.enum([
-  'cookie_banner', 'terms_of_service', 'privacy_policy',
+  'cookie_banner', 'terms_of_service', 'privacy_policy', 'cookie_policy',
   'subscription_terms', 'eula', 'consent_checkbox',
 ])
 

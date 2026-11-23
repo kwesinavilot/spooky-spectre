@@ -38,8 +38,8 @@ started and only with their one-time consent (see FR-EXT-08 and §8).
 
 ## 3. Glossary
 
-- **Agreement kind:** one of `cookie_banner`, `terms_of_service`, `privacy_policy`,
-  `subscription_terms`, `eula`, `consent_checkbox`.
+- **Agreement kind:** one of `cookie_banner`, `terms_of_service`, `privacy_policy`, `cookie_policy`
+  (added in v0.12.2), `subscription_terms`, `eula`, `consent_checkbox`.
 - **Detection result:** the kinds found on a page, the signals that matched, policy links found,
   cookie controls found, and a detection confidence. Contains no page text beyond short labels.
 - **Extracted document:** normalized text of one agreement, its sections, offsets, anchors,

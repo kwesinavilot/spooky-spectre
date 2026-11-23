@@ -44,6 +44,7 @@ export const KIND_LABEL: Record<AgreementKind, string> = {
   cookie_banner: 'Cookie banner',
   terms_of_service: 'Terms of service',
   privacy_policy: 'Privacy policy',
+  cookie_policy: 'Cookie policy',
   subscription_terms: 'Subscription terms',
   eula: 'Software license',
   consent_checkbox: 'Sign-up agreement',

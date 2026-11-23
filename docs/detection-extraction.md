@@ -44,7 +44,7 @@ the document. Otherwise a `DetectionResult` plus the live banner element.
 | Kind | How it is recognized |
 | --- | --- |
 | `cookie_banner` | Starts from visible buttons labeled like accept, reject or manage, walks up to a container with cookie or consent wording that is fixed or sticky, a dialog, or short. It must offer accept or reject; outside a fixed container or dialog it needs two kinds of control. Hidden banners (already dismissed) do not count |
-| `terms_of_service`, `privacy_policy`, `eula` | Title, main heading, URL path and the share of numbered headings, against a 0.5 threshold. A page can be more than one (for example "Terms & Privacy Policy") |
+| `terms_of_service`, `privacy_policy`, `cookie_policy`, `eula` | Title, main heading, URL path and the share of numbered headings, against a 0.5 threshold. A page can be more than one (for example "Terms & Privacy Policy"). `cookie_policy` matches "Cookie Policy", "Cookies Policy", "Cookie Notice" and similar in the title or heading. A `/cookies` path alone is not enough, because many sites have a cookie settings page there |
 | `consent_checkbox` | A checkbox whose label links to terms or privacy |
 | `subscription_terms` | A sign-up or payment form with at least two kinds of billing wording near the submit button |
 

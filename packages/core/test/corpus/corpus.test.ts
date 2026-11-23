@@ -21,7 +21,13 @@ interface Entry {
 const corpusDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../../corpus');
 const manifestPath = resolve(corpusDir, 'manifest.json');
 const TARGET = { passes: 7, of: 10 };
-const PAGE_KINDS: AgreementKind[] = ['terms_of_service', 'privacy_policy', 'eula', 'subscription_terms'];
+const PAGE_KINDS: AgreementKind[] = [
+  'terms_of_service',
+  'privacy_policy',
+  'cookie_policy',
+  'eula',
+  'subscription_terms',
+];
 
 const norm = (s: string) => normalizeInline(s).toLowerCase();
 

@@ -34,6 +34,17 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 
 ## [Unreleased]
 
+### Added
+- `cookie_policy` agreement kind. Pages titled or headed "Cookie Policy", "Cookies Policy", "Cookie Notice"
+  and similar are detected and labelled "Cookie policy", so Facebook's cookies page no longer says "No
+  agreement detected". A `/cookies` path alone is not enough, because cookie settings pages live there too.
+  Linked cookie policies are read as `cookie_policy` instead of `privacy_policy`. 5 new core tests.
+  Typecheck passed in core, ai and the extension. **Untested:** the test suites and corpus could not be run
+  (the shell stopped responding). Run `pnpm --filter @specter/core test` and `pnpm corpus:report`.
+
+### Removed
+- `privacy_policy` no longer matches cookie wording or `/cookies` paths; that moved to `cookie_policy`.
+
 ## [0.12.1] - 2026-10-31
 
 ### Fixed

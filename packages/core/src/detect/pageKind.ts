@@ -1,7 +1,7 @@
 import type { AgreementKind } from '../schema';
 import { normalizeInline } from '../dom/text';
 
-type PageKind = Extract<AgreementKind, 'terms_of_service' | 'privacy_policy' | 'eula'>;
+type PageKind = Extract<AgreementKind, 'terms_of_service' | 'privacy_policy' | 'cookie_policy' | 'eula'>;
 
 const PAGE_PATTERNS: Record<PageKind, { text: RegExp; path: RegExp }> = {
   terms_of_service: {
@@ -9,8 +9,14 @@ const PAGE_PATTERNS: Record<PageKind, { text: RegExp; path: RegExp }> = {
     path: /\/(terms|tos|terms-of-service|terms-of-use|conditions|user-agreement|legal)(\/|\.|$|-)/i,
   },
   privacy_policy: {
-    text: /\bprivacy (policy|notice|statement)\b|\bcookie (policy|notice)\b|\bdata protection\b/i,
-    path: /\/(privacy|privacy-policy|cookie-policy|cookies)(\/|\.|$|-)/i,
+    text: /\bprivacy (policy|notice|statement)\b|\bprivacy (and|&) cookies?\b|\bdata protection\b/i,
+    path: /\/(privacy|privacy-policy)(\/|\.|$|-)/i,
+  },
+  // "Cookies Policy" (plural) is how Facebook and others name it. A title or heading is needed:
+  // a /cookies path alone is not enough, since many sites have a cookie settings page.
+  cookie_policy: {
+    text: /\bcookies? (policy|notice|statement)\b|\bcookies? and (similar|other) technologies\b|^cookies?$/i,
+    path: /\/(cookies?|cookie-policy|cookies-policy|cookie-notice)(\/|\.|$|-)/i,
   },
   eula: {
     text: /\bend[- ]user licen[cs]e\b|\beula\b|\bsoftware licen[cs]e\b|\blicen[cs]e agreement\b/i,
