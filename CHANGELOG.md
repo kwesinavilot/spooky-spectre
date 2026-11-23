@@ -22,7 +22,7 @@ Spec roadmap:
 | 7 | Onboarding and tutorial | MVP | Done. Ghost waves and step 4 effects tested by the user |
 | 8 | Graveyard, saving and consent search | MVP | Not started |
 | 9 | Version comparison (Haunting Timeline) | MVP | Not started |
-| 10 | Ask Specter | MVP | Not started |
+| 10 | Ask Specter | MVP | Done (`.kiro/specs/specter/ask-specter`). Asking about saved or changed agreements waits for Specs 8 and 9 |
 | 11 | Reminders | Later | Deferred |
 | 12 | Help Center and coach marks | MVP | Not started |
 | 13 | Accessibility, polish and performance | MVP | Not started |
@@ -54,6 +54,12 @@ phishing investigation, multi-browser support, cloud sync and accounts.
   Immersive pulses the box twice; Subtle pulses once and the marker rises once; Quiet keeps a static outline
   and no movement. Reduced motion forces Quiet while "Respect system reduced motion" is on. Verified by code
   reading and typecheck only; not yet checked in Chrome.
+
+- Spec 10, Ask Specter, closed (`.kiro/specs/specter/ask-specter`). Citation chips now also show the cited
+  section on the live page, with a notice and the saved passage when it cannot be matched. Cited excerpts
+  are unverified: they never start Possession and their popover has no "Source verified" chip. Suggested
+  questions return after an answer. "Explain" on a finding opens Ask with the question filled in. 8 new
+  unit tests. Not yet tried in Chrome.
 
 ### Changed
 - Analysis runs automatically after Analyze agreement. Preview before sending is opt-in (default off).

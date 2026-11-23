@@ -11,7 +11,12 @@ export interface SidePanelState {
   tab: SidePanelTab;
   drill: DrillIn | null;
   status: SidePanelStatus;
+  /** A question waiting in the Ask box, set by "Explain" on a finding. Cleared once the Ask tab takes it. */
+  askDraft: string | null;
   setTab: (tab: SidePanelTab) => void;
+  /** Opens Ask with the question filled in. The user still presses Ask; nothing is sent. */
+  askAbout: (question: string) => void;
+  clearAskDraft: () => void;
   openDrill: (drill: DrillIn) => void;
   /** Back from a drill-in returns to the tab the user was on, with its state intact. */
   back: () => void;
@@ -24,7 +29,10 @@ export const createSidePanelState = (
   tab: 'page',
   drill: null,
   status: 'idle',
+  askDraft: null,
   setTab: (tab) => set({ tab, drill: null }),
+  askAbout: (question) => set({ tab: 'ask', drill: null, askDraft: question }),
+  clearAskDraft: () => set({ askDraft: null }),
   openDrill: (drill) => set({ drill }),
   back: () => set({ drill: null }),
   setStatus: (status) => set({ status }),

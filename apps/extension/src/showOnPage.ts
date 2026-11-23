@@ -36,7 +36,60 @@ export function markItemsFor(findings: ClauseFinding[], doc: Pick<ExtractedDocum
   return findings.filter((f) => f.verified).map((f) => markItemFor(f, doc));
 }
 
+/** Longest passage used to find a cited section on the live page. Long enough to be unique, short enough to match. */
+const EXCERPT_CHARS = 160;
+
+/** The opening words of a section, cut at a word boundary, as the passage to look for on the page. */
+export function excerptStart(text: string): string {
+  const flat = text.replace(/\s+/g, ' ').trim();
+  if (flat.length <= EXCERPT_CHARS) return flat;
+  const cut = flat.slice(0, EXCERPT_CHARS);
+  const space = cut.lastIndexOf(' ');
+  return (space > 40 ? cut.slice(0, space) : cut).trim();
+}
+
+/**
+ * The page's view of a section cited by an Ask answer. It is not a finding: it is unverified, low concern
+ * and never triggers Possession, so the popover shows no "Source verified" chip.
+ */
+export function excerptItemFor(section: { id: string; heading: string; text: string }): MarkItem {
+  const heading = section.heading || 'Introduction';
+  return {
+    id: `ask:${section.id}`,
+    quote: excerptStart(section.text),
+    effect: 'whisper',
+    card: { id: `ask:${section.id}`, title: heading, impact: 'Cited excerpt', sentence: 'Cited in an answer from Ask Specter.' },
+    concern: 'low',
+    confidence: 0,
+    verified: false,
+    section: `§ ${heading}`,
+  };
+}
+
 export type ShowResult = 'found' | 'missing' | 'stale' | 'no_tab';
+
+/**
+ * Shows a section cited by an Ask answer on the live page. Same tab rules as `showOnPage`. When the
+ * passage cannot be matched the caller keeps showing the saved passage in the panel.
+ */
+export async function showExcerptOnPage(
+  section: { id: string; heading: string; text: string },
+  fromTabId: number | null,
+): Promise<ShowResult> {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (tab?.id === undefined) return 'no_tab';
+  if (fromTabId !== null && tab.id !== fromTabId) return 'stale';
+  const item = excerptItemFor(section);
+  if (item.quote.length === 0) return 'missing';
+  const reply = await sendToTab(tab.id, {
+    type: 'highlight',
+    quote: item.quote,
+    effect: item.effect,
+    card: item.card,
+    item,
+  });
+  return reply?.type === 'highlighted' && reply.found ? 'found' : 'missing';
+}
 
 /**
  * Show on page for one finding. Sends it to the tab the agreement came from. Never clicks or changes the page.

@@ -206,11 +206,16 @@ function FindingCard({
             <Button variant="primary" onClick={show}>
               Show on page
             </Button>
+            <Button
+              variant="secondary"
+              onClick={() => useSidePanel.getState().askAbout(`Explain this clause: ${finding.summary}`)}
+            >
+              Explain
+            </Button>
             <Button variant="quiet" onClick={onDismiss}>
               Dismiss
             </Button>
           </div>
-          <p className="mt-2 text-caption text-muted">Explain arrives with Ask Specter.</p>
         </>
       ) : null}
     </Card>

@@ -8,6 +8,7 @@ import { PROVIDERS } from '../../src/aiConnect';
 import { getPrefs, TOKEN_BUDGET_DEFAULT } from '../../src/prefs';
 import { useFindings } from '../../src/findingsStore';
 import { ASK_MESSAGE, type AnalysisFailure } from '../../src/labels';
+import { showExcerptOnPage } from '../../src/showOnPage';
 import { useSettings } from '../../src/store/settings';
 import { useSidePanel } from '../../src/store/sidepanel';
 
@@ -40,6 +41,9 @@ export function AskTab() {
   const storedProvider = useSettings((s) => s.providerId);
   const provider = PROVIDERS.find((p) => p.id === storedProvider) ?? null;
   const docKey = doc?.documentHash ?? null;
+  const tabId = useFindings((s) => s.tabId);
+  const askDraft = useSidePanel((s) => s.askDraft);
+  const [sourceNotice, setSourceNotice] = useState<string | null>(null);
 
   const [turns, setTurns] = useState<Turn[]>([]);
   const [draft, setDraft] = useState('');
@@ -55,6 +59,26 @@ export function AskTab() {
   useEffect(() => {
     void getPrefs().then((p) => setMaxChars(budgetChars(p.tokenBudget)));
   }, []);
+
+  // "Explain" on a finding fills the question box. The user reviews it and presses Ask.
+  useEffect(() => {
+    if (askDraft === null) return;
+    setDraft(askDraft);
+    useSidePanel.getState().clearAskDraft();
+  }, [askDraft]);
+
+  /** Opens the cited passage in the panel and tries to show it on the live page. */
+  const openCitation = async (turnId: number, s: RetrievedSection, isOpen: boolean) => {
+    const key = `${turnId}:${s.id}`;
+    setSourceNotice(null);
+    if (isOpen) {
+      setOpenSource(null);
+      return;
+    }
+    setOpenSource(key);
+    const result = await showExcerptOnPage(s, tabId);
+    if (result !== 'found') setSourceNotice("Live highlighting isn't available. Showing the saved passage.");
+  };
 
   // What would be sent for the question being typed. Computed on this device only.
   const plan = useMemo(
@@ -147,16 +171,6 @@ export function AskTab() {
       </div>
       <p className="truncate text-small text-muted">{doc.title || 'Untitled agreement'}</p>
 
-      {turns.length === 0 ? (
-        <div className="flex flex-col gap-2">
-          {SUGGESTIONS.map((s) => (
-            <Button key={s} variant="quiet" block onClick={() => void ask(s)} disabled={busy}>
-              {s}
-            </Button>
-          ))}
-        </div>
-      ) : null}
-
       {turns.map((turn) => (
         <div key={turn.id} className="space-y-2">
           <div className="ml-auto max-w-[85%] rounded-[16px] border border-lavender bg-surface-2 px-3 py-2 text-body text-fg">
@@ -198,13 +212,18 @@ export function AskTab() {
                           <button
                             type="button"
                             aria-expanded={open}
-                            onClick={() => setOpenSource(open ? null : key)}
+                            onClick={() => void openCitation(turn.id, s, open)}
                             className="min-h-[44px] rounded-full border border-ghost px-3 text-small text-ghost"
                           >
                             § {s.heading || 'Introduction'}
                           </button>
                           {open ? (
                             <div className="mt-2">
+                              {sourceNotice ? (
+                                <p className="mb-2 text-caption text-muted" role="status">
+                                  {sourceNotice}
+                                </p>
+                              ) : null}
                               <InsetCard>
                                 <p className="whitespace-pre-wrap text-small text-fg">{s.text}</p>
                               </InsetCard>
@@ -220,6 +239,17 @@ export function AskTab() {
           </Card>
         </div>
       ))}
+
+      {/* Suggestions show on an empty thread and again after an answer (design steering 6C). */}
+      {!busy && turns.every((t) => t.status !== 'pending') ? (
+        <div className="flex flex-col gap-2">
+          {SUGGESTIONS.filter((s) => !turns.some((t) => t.question === s)).map((s) => (
+            <Button key={s} variant="quiet" block onClick={() => void ask(s)}>
+              {s}
+            </Button>
+          ))}
+        </div>
+      ) : null}
 
       <form
         className="space-y-2"

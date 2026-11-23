@@ -224,8 +224,9 @@ function buildPopover(item: MarkItem): HTMLDivElement {
   const chips = el('div');
   chips.append(
     Object.assign(el('span', `chip ${impactClass(item.card.impact)}`), { textContent: item.card.impact }),
-    Object.assign(el('span', 'chip ok'), { textContent: 'Source verified' }),
   );
+  // Only a finding that passed the quote check says so. A cited Ask excerpt does not.
+  if (item.verified) chips.append(Object.assign(el('span', 'chip ok'), { textContent: 'Source verified' }));
   const title = el('p', 'title', item.card.title);
   const sentence = el('p', 'sentence', item.card.sentence);
 
