@@ -1,6 +1,6 @@
 # Effects and scares
 
-**Status: partly built, not verified in Chrome.** Margin markers appear automatically after an analysis.
+**Status: built (Spec 6 closed in v0.12.0), not verified in Chrome.** Margin markers appear automatically after an analysis.
 Haunting, the spectral pointer, the Possession trigger, the callout, the vignette and drifting ghosts are
 built. The effect level (Immersive, Subtle, Quiet) and reduced motion are read on each request. The
 level is set in the side panel's Settings. The Chrome check (task 19) is still open. The

@@ -18,7 +18,7 @@ Spec roadmap:
 | 3 | Candidate finding and segmentation | MVP | Done in v0.8.0 (`.kiro/specs/specter/candidate-segmentation`), with ranked cap, 15 unit tests and corpus-based keyword coverage |
 | 4 | AI provider layer and BYOK | MVP | Done in v0.9.0 (`.kiro/specs/specter/ai-providers`). Live tests passed with a hosted provider. Ollama not yet confirmed |
 | 5 | Clause analysis and validation | MVP | Done (`.kiro/specs/specter/clause-analysis`). Live analysis checked. Possession moved to Spec 6 |
-| 6 | Side panel (Contract Exorcist) and Spectral Vision overlay | MVP | Partly built (`.kiro/specs/specter/side-panel-overlay`). Open: margin marker, popover, Possession and its caps, spectral pointer, Settings and Analyzing polish |
+| 6 | Side panel (Contract Exorcist) and Spectral Vision overlay | MVP | Done in v0.12.0 (`.kiro/specs/specter/side-panel-overlay`), closed at the user's request. Carried forward: tasks 17 and 18 (Specs 8 and 9) and task 19, the Chrome check, which is still the user's. Overlay effects are not yet seen working in Chrome |
 | 7 | Onboarding and tutorial | MVP | Done. Ghost waves and step 4 effects tested by the user |
 | 8 | Graveyard, saving and consent search | MVP | Not started |
 | 9 | Version comparison (Haunting Timeline) | MVP | Not started |
@@ -33,6 +33,11 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 ---
 
 ## [Unreleased]
+
+## [0.12.0] - 2026-10-31
+
+Spec 6 (side panel and Spectral Vision overlay) and Spec 10 (Ask Specter) closed. Spec 6 is closed with
+tasks 17, 18 and 19 carried forward; see `.kiro/specs/specter/side-panel-overlay/tasks.md`.
 
 ### Added
 - Spec 6 page overlay: margin markers appear on the page automatically after an analysis finishes, without
@@ -67,10 +72,12 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 - Onboarding ghosts: giants and peekers exit after reaching the end of their path; ghosts blink.
 
 ### Notes
-- Typecheck passed (`tsc --noEmit` in apps/extension). Extension unit tests passed (50 of 50, including
-  18 Possession tests). The overlay, markers and Possession callout are untested in Chrome. Chrome checks
-  (task 19) are pending the user.
-- Tasks 17 and 18 are blocked by Specs 8 and 9.
+- Typecheck passed (`tsc --noEmit` in apps/extension). Tests run at the end of this release: `packages/ai`
+  19 passed, `apps/extension` 53 passed (including 18 Possession tests). Core tests were not rerun; no core
+  code changed in this release.
+- The overlay, markers, Possession callout, effect levels, Settings and the Ask citation highlighting are
+  untested in Chrome. Task 19 is the user's check and is still open.
+- Spec 6 tasks 17 and 18 are carried forward to Specs 8 and 9.
 
 ## [0.11.0] - 2026-10-31
 

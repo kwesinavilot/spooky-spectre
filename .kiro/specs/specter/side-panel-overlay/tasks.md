@@ -1,6 +1,7 @@
 # Spec 6 — Side Panel and Spectral Vision Overlay (Tasks)
 
-Status: **open**. Spec 6 is not complete. `[x]` is built and checked by the user or in the repository.
+Status: **closed at the user's request (v0.12.0)** with tasks 17, 18 and 19 carried forward (see the end of this
+file). `[x]` is built and checked in the repository; the overlay has not been checked in Chrome.
 
 ## Built
 
@@ -40,10 +41,20 @@ Status: **open**. Spec 6 is not complete. `[x]` is built and checked by the user
 - [ ] 17 Data section: size used, Export JSON, Delete all with confirm. **Blocked by Spec 8.** _R6.3_
 - [ ] 18 Resurrection. **Blocked by Spec 8 and Spec 9.** _R7_
 - [ ] 19 Chrome check on the Streamly demo for each effect level, reduced motion on and off. Recorded here by the
-  user.
+  user. **Still to do by the user.**
 
 ## Notes
 
 - Tasks 10 to 12 are the core of Possession. Build and test them before the visuals in task 13.
 - The rules in `.kiro/steering/design.md` §5.3 are the spec for Possession. Where this file is shorter, the
   steering wins.
+
+## Closed (v0.12.0)
+
+Spec 6 is closed in the roadmap at the user's request. It is closed with three tasks open, not done:
+
+- Task 17 (Data section: size used, Export JSON, Delete all) moves to Spec 8, which creates the saved data.
+- Task 18 (Resurrection) moves to Specs 8 and 9, which create saved versions and their comparison.
+- Task 19 (Chrome check on the Streamly demo, each effect level, reduced motion on and off) is a manual check
+  by the user. Until it is recorded, markers, the popover, the Possession callout, the vignette, the drifting
+  ghosts and the effect levels are built and typechecked, not seen working in a browser.
