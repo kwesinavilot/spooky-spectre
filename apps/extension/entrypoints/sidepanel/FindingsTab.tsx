@@ -167,7 +167,7 @@ function FindingCard({
   const quote = finding.evidence.exactQuote;
 
   const show = async () => {
-    const result = await showOnPage(finding, tabId);
+    const result = await showOnPage(finding, doc, tabId);
     onNotice(SHOW_NOTICE[result]);
   };
 

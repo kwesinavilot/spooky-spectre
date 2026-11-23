@@ -18,6 +18,19 @@ export interface HighlightCard {
   sentence: string;
 }
 
+/** One verified finding as the page needs it: where it is, how it is drawn, and what the popover says. */
+export interface MarkItem {
+  id: string;
+  quote: string;
+  effect: string;
+  card: HighlightCard;
+  concern: 'low' | 'medium' | 'high';
+  confidence: number;
+  verified: boolean;
+  /** Section heading the clause is in, for the callout ("§ 4.2 Subscription and renewal"). */
+  section: string;
+}
+
 export type ExtractTarget = 'page' | 'banner';
 export type ExtractFailure = 'excluded' | 'pdf' | 'no_access' | 'nothing_found' | 'error';
 
@@ -39,7 +52,10 @@ export type SpecterMessage =
   // background -> extension pages
   | { type: 'tab-state-changed'; tabId: number }
   // side panel -> content script
-  | { type: 'highlight'; quote: string; effect: string; card?: HighlightCard }
+  | { type: 'highlight'; quote: string; effect: string; card?: HighlightCard; item?: MarkItem }
+  // side panel -> content script: draw a marker for every verified finding of the analysis
+  | { type: 'show-marks'; items: MarkItem[] }
+  | { type: 'marks-shown'; count: number }
   | { type: 'highlighted'; found: boolean }
   // page popover -> side panel: open the finding in the Findings tab
   | { type: 'focus-finding'; id: string }

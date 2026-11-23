@@ -34,6 +34,28 @@ phishing investigation, multi-browser support, cloud sync and accounts.
 
 ## [Unreleased]
 
+### Added
+- Spec 6 page overlay: margin markers appear on the page automatically after an analysis finishes, without
+  pressing Show on page. Markers use shadow DOM and text nodes only.
+- Popover on a marker with an "Open in Specter" action that switches the side panel to Findings.
+- Possession moment: a verified High-impact finding with confidence at least 0.85 shows a callout when the
+  pointer nears an action control, a control gets focus, or Show on page is pressed. Limits: once per
+  finding per load, once per site per day, three per day overall (counters in `chrome.storage.local`).
+  Callout includes "Why am I seeing this?" and Dismiss. Specter never blocks or delays a click.
+- Immersive vignette and drifting ghosts for Possession, and a spectral pointer for off-screen clauses.
+- `respectReducedMotion` preference (default on). Settings UI for it is not built yet.
+
+### Changed
+- Analysis runs automatically after Analyze agreement. Preview before sending is opt-in (default off).
+  A one-time migration (`previewVersion: 2`) resets saved profiles to this default.
+- Onboarding ghosts: giants and peekers exit after reaching the end of their path; ghosts blink.
+
+### Notes
+- Typecheck passed (`tsc --noEmit` in apps/extension). Extension unit tests passed (50 of 50, including
+  18 Possession tests). The overlay, markers and Possession callout are untested in Chrome. Chrome checks
+  (task 19) are pending the user.
+- Tasks 17 and 18 are blocked by Specs 8 and 9.
+
 ## [0.11.0] - 2026-10-31
 
 Spec 7 (onboarding and tutorial) closed. Ghost waves and step 4 effects checked by the user. Spec 6 work

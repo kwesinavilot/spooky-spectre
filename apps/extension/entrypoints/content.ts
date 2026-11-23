@@ -5,7 +5,8 @@ import { chooseRoot, extractDocument } from '@specter/core/extract';
 import { shouldAnalyze } from '@specter/core/privacy';
 import type { AgreementKind, DetectionResult } from '@specter/core/schema';
 import type { SpecterMessage } from '../src/messaging';
-import { clearHighlight, showHighlight } from '../src/pageHighlight';
+import { clearAll, focusMark, markerRect, setEffectLevel, showMarks } from '../src/pageHighlight';
+import { configure, dispose, momentForFinding } from '../src/possessionOverlay';
 import { blockedDomains, getPrefs } from '../src/prefs';
 
 type SpecterGlobal = typeof globalThis & { __specterLoaded?: boolean; __specterOnDemand?: boolean };
@@ -131,13 +132,31 @@ function listen(current: () => Current): void {
       sendResponse(reply);
       return false;
     }
+    if (message.type === 'show-marks') {
+      // A marker for every verified finding, drawn at once. The side panel sends this after an analysis.
+      void (async () => {
+        const prefs = await getPrefs();
+        const reduce = prefs.respectReducedMotion && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        setEffectLevel(prefs.effectLevel, reduce);
+        const count = showMarks(message.items);
+        const c = current();
+        const controls = 'excluded' in c || !c.outcome || c.outcome.excluded ? [] : c.outcome.result.actionControls;
+        configure({ items: message.items, controls, level: prefs.effectLevel, reduce });
+        sendResponse({ type: 'marks-shown', count } satisfies SpecterMessage);
+      })();
+      return true;
+    }
     if (message.type === 'highlight') {
-      const found = showHighlight(message.quote, message.effect, message.card);
+      // "Show on page" for one finding: scroll to it, and count it as a moment of agreement.
+      const item = message.item;
+      const found = item ? focusMark(item) : false;
+      if (item && found) momentForFinding(item.id, () => markerRect(item.id));
       sendResponse({ type: 'highlighted', found } satisfies SpecterMessage);
       return false;
     }
     if (message.type === 'clear-highlight') {
-      clearHighlight();
+      clearAll();
+      dispose();
       return false;
     }
     if (message.type === 'extract') {

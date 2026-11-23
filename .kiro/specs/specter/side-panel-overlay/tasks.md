@@ -26,14 +26,16 @@ Status: **open**. Spec 6 is not complete. `[x]` is built and checked by the user
   Not yet connected to the page: no moment of agreement is detected. _R4.1_
 - [x] 11 Caps: once per finding per load, once per site per day, three per day, daily reset (`countersForDay`).
   Pure functions with unit tests passing. Storage wiring not yet done. _R4.2, R4.3_
-- [ ] 12 Callout beside the control with "Why am I seeing this?". Esc dismisses. No `preventDefault`. _R4.4, R4.5, R4.7_
-- [ ] 13 Immersive vignette and drifting ghosts, once each, never over a protected control. _R4.6_
-- [ ] 14 Spectral pointer for off-screen targets. _R5.1_
+- [x] 12 Callout beside the control with "Why am I seeing this?". Esc dismisses. No `preventDefault`. Built in
+  `possessionOverlay.ts` and typechecked; not yet checked in Chrome. _R4.4, R4.5, R4.7_
+- [x] 13 Immersive vignette and drifting ghosts, once each, never over a protected control. Built; placement
+  against protected controls is not yet verified in Chrome. _R4.6_
+- [x] 14 Spectral pointer for off-screen targets. Built in `pageHighlight.ts` (`focusMark`); not yet checked in Chrome. _R5.1_
 - [ ] 15 Analyzing screen: show the excerpts being sent (not only the count) and keep Cancel visible. _R6.1_
 - [ ] 16 Settings: haunting level Segmented, respect reduced motion switch, excluded domains editor, "This site".
   _R6.2_
-- [ ] 17 Data section: size used, Export JSON, Delete all with confirm. Waits for Spec 8. _R6.3_
-- [ ] 18 Resurrection. Waits for Spec 8 and Spec 9. _R7_
+- [ ] 17 Data section: size used, Export JSON, Delete all with confirm. **Blocked by Spec 8.** _R6.3_
+- [ ] 18 Resurrection. **Blocked by Spec 8 and Spec 9.** _R7_
 - [ ] 19 Chrome check on the Streamly demo for each effect level, reduced motion on and off. Recorded here by the
   user.
 

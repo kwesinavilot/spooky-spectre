@@ -9,7 +9,8 @@ import { describePage, type PageInfo } from '../../src/pageInfo';
 import { allowSite, checkPage, extractFromTab } from '../../src/analyze';
 import { readLinkedPolicy } from '../../src/linkedPolicy';
 import { blockedDomains, getPrefs } from '../../src/prefs';
-import { sendMessage, type SpecterMessage } from '../../src/messaging';
+import { sendMessage, sendToTab, type SpecterMessage } from '../../src/messaging';
+import { markItemsFor } from '../../src/showOnPage';
 import { defaultChoice, documentChoices, type DocumentChoice } from '../../src/choices';
 import {
   coverageLabel,
@@ -199,6 +200,10 @@ export function PageTab() {
     abort.current = null;
     current.current = null;
     useFindings.getState().publish(run.snapshot);
+    // Markers for every verified finding appear on the page by themselves (Spec 6 task 7).
+    if (tab) {
+      void sendToTab(tab.id, { type: 'show-marks', items: markItemsFor(run.snapshot.findings, doc) });
+    }
     setView({ kind: 'extracted', result, doc });
     useSidePanel.getState().setTab('findings');
   };

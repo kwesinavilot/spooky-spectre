@@ -426,7 +426,8 @@ function Peeker({ p }: { p: Peek }) {
   const blinkAt = p.at + enterDur;
   const tourDelay = p.at + enterDur + 1.6;
   const fades = p.exit === 'fade';
-  const pts = fades ? p.route : [...p.route, p.exit];
+  const exit = p.exit;
+  const pts: Point[] = exit === 'fade' ? p.route : [...p.route, exit];
   const [m1, m2, m3, m4] = sample(pts, 4) as [Point, Point, Point, Point];
 
   const tour = vars({

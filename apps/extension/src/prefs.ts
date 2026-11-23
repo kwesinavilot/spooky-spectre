@@ -36,6 +36,8 @@ export interface SpecterPrefs {
   cacheAnalysis: boolean;
   /** Tokens of agreement text allowed per analysis or question. See TOKEN_BUDGET_* below. */
   tokenBudget: number;
+  /** Honour the system's reduced-motion setting by showing the Quiet look. On by default. */
+  respectReducedMotion: boolean;
 }
 
 /** Token budget bounds for the AI settings slider (about 4 characters per token). */
@@ -59,6 +61,7 @@ export const DEFAULT_PREFS: SpecterPrefs = {
   aiLastTestAt: null,
   cacheAnalysis: false,
   tokenBudget: TOKEN_BUDGET_DEFAULT,
+  respectReducedMotion: true,
 };
 
 const KEY = 'specterPrefs';
